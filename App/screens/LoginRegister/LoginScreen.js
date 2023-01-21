@@ -19,18 +19,18 @@ const LoginScreen = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        navigation.replace("WelcomeScreen");
+        navigation.replace("DrawerNavigator");
       }
     });
     return unsubscribe;
   }, []);
 
+  // Register the user with email and password
   const handleSignUp = () => {
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((userCredentials) => {
         const user = userCredentials.user;
-        //console.log(user.email);
       })
       .catch((error) => alert(error.message));
   };
