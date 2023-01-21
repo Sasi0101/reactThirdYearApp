@@ -3,36 +3,24 @@ import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import FlashcardsScreen from "./OtherScreens/FlashcardsScreen";
 import ProfileScreen from "./OtherScreens/ProfileScreen";
-import SignOutScreen from "./OtherScreens/SignOutScreen";
 import MessagingScreen from "./OtherScreens/MessagingScreen";
+import { auth } from "../firebase";
+import { DrawerContent } from "./DrawerContent";
+import TodoScreen from "./OtherScreens/TodoScreen";
+import CalendarScreen from "./OtherScreens/CalendarScreen";
+import LoginScreen from "./LoginRegister/LoginScreen";
 
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNavigator() {
   return (
-    <Drawer.Navigator
-      options={{ headerShown: false }}
-      screenOptions={{
-        drawerActiveBackgroundColor: "red",
-      }}
-    >
-      <Drawer.Screen
-        options={{ headerShown: true }}
-        name="Messaging Screen"
-        style={styles.messagingScreen}
-        component={MessagingScreen}
-      />
-      <Drawer.Screen
-        options={{ headerShown: false }}
-        name="Flashcards"
-        component={FlashcardsScreen}
-      />
-      <Drawer.Screen
-        options={{ headerShown: false }}
-        name="Profile"
-        component={ProfileScreen}
-      />
-      <Drawer.Screen name="Sign out" component={SignOutScreen} />
+    <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
+      <Drawer.Screen name="MessagingScreen" component={MessagingScreen} />
+      <Drawer.Screen name="FlashcardsScreen" component={FlashcardsScreen} />
+      <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Drawer.Screen name="TodoScreen" component={TodoScreen} />
+      <Drawer.Screen name="CalendarScreen" component={CalendarScreen} />
+      <Drawer.Screen name="Login" component={LoginScreen} />
     </Drawer.Navigator>
   );
 }
