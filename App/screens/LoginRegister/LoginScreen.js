@@ -2,7 +2,6 @@ import {
   View,
   Text,
   StyleSheet,
-  KeyboardAvoidingView,
   TextInput,
   TouchableOpacity,
 } from "react-native";
@@ -19,21 +18,11 @@ const LoginScreen = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        navigation.replace("DrawerNavigator");
+        navigation.navigate("DrawerNavigator");
       }
     });
     return unsubscribe;
   }, []);
-
-  // Register the user with email and password
-  const handleSignUp = () => {
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-      })
-      .catch((error) => alert(error.message));
-  };
 
   const handleLogin = () => {
     auth
@@ -42,6 +31,10 @@ const LoginScreen = () => {
         const user = userCredentials.user;
       })
       .catch((error) => console.log(error.message));
+  };
+
+  const changeToRegister = () => {
+    navigation.navigate("Register");
   };
 
   return (
@@ -71,7 +64,7 @@ const LoginScreen = () => {
 
         {/** Register button */}
         <TouchableOpacity
-          onPress={handleSignUp}
+          onPress={changeToRegister}
           style={[styles.button, styles.buttonOutline]}
         >
           <Text style={styles.buttonOutlineText}>Register</Text>

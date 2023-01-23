@@ -1,6 +1,6 @@
 import React from "react";
-import { useState } from "react";
-import { auth } from "../firebase";
+import { useState, useLayoutEffect } from "react";
+import { auth, firestore } from "../firebase";
 import { View, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
@@ -19,6 +19,19 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 export function DrawerContent(props) {
   const [isDarkTheme, setIsDarkTheme] = useState("");
   const navigation = useNavigation();
+  const [username, setUsername] = useState("");
+
+  useLayoutEffect(() => {
+    async function getUser() {
+      const userDoc = await firestore
+        .collection("users")
+        .doc(auth.currentUser?.email)
+        .get();
+      setUsername(userDoc.data().username);
+    }
+    getUser();
+  });
+
   const toggleTheme = () => {
     setIsDarkTheme(!isDarkTheme);
   };
@@ -39,7 +52,7 @@ export function DrawerContent(props) {
                 size={50}
               />
               <View style={{ marginLeft: 15, flexDirection: "column" }}>
-                <Title style={styles.title}> Username goes here</Title>
+                <Title style={styles.title}> {username} </Title>
                 <Caption style={styles.caption}>
                   {auth.currentUser?.email}
                 </Caption>
