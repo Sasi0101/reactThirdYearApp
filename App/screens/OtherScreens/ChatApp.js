@@ -7,15 +7,6 @@ export default function ChatApp() {
   const [messages, setMessages] = useState("");
   const [newMessage, setNewMessage] = useState("");
 
-  /*useEffect(() => {
-    firebase
-      .database()
-      .ref("users")
-      .on("value", (snapshot) => {
-        const messagesData = snapshot.val();
-      });
-  }, []);
-  */
   const onLog = () => {};
 
   return (

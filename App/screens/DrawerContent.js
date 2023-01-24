@@ -1,5 +1,5 @@
-import React from "react";
-import { useState, useLayoutEffect } from "react";
+import React, { useEffect } from "react";
+import { useState, useLayoutEffect, useCallback } from "react";
 import { auth, firestore } from "../firebase";
 import { View, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/core";
@@ -14,23 +14,19 @@ import {
   TouchableRipple,
   Switch,
 } from "react-native-paper";
+//import { userData } from "./Helpers/UserInfo";
+
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export function DrawerContent(props) {
   const [isDarkTheme, setIsDarkTheme] = useState("");
   const navigation = useNavigation();
-  const [username, setUsername] = useState("");
+  const [userName, setUsername] = useState("");
 
-  useLayoutEffect(() => {
-    async function getUser() {
-      const userDoc = await firestore
-        .collection("users")
-        .doc(auth.currentUser?.email)
-        .get();
-      setUsername(userDoc.data().username);
-    }
-    getUser();
-  });
+  useEffect(() => {
+    console.log("loaded username");
+    setUsername(props.data.username);
+  }, [props.data]);
 
   const toggleTheme = () => {
     setIsDarkTheme(!isDarkTheme);
@@ -52,7 +48,7 @@ export function DrawerContent(props) {
                 size={50}
               />
               <View style={{ marginLeft: 15, flexDirection: "column" }}>
-                <Title style={styles.title}> {username} </Title>
+                <Title style={styles.title}> {userName} </Title>
                 <Caption style={styles.caption}>
                   {auth.currentUser?.email}
                 </Caption>
@@ -68,6 +64,16 @@ export function DrawerContent(props) {
               label="Messaging Screen"
               onPress={() => {
                 props.navigation.navigate("MessagingScreen");
+              }}
+            />
+
+            <DrawerItem
+              icon={(color, size) => (
+                <Icon name="home-outline" color={color} size={size} />
+              )}
+              label="Users screen"
+              onPress={() => {
+                props.navigation.navigate("UsersScreen");
               }}
             />
 

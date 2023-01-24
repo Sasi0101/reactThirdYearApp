@@ -1,26 +1,54 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import FlashcardsScreen from "./OtherScreens/FlashcardsScreen";
 import ProfileScreen from "./OtherScreens/ProfileScreen";
 import MessagingScreen from "./OtherScreens/MessagingScreen";
-import { auth } from "../firebase";
+import { auth, firestore } from "../firebase";
 import { DrawerContent } from "./DrawerContent";
 import TodoScreen from "./OtherScreens/TodoScreen";
 import CalendarScreen from "./OtherScreens/CalendarScreen";
 import LoginScreen from "./LoginRegister/LoginScreen";
+import UsersScreen from "./MessagingScreens/UsersScreen";
+import PrivateMessage from "./MessagingScreens/PrivateMessage";
 
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNavigator() {
+  let [previousData, setPreviousData] = useState({});
+
+  //handle if there was a change in the users data
+  useEffect(() => {
+    const unsubscribe = firestore
+      .collection("users")
+      .doc(auth.currentUser?.email)
+      .onSnapshot((doc) => {
+        const data = doc.data();
+        if (data.username !== previousData.username) {
+          setPreviousData(data);
+        }
+      });
+    return () => unsubscribe();
+  }, []);
+
   return (
-    <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
+    <Drawer.Navigator
+      drawerContent={(props) => (
+        <DrawerContent {...props} data={previousData} />
+      )}
+    >
       <Drawer.Screen name="MessagingScreen" component={MessagingScreen} />
       <Drawer.Screen name="FlashcardsScreen" component={FlashcardsScreen} />
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
       <Drawer.Screen name="TodoScreen" component={TodoScreen} />
       <Drawer.Screen name="CalendarScreen" component={CalendarScreen} />
       <Drawer.Screen name="Login" component={LoginScreen} />
+      <Drawer.Screen name="UsersScreen" component={UsersScreen} />
+      <Drawer.Screen
+        name="PrivateMessageScreen"
+        component={PrivateMessage}
+        //options={({ route }) => ({ title: route.params.username })}
+      />
     </Drawer.Navigator>
   );
 }
