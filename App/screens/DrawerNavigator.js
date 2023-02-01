@@ -11,6 +11,7 @@ import CalendarScreen from "./OtherScreens/CalendarScreen";
 import LoginScreen from "./LoginRegister/LoginScreen";
 import UsersScreen from "./MessagingScreens/UsersScreen";
 import PrivateMessage from "./MessagingScreens/PrivateMessage";
+import PrivateMessageGiftedChat from "./MessagingScreens/PrivateMessagesGiftedChat";
 
 const Drawer = createDrawerNavigator();
 
@@ -46,7 +47,7 @@ export default function DrawerNavigator() {
       <Drawer.Screen name="UsersScreen" component={UsersScreen} />
       <Drawer.Screen
         name="PrivateMessageScreen"
-        component={PrivateMessage}
+        component={PrivateMessageGiftedChat}
         //options={({ route }) => ({ title: route.params.username })}
       />
     </Drawer.Navigator>

@@ -1,54 +1,80 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { GiftedChat } from "react-native-gifted-chat";
+import OneMessage from "./OneMessage";
 import { auth, firestore } from "../../firebase";
+import SendAndTextInput from "./SendAndTextInput";
+import { GiftedChat } from "react-native-gifted-chat";
 
 export default function PrivateMessage(props) {
-  const [messages, setMessages] = useState([]);
-  let users_id = "";
+  const [messages, setMessages] = useState([""]);
+  const [user_id, setUsersId] = useState(null);
+
   //makes the id and checks if there is one document existing or no if not
   //it will make a new document with that
   async function checkIdExists() {
-    if (auth.currentUser?.email > props.route.params.email) {
-      users_id = auth.currentUser?.email + props.route.params.email;
-    } else {
-      users_id = props.route.params.email + auth.currentUser?.email;
-    }
+    let users_id = "";
+    auth.currentUser?.email > props.route.params.email
+      ? (users_id = auth.currentUser?.email + props.route.params.email)
+      : (users_id = props.route.params.email + auth.currentUser?.email);
 
-    try {
-      const querySnapshot = await firestore
-        .collection("privateMessages")
-        .doc(users_id)
-        .get();
+    const querySnapshot = await firestore
+      .collection("privateMessages")
+      .doc(users_id)
+      .collection("messages")
+      .get()
+      .then((snapshot) => {
+        if (!snapshot.empty) {
+          const messagesArray = snapshot.docs.map((doc) => doc.data());
+          setMessages(messagesArray);
+        } else {
+          console.log("Its empty");
+        }
+      })
+      .catch((error) => {
+        console.error("Error in private message: ", error);
+      });
 
-      if (!querySnapshot.exists) {
-        const newData = { id: users_id, lastMessage: "", messages: [] };
-        firestore.collection("privateMessages").doc(users_id).set(newData);
-      } else {
-        setMessages(querySnapshot.messages);
-      }
-    } catch (error) {
-      console.log("Error at private messages ", error);
-    }
     return users_id;
   }
 
-  useEffect(() => {
-    checkIdExists();
-    props.navigation.setOptions({ title: props.route.params.username });
-  }, []);
+  useLayoutEffect(() => {
+    //checkIdExists();
+    setMessages(null);
+    async function fetchData() {
+      const id = await checkIdExists();
+      setUsersId(id);
+      const unsubscribe = firestore
+        .collection("privateMessages")
+        .doc(id)
+        .collection("messages")
+        .onSnapshot((snapshot) => {
+          console.log(snapshot);
+          //setMessages((prev) => [...prev, change.doc.data()]);
+        });
+      unsubscribe();
+    }
+    fetchData();
 
-  const onSend = (newMessages) => {
-    setMessages(GiftedChat.append(messages, newMessages));
-  };
+    props.navigation.setOptions({ title: props.route.params.username });
+  }, [props.route.params.username]);
+
+  useEffect(() => {}, [messages]);
 
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={onSend}
-      user={{ _id: auth.currentUser?.email }}
-    />
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={messages}
+        renderItem={({ item }) => (
+          <OneMessage
+            text={item.text}
+            user={item.sentBy}
+            time={item.createdAt}
+          />
+        )}
+        keyExtractor={(item, index) => index.toString()}
+      />
+      <SendAndTextInput userId={user_id} />
+    </View>
   );
 }
 

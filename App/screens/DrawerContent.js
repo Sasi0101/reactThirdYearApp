@@ -147,7 +147,7 @@ export function DrawerContent(props) {
             .then(() => {
               navigation.navigate("Login");
             })
-            .catch((error) => alert(error.message));
+            .catch((error) => console.error("Error at signing out: ", error));
         }}
       />
     </View>
