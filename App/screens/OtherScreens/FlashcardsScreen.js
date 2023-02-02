@@ -4,7 +4,7 @@ import React from "react";
 export default function FlashcardsScreen() {
   return (
     <View>
-      <Text>FlashcardsScreen</Text>
+      <Text> FlashcardsScreen</Text>
     </View>
   );
 }

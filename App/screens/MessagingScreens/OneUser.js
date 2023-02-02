@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { auth, firestore } from "../../firebase";
@@ -9,35 +9,33 @@ export default function OneUser(props) {
   const [lastMessage, setLastMessage] = useState("");
 
   useLayoutEffect(() => {
-    //the id where the last message is
     let temp_id =
       auth.currentUser?.email.localeCompare(props.email) > 0
         ? auth.currentUser?.email + props.email
         : props.email + auth.currentUser?.email;
 
-    firestore
+    const unsubscribe = firestore
       .collection("privateMessages")
       .doc(temp_id)
       .collection("messages")
       .orderBy("createdAt", "desc")
       .limit(1)
-      .get()
-      .then((snapshot) => {
+      .onSnapshot((snapshot) => {
         if (snapshot.empty) {
           const tempMessage = {
-            user: auth.currentUser?.email,
+            user: { _id: auth.currentUser?.email },
             text: "No previous message",
           };
           setLastMessage(tempMessage);
         } else {
           setLastMessage(snapshot.docs[0].data());
         }
-      })
-      .catch((error) =>
-        console.error("Error when printing out last message: ", error)
-      );
-  }, []);
-  //console.log("hello");
+      });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [props.email]);
 
   return (
     <TouchableOpacity
@@ -53,12 +51,12 @@ export default function OneUser(props) {
         <Text style={styles.textContainer}>{props.email}</Text>
         <Text
           style={
-            lastMessage.user._id === auth.currentUser?.email
-              ? styles.textContainer
-              : styles.blackTextContainer
+            !lastMessage || lastMessage.user._id !== auth.currentUser?.email
+              ? styles.blackTextContainer
+              : styles.textContainer
           }
         >
-          {lastMessage.text}
+          Last message is: {lastMessage.text}
         </Text>
       </View>
     </TouchableOpacity>

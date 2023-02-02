@@ -1,22 +1,24 @@
 import { StyleSheet, View, FlatList } from "react-native";
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import OneUser from "./OneUser";
 import { auth, firestore } from "../../firebase";
 
 export default function UsersScreen() {
   const [usersToPrint, setUsersToPrint] = useState(null);
 
-  const usersRef = firestore
-    .collection("users")
-    .where("email", "!=", auth.currentUser?.email);
+  useEffect(() => {
+    const usersRef = firestore
+      .collection("users")
+      .where("email", "!=", auth.currentUser?.email);
 
-  usersRef.onSnapshot((element) => {
-    let users = [];
-    element.forEach((doc) => {
-      users.push(doc.data());
+    usersRef.onSnapshot((element) => {
+      let users = [];
+      element.forEach((doc) => {
+        users.push(doc.data());
+      });
+      setUsersToPrint(users);
     });
-    setUsersToPrint(users);
-  });
+  }, []);
 
   return (
     <View>
