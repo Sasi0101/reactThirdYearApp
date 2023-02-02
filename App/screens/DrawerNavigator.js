@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import React, { useState, useEffect } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import FlashcardsScreen from "./OtherScreens/FlashcardsScreen";
@@ -10,7 +10,6 @@ import TodoScreen from "./OtherScreens/TodoScreen";
 import CalendarScreen from "./OtherScreens/CalendarScreen";
 import LoginScreen from "./LoginRegister/LoginScreen";
 import UsersScreen from "./MessagingScreens/UsersScreen";
-import PrivateMessage from "./MessagingScreens/PrivateMessage";
 import PrivateMessageGiftedChat from "./MessagingScreens/PrivateMessagesGiftedChat";
 
 const Drawer = createDrawerNavigator();
