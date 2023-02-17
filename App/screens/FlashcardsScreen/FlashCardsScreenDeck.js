@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-export default function CalendarScreen() {
+export default function FlashCardsScreenDeck() {
   return (
     <View>
-      <Text>CalendarScreen</Text>
+      <Text>FlashCardsScreenDeck</Text>
     </View>
   );
 }

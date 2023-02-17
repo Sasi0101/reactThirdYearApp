@@ -1,16 +1,17 @@
 import { StyleSheet } from "react-native";
 import React, { useState, useEffect } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import FlashcardsScreen from "./OtherScreens/FlashcardsScreen";
+import FlashcardsScreen from "./FlashcardsScreen/FlashcardsScreen";
 import ProfileScreen from "./OtherScreens/ProfileScreen";
 import MessagingScreen from "./OtherScreens/MessagingScreen";
 import { auth, firestore } from "../firebase";
 import { DrawerContent } from "./DrawerContent";
-import TodoScreen from "./OtherScreens/TodoScreen";
-import CalendarScreen from "./OtherScreens/CalendarScreen";
+import TodoScreen from "./TaskScreen/TodoScreen";
 import LoginScreen from "./LoginRegister/LoginScreen";
 import UsersScreen from "./MessagingScreens/UsersScreen";
 import PrivateMessageGiftedChat from "./MessagingScreens/PrivateMessagesGiftedChat";
+import StudyPageScreen from "./FlashcardsScreen/StudyPageScreen";
+import CalendarScreen from "./CalendarScreen/CalendarScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -37,18 +38,19 @@ export default function DrawerNavigator() {
         <DrawerContent {...props} data={previousData} />
       )}
     >
+      <Drawer.Screen name="TodoScreen" component={TodoScreen} />
       <Drawer.Screen name="MessagingScreen" component={MessagingScreen} />
       <Drawer.Screen name="FlashcardsScreen" component={FlashcardsScreen} />
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
-      <Drawer.Screen name="TodoScreen" component={TodoScreen} />
+
       <Drawer.Screen name="CalendarScreen" component={CalendarScreen} />
       <Drawer.Screen name="Login" component={LoginScreen} />
       <Drawer.Screen name="UsersScreen" component={UsersScreen} />
       <Drawer.Screen
         name="PrivateMessageScreen"
         component={PrivateMessageGiftedChat}
-        //options={({ route }) => ({ title: route.params.username })}
       />
+      <Drawer.Screen name="StudyPageScreen" component={StudyPageScreen} />
     </Drawer.Navigator>
   );
 }

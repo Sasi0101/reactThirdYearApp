@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-export default function TodoScreen() {
+export default function StudyPageScreen() {
   return (
     <View>
-      <Text>TodoScreen</Text>
+      <Text>StudyPageScreen</Text>
     </View>
   );
 }

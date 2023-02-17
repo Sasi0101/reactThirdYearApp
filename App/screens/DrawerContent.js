@@ -8,13 +8,11 @@ import {
   Avatar,
   Title,
   Caption,
-  Paragraph,
   Drawer,
   Text,
   TouchableRipple,
   Switch,
 } from "react-native-paper";
-//import { userData } from "./Helpers/UserInfo";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
