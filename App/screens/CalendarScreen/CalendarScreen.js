@@ -282,6 +282,21 @@ export default function CalendarScreen() {
         />
       </View>
 
+      <View style={{ flex: 1 }}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            const date = new Date(selectedDate);
+
+            setEventDate(date);
+            if (!isEdit) makeEverythingOriginal();
+            setEventAddOverlay(!eventAddOverlay);
+          }}
+        >
+          <Text style={{ fontSize: 30 }}> + </Text>
+        </TouchableOpacity>
+      </View>
+
       <View>
         <Overlay
           isVisible={eventAddOverlay}
@@ -444,4 +459,17 @@ export default function CalendarScreen() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  button: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#0080ff",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    elevation: 5,
+  },
+});

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import FlashcardsScreen from "./FlashcardsScreen/FlashcardsScreen";
 import ProfileScreen from "./OtherScreens/ProfileScreen";
-import MessagingScreen from "./OtherScreens/MessagingScreen";
+import MessagingScreen from "./GroupsScreen/MessagingScreen";
 import { auth, firestore } from "../firebase";
 import { DrawerContent } from "./DrawerContent";
 import TodoScreen from "./TaskScreen/TodoScreen";
@@ -12,6 +12,7 @@ import UsersScreen from "./MessagingScreens/UsersScreen";
 import PrivateMessageGiftedChat from "./MessagingScreens/PrivateMessagesGiftedChat";
 import StudyPageScreen from "./FlashcardsScreen/StudyPageScreen";
 import CalendarScreen from "./CalendarScreen/CalendarScreen";
+import GroupMessagesGiftedChat from "./GroupsScreen/GroupMessagesGiftedChat";
 
 const Drawer = createDrawerNavigator();
 
@@ -51,6 +52,10 @@ export default function DrawerNavigator() {
         component={PrivateMessageGiftedChat}
       />
       <Drawer.Screen name="StudyPageScreen" component={StudyPageScreen} />
+      <Drawer.Screen
+        name="GroupMessageScreen"
+        component={GroupMessagesGiftedChat}
+      />
     </Drawer.Navigator>
   );
 }

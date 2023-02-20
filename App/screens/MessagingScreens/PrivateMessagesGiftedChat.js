@@ -22,7 +22,6 @@ export default function PrivateMessagesGiftedChat(props) {
   }, [props.route.params.email]);
 
   useEffect(() => {
-    //checkIdExists();
     let unsubscribe = firestore
       .collection("privateMessages")
       .doc(user_id)
@@ -60,15 +59,6 @@ export default function PrivateMessagesGiftedChat(props) {
             error
           );
         });
-
-      //adding the message to the last message
-      /*firestore
-        .collection("privateMessages")
-        .doc(user_id)
-        .set({ lastMessage: messages[0] })
-        .catch((error) =>
-          console.error("Error while adding to the last message: ", error)
-        );*/
     },
     [user_id]
   );
