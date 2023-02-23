@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "github:react-native-async-storage/async-storage",
+    
     "@react-native-community/datetimepicker": "^6.5.2",
     "@react-native-picker/picker": "^2.4.8",
     "@react-navigation/drawer": "^6.5.7",

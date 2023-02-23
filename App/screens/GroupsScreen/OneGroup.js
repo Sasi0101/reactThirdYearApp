@@ -5,13 +5,13 @@ import {
   TouchableOpacity,
   Button,
   Dimensions,
+  TextInput,
   Alert,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { auth, firestore } from "../../firebase";
 import { Overlay } from "@rneui/themed";
-import GroupMessagesGiftedChat from "./GroupMessagesGiftedChat";
 
 export default function OneGroup(props) {
   const navigation = useNavigation();
@@ -19,7 +19,37 @@ export default function OneGroup(props) {
   const [isJoined, setIsJoined] = useState(false);
   const [isThereSpaceLeft, setIsThereSpaceLeft] = useState(true);
 
+  const [showPasswordOverLay, setShowPasswordOverlay] = useState(false);
+  const [password, setPassword] = useState("");
+  const [lastMessage, setLastMessage] = useState("");
+
+  //useLayoutEffect if it needs to
+
   useLayoutEffect(() => {
+    const unsubscribe = firestore
+      .collection("groups")
+      .doc(props.data.id)
+      .collection("messages")
+      .orderBy("createdAt", "desc")
+      .limit(1)
+      .onSnapshot((snapshot) => {
+        if (snapshot.empty) {
+          const tempMessage = {
+            user: { _id: auth.currentUser?.email },
+            text: "No previous message",
+          };
+          setLastMessage(tempMessage);
+        } else {
+          setLastMessage(snapshot.docs[0].data());
+        }
+      });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     props.data.data.members.length >= props.data.data.numberlimit
       ? setIsThereSpaceLeft(false)
       : setIsThereSpaceLeft(true);
@@ -29,11 +59,25 @@ export default function OneGroup(props) {
       : setIsJoined(false);
 
     console.log(isJoined, " ", isThereSpaceLeft);
-  }, [props]);
+  }, []);
 
   useEffect(() => {}, [isJoined, isThereSpaceLeft]);
 
-  const handleJoin = () => {
+  function handleJoin() {
+    if (props.data.data.password.length !== 0 && password.length === 0) {
+      setShowPasswordOverlay(true);
+      return;
+    }
+
+    if (props.data.data.password.length !== 0 && password.length !== 0) {
+      if (password !== props.data.data.password) {
+        Alert.alert("Error", "Password is not correct");
+        return;
+      }
+    }
+
+    setIsJoined(true);
+    setShowPasswordOverlay(false);
     let prevMembers = [];
     prevMembers = props.data.data.members;
     let newMembers = [...prevMembers, auth.currentUser?.email];
@@ -45,14 +89,15 @@ export default function OneGroup(props) {
         members: newMembers,
       })
       .then(() => {
-        navigation.navigate("GroupMessagesGiftedChat");
+        navigation.navigate("GroupMessageScreen", {
+          id: props.data.id,
+          data: props.data.data,
+        });
       })
       .catch((error) => {
         console.error("Error when updating join: ", error);
       });
-
-    navigation.navigate("GroupMessageScreen");
-  };
+  }
 
   return (
     <>
@@ -213,17 +258,60 @@ export default function OneGroup(props) {
       {isJoined && (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("GroupMessageScreen");
+            navigation.navigate("GroupMessageScreen", {
+              data: props.data.data,
+              id: props.data.id,
+            });
           }}
         >
           <View style={styles.item}>
             <Text style={styles.title}>{props.data.data.name}</Text>
             <Text style={styles.subtitle} numberOfLines={1}>
-              last message comes here
+              {lastMessage.text}
             </Text>
           </View>
         </TouchableOpacity>
       )}
+
+      <Overlay
+        isVisible={showPasswordOverLay}
+        onBackdropPress={() => {
+          setShowPasswordOverlay(!showPasswordOverLay);
+          setPassword("");
+        }}
+      >
+        <View
+          style={{
+            width: Dimensions.get("window").width * 0.8,
+            //height: Dimensions.get("window").height * 0.1,
+          }}
+        >
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+          />
+
+          <View style={{ flexDirection: "row", paddingVertical: 10 }}>
+            <TouchableOpacity
+              onPress={() => {
+                setShowPasswordOverlay(!showPasswordOverLay);
+                setPassword("");
+              }}
+              style={{ left: 5 }}
+            >
+              <Text> Cancel </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => handleJoin()}
+              style={{ position: "absolute", right: 5, paddingTop: 10 }}
+            >
+              <Text> Ok </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Overlay>
     </>
   );
 }

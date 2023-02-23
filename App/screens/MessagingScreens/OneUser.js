@@ -49,15 +49,21 @@ export default function OneUser(props) {
       <View style={styles.boxContainer}>
         <Text style={styles.textContainer}>{props.username}</Text>
         <Text style={styles.textContainer}>{props.email}</Text>
-        <Text
-          style={
-            !lastMessage || lastMessage.user._id !== auth.currentUser?.email
-              ? styles.blackTextContainer
-              : styles.textContainer
-          }
-        >
-          Last message is: {lastMessage.text}
-        </Text>
+        {lastMessage.text === "No previous message" && (
+          <Text style={styles.textContainer}>No previous conversation</Text>
+        )}
+
+        {lastMessage.text !== "No previous message" && (
+          <Text
+            style={
+              !lastMessage || lastMessage.user._id !== auth.currentUser?.email
+                ? styles.blackTextContainer
+                : styles.textContainer
+            }
+          >
+            Last message is: {lastMessage.text}
+          </Text>
+        )}
       </View>
     </TouchableOpacity>
   );

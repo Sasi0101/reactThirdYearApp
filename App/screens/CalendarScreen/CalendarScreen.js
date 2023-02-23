@@ -282,7 +282,7 @@ export default function CalendarScreen() {
         />
       </View>
 
-      <View style={{ flex: 1 }}>
+      <View style={{}}>
         <TouchableOpacity
           style={styles.button}
           onPress={() => {

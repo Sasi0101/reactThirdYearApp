@@ -39,8 +39,8 @@ export default function DrawerNavigator() {
         <DrawerContent {...props} data={previousData} />
       )}
     >
-      <Drawer.Screen name="TodoScreen" component={TodoScreen} />
       <Drawer.Screen name="MessagingScreen" component={MessagingScreen} />
+      <Drawer.Screen name="TodoScreen" component={TodoScreen} />
       <Drawer.Screen name="FlashcardsScreen" component={FlashcardsScreen} />
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
 

@@ -8,6 +8,79 @@ export default function PrivateMessagesGiftedChat(props) {
   const [messages, setMessages] = useState([]);
   const [user_id, setUserId] = useState();
 
+  async function handleSpokenTo2() {
+    let currentUser;
+    let otherUser;
+
+    await firestore
+      .collection("users")
+      .doc(auth.currentUser?.email)
+      .get()
+      .then((doc) => {
+        currentUser = doc.data();
+      })
+      .catch((error) =>
+        console.error("Error at privateMessagesGiftedChat currentUser: ", error)
+      );
+
+    await firestore
+      .collection("users")
+      .doc(props.route.params.email)
+      .get()
+      .then((doc) => {
+        otherUser = doc.data();
+      })
+      .catch((error) =>
+        console.error("Error in privateMessagesGiftedChat otherUser: ", error)
+      );
+
+    let currentUserTalkedTo = currentUser.usersTalkedTo
+      ? currentUser.usersTalkedTo
+      : [];
+    let otherUserTalkedTo = otherUser.usersTalkedTo
+      ? otherUser.usersTalkedTo
+      : [];
+
+    let filteredCurrentArray = currentUserTalkedTo.filter(
+      (item) => item.email != otherUser.email
+    );
+    let filteredOtherArray = otherUserTalkedTo.filter(
+      (item) => item.email != currentUser.email
+    );
+
+    firestore
+      .collection("users")
+      .doc(auth.currentUser?.email)
+      .update({
+        usersTalkedTo: [
+          { email: otherUser.email, username: otherUser.username },
+          ...filteredCurrentArray,
+        ],
+      })
+      .catch((error) =>
+        console.error(
+          "Error when updating first user in private gifted chat: ",
+          error
+        )
+      );
+
+    firestore
+      .collection("users")
+      .doc(otherUser.email)
+      .update({
+        usersTalkedTo: [
+          { email: currentUser.email, username: currentUser.username },
+          ...filteredOtherArray,
+        ],
+      })
+      .catch((error) =>
+        console.error(
+          "Error when updating first user in private gifted chat: ",
+          error
+        )
+      );
+  }
+
   //happens when the email change
   useLayoutEffect(() => {
     let temp_id =
@@ -45,8 +118,7 @@ export default function PrivateMessagesGiftedChat(props) {
 
   let onSend = useCallback(
     (messages = []) => {
-      console.log("id where submitting is ", user_id);
-
+      handleSpokenTo2();
       //adding the element to the database
       firestore
         .collection("privateMessages")
