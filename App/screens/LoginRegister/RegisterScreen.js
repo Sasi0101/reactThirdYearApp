@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { auth, firestore } from "../../firebase";
 import { useNavigation } from "@react-navigation/core";
+import NetInfo from "@react-native-community/netinfo";
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState("");
@@ -16,13 +17,32 @@ const RegisterScreen = () => {
   const [password2, setPassword2] = useState("");
   const [username, setUsername] = useState("");
   const navigation = useNavigation();
+  const [isThereWifi, setIsThereWifi] = useState(true);
+  const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        navigation.replace("DrawerNavigator");
+  useLayoutEffect(() => {
+    const unsubsribe = NetInfo.addEventListener((state) => {
+      if (state.isConnected) {
+        setIsThereWifi(true);
+      } else {
+        setIsThereWifi(false);
       }
     });
+
+    return unsubsribe;
+  }, []);
+
+  useEffect(() => {
+    let unsubscribe;
+    if (isThereWifi) {
+      unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          navigation.replace("DrawerNavigator");
+        }
+      });
+    } else {
+      Alert.alert("Network error", "There is no connection to the internet");
+    }
     return unsubscribe;
   }, []);
 
@@ -32,6 +52,11 @@ const RegisterScreen = () => {
 
   // Register the user with email and password
   const handleSignUp = () => {
+    if (!isThereWifi) {
+      Alert.alert("Network error", "There is no connection to the internet");
+      return;
+    }
+
     email == "" || password == "" || password2 == "" || username == ""
       ? Alert.alert("Error", "All inputs must be filled out!")
       : password != password2
@@ -71,7 +96,8 @@ const RegisterScreen = () => {
           placeholder="Email"
           value={email}
           onChangeText={(text) => setEmail(text)}
-          style={styles.input}
+          style={[styles.input]}
+          maxLength={50}
         />
 
         <TextInput
@@ -79,7 +105,8 @@ const RegisterScreen = () => {
           value={password}
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
-          secureTextEntry
+          secureTextEntry={isSecureTextEntry}
+          maxLength={32}
         />
 
         <TextInput
@@ -87,7 +114,8 @@ const RegisterScreen = () => {
           value={password2}
           onChangeText={(text) => setPassword2(text)}
           style={styles.input}
-          secureTextEntry
+          secureTextEntry={isSecureTextEntry}
+          maxLength={32}
         />
 
         <TextInput
@@ -95,6 +123,7 @@ const RegisterScreen = () => {
           value={username}
           onChangeText={(text) => setUsername(text)}
           style={styles.input}
+          maxLength={24}
         />
       </View>
 

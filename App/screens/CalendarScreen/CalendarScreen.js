@@ -375,6 +375,7 @@ export default function CalendarScreen() {
             placeholder="Event name"
             value={eventName}
             onChangeText={(text) => setEventName(text)}
+            maxLength={64}
           />
 
           <View style={{ height: 20 }} />
@@ -391,6 +392,7 @@ export default function CalendarScreen() {
             placeholder="Event decription"
             value={eventDescription}
             onChangeText={(text) => setEventDescription(text)}
+            maxLength={512}
           />
 
           {show && (

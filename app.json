@@ -4,10 +4,10 @@
     "slug": "reactThirdYearApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./app/assets/icon.png",
+    "icon": "./App/assets/favicon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./app/assets/splash.png",
+      "image": "./App/assets/favicon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,16 +18,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sasi01.reactThirdYearApp"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./app/assets/adaptive-icon.png",
+        "foregroundImage": "./App/assets/favicon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.sasi01.reactThirdYearApp"
     },
     "web": {
-      "favicon": "./app/assets/favicon.png"
+      "favicon": "./App/assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3bc003f8-3304-4fed-8826-78d79a1170a7"
+      }
     }
   }
 }
+

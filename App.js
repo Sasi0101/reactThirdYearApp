@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import DrawerNavigator from "./App/screens/DrawerNavigator";
 import RegisterScreen from "./App/screens/LoginRegister/RegisterScreen.js";
+//import test from "./App/assets/favicon.png";
 
 const Stack = createNativeStackNavigator();
 

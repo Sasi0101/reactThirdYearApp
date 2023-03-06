@@ -7,6 +7,7 @@ import {
   Button,
   Dimensions,
   FlatList,
+  ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Overlay } from "@rneui/themed";
@@ -18,6 +19,11 @@ export default function TodoScreen() {
   const [description, setDescription] = useState("");
   const [isOverlayOn, setIsOverlayOn] = useState(false);
   const [task, setTasks] = useState(null);
+  const [showingDetailedSpecs, setShowingDetailedSpecs] = useState(false);
+  const [specTitle, setSpecTitle] = useState("");
+  const [specDescription, setSpecDescription] = useState("");
+  const [isEditOverlay, setIsEditOverlay] = useState(false);
+  const [currentId, setCurrentId] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -62,13 +68,38 @@ export default function TodoScreen() {
     setTasks(updatedTasks);
   };
 
+  const handleOnShow = (data) => {
+    setSpecTitle(data.title);
+    setSpecDescription(data.description);
+    setCurrentId(data.id);
+    setShowingDetailedSpecs(true);
+  };
+
+  const handleOnEdit = () => {
+    setDescription(specDescription);
+    setTitle(specTitle);
+    setIsEditOverlay(true);
+  };
+
+  const handleEditChange = async () => {
+    const itemToUpdate = task.find((item) => item.id === currentId);
+    itemToUpdate.description = description;
+    itemToUpdate.title = title;
+    await AsyncStorage.setItem("tasks", JSON.stringify(task));
+    setIsEditOverlay(false);
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
         <FlatList
           data={task}
           renderItem={({ item }) => (
-            <OneTask data={item} onDelete={(data) => handleOnDelete(data)} />
+            <OneTask
+              data={item}
+              onDelete={(data) => handleOnDelete(data)}
+              onShow={(data) => handleOnShow(data)}
+            />
           )}
         />
         <TouchableOpacity
@@ -82,6 +113,46 @@ export default function TodoScreen() {
       </View>
 
       <Overlay
+        isVisible={showingDetailedSpecs}
+        onBackdropPress={() => {
+          setShowingDetailedSpecs(false);
+          setSpecTitle("");
+          setSpecDescription("");
+        }}
+      >
+        <View style={styles.body}>
+          <Text>Title</Text>
+          <Text style={[styles.input, { fontSize: 25, fontWeight: "bold" }]}>
+            {specTitle}
+          </Text>
+          <Text>Description:</Text>
+          <ScrollView
+            style={[
+              styles.input,
+              {
+                maxHeight: Dimensions.get("window").height * 0.2,
+                flex: 2,
+                textAlignVertical: "top",
+                textAlign: "left",
+              },
+            ]}
+          >
+            <Text>{specDescription}</Text>
+          </ScrollView>
+        </View>
+        <View>
+          <Button
+            title="Edit"
+            style={{ width: "100%" }}
+            onPress={() => {
+              setShowingDetailedSpecs(false);
+              handleOnEdit();
+            }}
+          />
+        </View>
+      </Overlay>
+
+      <Overlay
         isVisible={isOverlayOn}
         onBackdropPress={() => {
           setIsOverlayOn(false);
@@ -93,6 +164,7 @@ export default function TodoScreen() {
             style={[styles.input, { fontSize: 25, fontWeight: "bold" }]}
             placeholder="Title"
             onChangeText={(value) => setTitle(value)}
+            maxLength={64}
           />
           <TextInput
             value={description}
@@ -103,6 +175,7 @@ export default function TodoScreen() {
             placeholder="Description"
             multiline
             onChangeText={(value) => setDescription(value)}
+            maxLength={512}
           />
           <Button
             title="Save Task"
@@ -112,6 +185,54 @@ export default function TodoScreen() {
               setTask();
             }}
           />
+        </View>
+      </Overlay>
+
+      <Overlay
+        isVisible={isEditOverlay}
+        onBackdropPress={() => {
+          setIsEditOverlay(false);
+        }}
+      >
+        <View style={styles.body}>
+          <TextInput
+            value={title}
+            style={[styles.input, { fontSize: 25, fontWeight: "bold" }]}
+            placeholder="Title"
+            onChangeText={(value) => setTitle(value)}
+            maxLength={64}
+          />
+          <TextInput
+            value={description}
+            style={[
+              styles.input,
+              { flex: 2, textAlignVertical: "top", textAlign: "left" },
+            ]}
+            placeholder="Description"
+            multiline
+            onChangeText={(value) => setDescription(value)}
+            maxLength={512}
+          />
+
+          <View style={{ flexDirection: "row" }}>
+            <Button
+              title="Cancel"
+              style={{ width: "100%" }}
+              onPress={() => {
+                setIsEditOverlay(false);
+                setDescription("");
+                setTitle("");
+              }}
+            />
+
+            <Button
+              title="Save Task"
+              style={{ width: "100%" }}
+              onPress={() => {
+                handleEditChange();
+              }}
+            />
+          </View>
         </View>
       </Overlay>
     </View>

@@ -1,0 +1,3 @@
+check whether there is internet or not - probably fixed for login and
+limit description and username - should be done
+make sure text boxes dont get too big - should be done

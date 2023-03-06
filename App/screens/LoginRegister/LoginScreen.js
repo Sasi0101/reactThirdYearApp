@@ -4,27 +4,58 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { auth } from "../../firebase";
 import { useNavigation } from "@react-navigation/core";
+import NetInfo from "@react-native-community/netinfo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
+  const maxUsernameLength = 50;
+  const maxPasswordLength = 36;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isThereWifi, setIsThereWifi] = useState(true);
 
   const navigation = useNavigation();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        navigation.navigate("DrawerNavigator");
+    let unsubscribe;
+
+    //check if there is someone logged in
+    if (isThereWifi) {
+      unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          navigation.navigate("DrawerNavigator");
+        }
+      });
+    } else {
+      Alert.alert("Network error", "There is no connection to the internet");
+    }
+
+    return unsubscribe;
+  }, [isThereWifi]);
+
+  useLayoutEffect(() => {
+    const unsubsribe = NetInfo.addEventListener((state) => {
+      if (state.isConnected) {
+        setIsThereWifi(true);
+      } else {
+        setIsThereWifi(false);
       }
     });
-    return unsubscribe;
+
+    return unsubsribe;
   }, []);
 
   const handleLogin = () => {
+    if (!isThereWifi) {
+      Alert.alert("Network error", "There is no connection to the internet");
+      return;
+    }
+
     auth
       .signInWithEmailAndPassword(email, password)
       .then((userCredentials) => {
@@ -38,39 +69,41 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container} behavior="padding">
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-          style={styles.input}
-        />
+    <>
+      <View style={styles.container} behavior="padding">
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            style={styles.input}
+            maxLength={50}
+          />
 
-        <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          style={styles.input}
-          secureTextEntry
-        />
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            style={styles.input}
+            secureTextEntry
+            maxLength={32}
+          />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={handleLogin} style={styles.button}>
+            <Text style={styles.buttonText}> Login </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={changeToRegister}
+            style={[styles.button, styles.buttonOutline]}
+          >
+            <Text style={styles.buttonOutlineText}>Register</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <View style={styles.buttonContainer}>
-        {/** Login button */}
-        <TouchableOpacity onPress={handleLogin} style={styles.button}>
-          <Text style={styles.buttonText}> Login </Text>
-        </TouchableOpacity>
-
-        {/** Register button */}
-        <TouchableOpacity
-          onPress={changeToRegister}
-          style={[styles.button, styles.buttonOutline]}
-        >
-          <Text style={styles.buttonOutlineText}>Register</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </>
   );
 };
 

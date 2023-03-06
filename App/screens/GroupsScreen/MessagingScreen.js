@@ -120,6 +120,7 @@ export default function MessagingScreen() {
               placeholder="Group name"
               value={groupName}
               onChangeText={(text) => setGroupName(text)}
+              maxLength={50}
             />
           </View>
 
@@ -133,6 +134,7 @@ export default function MessagingScreen() {
               value={groupDescription}
               onChangeText={(text) => setGroupDescription(text)}
               style={{ backgroundColor: "#E8E4C9", fontSize: 19 }}
+              maxLength={500}
             />
           </View>
 
@@ -154,6 +156,7 @@ export default function MessagingScreen() {
                 value={groupPassword}
                 onChangeText={(text) => setGroupPassword(text)}
                 style={{ backgroundColor: "#E8E4C9", fontSize: 19 }}
+                maxLength={32}
               />
             </View>
           )}

@@ -1,12 +1,17 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Dimensions } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { auth, firestore } from "../../firebase";
+import { Avatar } from "react-native-paper";
+import "firebase/storage";
+import firebase from "firebase/app";
 
 export default function OneUser(props) {
   const navigation = useNavigation();
   const [lastMessage, setLastMessage] = useState("");
+  const [doesUserHaveAvatar, setDoesUserHaveAvatar] = useState(false);
+  const [imageURL, setImageURL] = useState(null);
 
   useLayoutEffect(() => {
     let temp_id =
@@ -32,6 +37,20 @@ export default function OneUser(props) {
         }
       });
 
+    const url = "images/" + props.email + ".png";
+    const storageRef = firebase.storage().ref();
+    const imageRef = storageRef.child(url);
+
+    imageRef
+      .getDownloadURL()
+      .then((url) => {
+        setDoesUserHaveAvatar(true);
+        setImageURL(url);
+      })
+      .catch(() => {
+        setDoesUserHaveAvatar(false);
+      });
+
     return () => {
       unsubscribe();
     };
@@ -39,6 +58,7 @@ export default function OneUser(props) {
 
   return (
     <TouchableOpacity
+      style={{ width: Dimensions.get("window").width * 1 }}
       onPress={() => {
         navigation.navigate("PrivateMessageScreen", {
           username: props.username,
@@ -46,24 +66,45 @@ export default function OneUser(props) {
         });
       }}
     >
-      <View style={styles.boxContainer}>
-        <Text style={styles.textContainer}>{props.username}</Text>
-        <Text style={styles.textContainer}>{props.email}</Text>
-        {lastMessage.text === "No previous message" && (
-          <Text style={styles.textContainer}>No previous conversation</Text>
-        )}
+      <View style={[{ flexDirection: "row", flex: 1 }, styles.boxContainer]}>
+        <View style={{ paddingLeft: 5, flex: 1 }}>
+          {doesUserHaveAvatar && (
+            <Avatar.Image
+              source={{
+                uri: imageURL,
+              }}
+              size={50}
+            />
+          )}
 
-        {lastMessage.text !== "No previous message" && (
-          <Text
-            style={
-              !lastMessage || lastMessage.user._id !== auth.currentUser?.email
-                ? styles.blackTextContainer
-                : styles.textContainer
-            }
-          >
-            Last message is: {lastMessage.text}
-          </Text>
-        )}
+          {!doesUserHaveAvatar && (
+            <Avatar.Image
+              source={require("../../assets/anonymous-user.png")}
+              size={50}
+            />
+          )}
+        </View>
+        <View style={{ paddingLeft: 5, flex: 5 }}>
+          <Text style={styles.textContainer}>{props.username}</Text>
+
+          {lastMessage.text === "No previous message" && (
+            <Text style={styles.textContainer}>No previous conversation</Text>
+          )}
+
+          {lastMessage.text !== "No previous message" && (
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={
+                !lastMessage || lastMessage.user._id !== auth.currentUser?.email
+                  ? styles.blackTextContainer
+                  : styles.textContainer
+              }
+            >
+              {lastMessage.text}
+            </Text>
+          )}
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -75,6 +116,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     padding: 10,
     margin: 10,
+
     alignItems: "center",
   },
   textContainer: {

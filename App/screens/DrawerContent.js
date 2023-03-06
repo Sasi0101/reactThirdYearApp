@@ -13,17 +13,36 @@ import {
   TouchableRipple,
   Switch,
 } from "react-native-paper";
-
+import "firebase/storage";
+import firebase from "firebase/app";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export function DrawerContent(props) {
   const [isDarkTheme, setIsDarkTheme] = useState("");
   const navigation = useNavigation();
   const [userName, setUsername] = useState("");
+  const [imageURL, setImageURL] = useState(null);
+  const [doesUserHaveAvatar, setDoesUserHaveAvatar] = useState(false);
 
   useEffect(() => {
-    console.log("loaded username");
     setUsername(props.data.username);
+
+    const url = "images/" + auth.currentUser?.email + ".png";
+    const storageRef = firebase.storage().ref();
+    const imageRef = storageRef.child(url);
+
+    imageRef
+      .getMetadata()
+      .then((metadata) => {
+        console.log("Image metadata:", metadata);
+        imageRef.getDownloadURL().then((url) => {
+          setDoesUserHaveAvatar(true);
+          setImageURL(url);
+        });
+      })
+      .catch((error) => {
+        //console.log("Error getting image metadata:", error);
+      });
   }, [props.data]);
 
   const toggleTheme = () => {
@@ -41,10 +60,21 @@ export function DrawerContent(props) {
             ]}
           >
             <View style={{ flexDirection: "row", marginTop: 15 }}>
-              <Avatar.Image
-                source={{ uri: "https://picsum.photos/200" }}
-                size={50}
-              />
+              {doesUserHaveAvatar && (
+                <Avatar.Image
+                  source={{
+                    uri: imageURL,
+                  }}
+                  size={50}
+                />
+              )}
+
+              {!doesUserHaveAvatar && (
+                <Avatar.Image
+                  source={require("../assets/anonymous-user.png")}
+                  size={50}
+                />
+              )}
               <View style={{ marginLeft: 15, flexDirection: "column" }}>
                 <Title style={styles.title}> {userName} </Title>
                 <Caption style={styles.caption}>

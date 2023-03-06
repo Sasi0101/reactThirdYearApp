@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import React, { useState, useEffect } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import FlashcardsScreen from "./FlashcardsScreen/FlashcardsScreen";
-import ProfileScreen from "./OtherScreens/ProfileScreen";
+import ProfileScreen from "./ProfileScreen/ProfileScreen";
 import MessagingScreen from "./GroupsScreen/MessagingScreen";
 import { auth, firestore } from "../firebase";
 import { DrawerContent } from "./DrawerContent";
@@ -13,6 +13,7 @@ import PrivateMessageGiftedChat from "./MessagingScreens/PrivateMessagesGiftedCh
 import StudyPageScreen from "./FlashcardsScreen/StudyPageScreen";
 import CalendarScreen from "./CalendarScreen/CalendarScreen";
 import GroupMessagesGiftedChat from "./GroupsScreen/GroupMessagesGiftedChat";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Drawer = createDrawerNavigator();
 
@@ -21,16 +22,41 @@ export default function DrawerNavigator() {
 
   //handle if there was a change in the users data
   useEffect(() => {
-    const unsubscribe = firestore
-      .collection("users")
-      .doc(auth.currentUser?.email)
-      .onSnapshot((doc) => {
-        const data = doc.data();
-        if (data.username !== previousData.username) {
-          setPreviousData(data);
-        }
-      });
-    return () => unsubscribe();
+    let unsubscribe;
+    const fetchData = async () => {
+      const prevData = await AsyncStorage.getItem("previousData");
+
+      if (prevData) {
+        const parsedPrevData = JSON.parse(prevData);
+        setPreviousData(parsedPrevData);
+
+        unsubscribe = firestore
+          .collection("users")
+          .doc(auth.currentUser?.email)
+          .onSnapshot((doc) => {
+            const data = doc.data();
+            if (data.username !== previousData.username) {
+              setPreviousData(data);
+              AsyncStorage.setItem("previousData", JSON.stringify(data));
+            }
+          });
+      } else {
+        unsubscribe = firestore
+          .collection("users")
+          .doc(auth.currentUser?.email)
+          .onSnapshot((doc) => {
+            const data = doc.data();
+            if (data.username !== previousData.username) {
+              setPreviousData(data);
+              AsyncStorage.setItem("previousData", JSON.stringify(data));
+            }
+          });
+      }
+    };
+
+    fetchData();
+
+    return () => unsubscribe;
   }, []);
 
   return (

@@ -148,6 +148,7 @@ export default function FlashcardsScreen(props) {
             placeholder=" Enter deck name"
             value={inputValue}
             onChangeText={(text) => setInputValue(text)}
+            maxLength={50}
           />
         </View>
 
@@ -218,6 +219,7 @@ export default function FlashcardsScreen(props) {
             placeholder=" Enter question"
             value={frontCard}
             onChangeText={(text) => setFrontCard(text)}
+            maxLength={256}
           />
         </View>
 
@@ -234,6 +236,7 @@ export default function FlashcardsScreen(props) {
             placeholder=" Enter answer"
             value={backCard}
             onChangeText={(text) => setBackCard(text)}
+            maxLength={512}
           />
         </View>
 

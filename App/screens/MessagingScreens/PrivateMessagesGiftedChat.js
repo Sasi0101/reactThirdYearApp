@@ -3,10 +3,14 @@ import React from "react";
 import { useState, useLayoutEffect, useCallback, useEffect } from "react";
 import { GiftedChat } from "react-native-gifted-chat";
 import { auth, firestore } from "../../firebase";
+import "firebase/storage";
+import firebase from "firebase/app";
 
 export default function PrivateMessagesGiftedChat(props) {
   const [messages, setMessages] = useState([]);
   const [user_id, setUserId] = useState();
+  const [downloadURL, setDownloadURl] = useState();
+  const [username, setUsername] = useState();
 
   async function handleSpokenTo2() {
     let currentUser;
@@ -83,6 +87,7 @@ export default function PrivateMessagesGiftedChat(props) {
 
   //happens when the email change
   useLayoutEffect(() => {
+    getImageUrl(auth.currentUser?.email);
     let temp_id =
       auth.currentUser?.email.localeCompare(props.route.params.email) > 0
         ? auth.currentUser?.email + props.route.params.email
@@ -90,6 +95,14 @@ export default function PrivateMessagesGiftedChat(props) {
 
     setMessages([]);
     setUserId(temp_id);
+
+    firestore
+      .collection("users")
+      .doc(auth.currentUser?.email)
+      .get()
+      .then((doc) => {
+        setUsername(doc.data().username);
+      });
 
     props.navigation.setOptions({ title: props.route.params.username });
   }, [props.route.params.email]);
@@ -135,6 +148,23 @@ export default function PrivateMessagesGiftedChat(props) {
     [user_id]
   );
 
+  const getImageUrl = async (filename) => {
+    const storageRef = firebase.storage().ref();
+    const imageRef = storageRef.child("images/" + filename + ".png");
+
+    imageRef
+      .getDownloadURL()
+      .then((url) => {
+        console.log();
+        setDownloadURl(url);
+      })
+      .catch(() => {
+        setDownloadURl(
+          "https://firebasestorage.googleapis.com/v0/b/third-year-project-4e8dd.appspot.com/o/images%2Fanonymous-user.png?alt=media&token=cde172df-d191-47b3-af3d-92b7c05f8b8b"
+        );
+      });
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <GiftedChat
@@ -142,7 +172,15 @@ export default function PrivateMessagesGiftedChat(props) {
         onSend={(messages) => onSend(messages)}
         user={{
           _id: auth.currentUser?.email,
+          avatar: downloadURL,
+          //name: username, not need this for private messages but for group messages yes
         }}
+        showAvatarForEveryMessage={true}
+        //renderUsernameOnMessage={true} need for the usernames
+        onPressAvatar={(user) =>
+          console.log(`Avatar pressed for user ${user._id}`)
+        }
+        onPress={() => console.log("message was pressed")}
       />
     </View>
   );

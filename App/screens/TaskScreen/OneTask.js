@@ -5,19 +5,39 @@ export default function OneTask(props) {
   useEffect(() => {}, []);
 
   return (
-    <TouchableOpacity
-      style={styles.item}
-      onPress={() => {
-        props.onDelete(props.data);
-      }}
-    >
-      <Text style={[styles.title]} numberOfLines={1}>
-        {props.data.title}
-      </Text>
-      <Text style={[styles.subtitle]} numberOfLines={1}>
-        {props.data.description}
-      </Text>
-    </TouchableOpacity>
+    <View style={[{ flexDirection: "row" }, styles.item]}>
+      <TouchableOpacity
+        style={{ flex: 8 }}
+        onPress={() => {
+          props.onShow(props.data);
+          //console.log("should show info");
+        }}
+      >
+        <View style={{ flexDirection: "column" }}>
+          <Text style={[styles.title]} numberOfLines={1}>
+            {props.data.title}
+          </Text>
+          <Text style={[styles.subtitle]} numberOfLines={1}>
+            {props.data.description}
+          </Text>
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        onPress={() => {
+          props.onDelete(props.data);
+        }}
+      >
+        <View style={{}}>
+          <Text>Delete</Text>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 }
 

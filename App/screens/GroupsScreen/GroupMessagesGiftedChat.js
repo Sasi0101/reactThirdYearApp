@@ -5,8 +5,7 @@ import { useState, useLayoutEffect, useCallback, useEffect } from "react";
 import { GiftedChat } from "react-native-gifted-chat";
 
 export default function GroupMessagesGiftedChat(props) {
-  const [messages, setMessages] = useState("");
-  console.log(props.route.params);
+  const [messages, setMessages] = useState([]);
 
   useLayoutEffect(() => {
     props.navigation.setOptions({ title: props.route.params.data.name });

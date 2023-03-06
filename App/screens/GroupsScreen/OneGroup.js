@@ -290,6 +290,7 @@ export default function OneGroup(props) {
             placeholder="Password"
             value={password}
             onChangeText={(text) => setPassword(text)}
+            maxLength={32}
           />
 
           <View style={{ flexDirection: "row", paddingVertical: 10 }}>
