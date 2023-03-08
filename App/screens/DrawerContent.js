@@ -34,7 +34,7 @@ export function DrawerContent(props) {
     imageRef
       .getMetadata()
       .then((metadata) => {
-        console.log("Image metadata:", metadata);
+        //console.log("Image metadata:", metadata);
         imageRef.getDownloadURL().then((url) => {
           setDoesUserHaveAvatar(true);
           setImageURL(url);
@@ -142,6 +142,16 @@ export function DrawerContent(props) {
               label="Profile"
               onPress={() => {
                 props.navigation.navigate("ProfileScreen");
+              }}
+            />
+
+            <DrawerItem
+              icon={(color, size) => (
+                <Icon name="home-outline" color={color} size={size} />
+              )}
+              label="Notifications"
+              onPress={() => {
+                props.navigation.navigate("NotificationScreen");
               }}
             />
           </Drawer.Section>

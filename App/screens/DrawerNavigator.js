@@ -14,6 +14,7 @@ import StudyPageScreen from "./FlashcardsScreen/StudyPageScreen";
 import CalendarScreen from "./CalendarScreen/CalendarScreen";
 import GroupMessagesGiftedChat from "./GroupsScreen/GroupMessagesGiftedChat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import NotificationsScreen from "./NotificationsScreen/NotificationsScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -81,6 +82,10 @@ export default function DrawerNavigator() {
       <Drawer.Screen
         name="GroupMessageScreen"
         component={GroupMessagesGiftedChat}
+      />
+      <Drawer.Screen
+        name="NotificationScreen"
+        component={NotificationsScreen}
       />
     </Drawer.Navigator>
   );

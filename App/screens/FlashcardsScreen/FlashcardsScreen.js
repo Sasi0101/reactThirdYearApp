@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Overlay } from "@rneui/themed";
 import OneDeck from "./OneDeck";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function FlashcardsScreen(props) {
   const [deckNames, setDeckNames] = useState([]);
@@ -24,6 +25,8 @@ export default function FlashcardsScreen(props) {
   const [deckOverlay, setDeckOverlay] = useState(false);
   const [cardsOverlay, setCardsOverlay] = useState(false);
   const [chooseDeckOverlay, setChooseDeckOverlay] = useState(false);
+  const [updateFlatlist, setUpdateFlatlist] = useState(false);
+  const [reloadItem, setReloadItem] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -79,6 +82,7 @@ export default function FlashcardsScreen(props) {
     if (checkIfExists !== null) oldCards = JSON.parse(checkIfExists);
 
     const new_item = {
+      id: Math.random(),
       front: frontCard,
       back: backCard,
       createdAt: new Date(),
@@ -88,16 +92,33 @@ export default function FlashcardsScreen(props) {
     };
 
     oldCards.push(new_item);
-    const newDeckName = selectedOption + "new";
-    await AsyncStorage.setItem(newDeckName, JSON.stringify(oldCards));
-    console.log(oldCards);
-    console.log(newDeckName);
+    const newDeckName = selectedOption;
+    const sortedArray = oldCards.sort(
+      (a, b) => new Date(a.nextTime) - new Date(b.nextTime)
+    );
+    await AsyncStorage.setItem(newDeckName, JSON.stringify(sortedArray));
+
+    //not the best idea as we have to rerender all of them
+    setUpdateFlatlist(true);
+    setUpdateFlatlist(false);
   };
+
+  //refresh every time it is focused
+  /*useFocusEffect(() => {
+    if (!deckOverlay && !cardsOverlay && !chooseDeckOverlay) {
+      console.log("Screen is focused jeej");
+      setUpdateFlatlist(true);
+      setUpdateFlatlist(false);
+      setReloadItem(!reloadItem);
+    }
+    //console.log(deckNames);
+  });*/
 
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       <View style={{ height: "90%" }}>
         <FlatList
+          key={updateFlatlist ? "forceUpdate" : "noUpdate"}
           data={deckNames}
           renderItem={({ item }) => <OneDeck deckName={item} />}
         />

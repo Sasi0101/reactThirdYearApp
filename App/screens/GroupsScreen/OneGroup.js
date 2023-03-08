@@ -44,6 +44,18 @@ export default function OneGroup(props) {
         }
       });
 
+    const unsubscribe2 = firestore
+      .collection("groups")
+      .doc(props.data.id)
+      .onSnapshot((doc) => {
+        const data = doc.data();
+        if (data) {
+          data.members.includes(auth.currentUser?.email)
+            ? setIsJoined(true)
+            : setIsJoined(false);
+        }
+      });
+
     return () => {
       unsubscribe();
     };
