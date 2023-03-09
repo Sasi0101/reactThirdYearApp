@@ -58,6 +58,7 @@ export default function OneGroup(props) {
 
     return () => {
       unsubscribe();
+      unsubscribe2();
     };
   }, []);
 
@@ -110,6 +111,36 @@ export default function OneGroup(props) {
         console.error("Error when updating join: ", error);
       });
   }
+
+  const handleRequestForAccess = async () => {
+    console.log(props.data.data.owner);
+    // Get the previous notifications data
+    const userRef = firestore.collection("users").doc(props.data.data.owner);
+    const userSnapshot = await userRef.get();
+
+    let previousNotifications = [];
+    if (userSnapshot.exists) {
+      const userData = userSnapshot.data();
+      if (userData.notifications) {
+        previousNotifications = userData.notifications;
+      }
+    }
+
+    // Add the new notification
+    const tempData = {
+      id: Math.random(),
+      type: "groupAddition",
+      email: auth.currentUser?.email,
+      note: "test note",
+    };
+
+    await userRef.set(
+      {
+        notifications: [...previousNotifications, tempData],
+      },
+      { merge: true }
+    );
+  };
 
   return (
     <>
@@ -316,6 +347,16 @@ export default function OneGroup(props) {
               <Text> Cancel </Text>
             </TouchableOpacity>
 
+            <TouchableOpacity
+              style={{ paddingLeft: 70 }}
+              onPress={() => {
+                setShowPasswordOverlay(!showPasswordOverLay);
+                setPassword("");
+                handleRequestForAccess();
+              }}
+            >
+              <Text>Ask owner to join</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => handleJoin()}
               style={{ position: "absolute", right: 5, paddingTop: 10 }}

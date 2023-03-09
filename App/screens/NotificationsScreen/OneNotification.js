@@ -5,7 +5,7 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { auth, firestore } from "../../firebase";
 
 export default function OneNotification(props) {
@@ -13,11 +13,36 @@ export default function OneNotification(props) {
   const [email, setEmail] = useState("");
   const [note, setNote] = useState("");
 
+  const [allNotifications, setAllNotifications] = useState([]);
+
   useLayoutEffect(() => {
     setType(props.data.type);
     setEmail(props.data.email);
     setNote(props.data.note);
+    setAllNotifications(props.allNotifications);
   }, []);
+
+  useEffect(() => {}, [allNotifications]);
+
+  const handleOnIgnore = async () => {
+    const newNotifcations = allNotifications.filter(
+      (item) => item.id !== props.data.id
+    );
+
+    await firestore
+      .collection("users")
+      .doc(auth.currentUser?.email)
+      .update({
+        notifications: newNotifcations,
+      })
+      .catch((error) =>
+        console.warn("Error when igonring a notification: ", error)
+      );
+  };
+
+  const handleAccept = async () => {
+    //handleOnIgnore();
+  };
 
   return (
     <View>
@@ -34,13 +59,19 @@ export default function OneNotification(props) {
             paddingVertical: 5,
           }}
         >
-          <TouchableOpacity style={{ borderWidth: 1 }}>
+          <TouchableOpacity
+            style={{ borderWidth: 1 }}
+            onPress={() => handleOnIgnore()}
+          >
             <Text style={{ paddingHorizontal: 2, paddingVertical: 2 }}>
               Ignore
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={{ borderWidth: 1 }}>
+          <TouchableOpacity
+            style={{ borderWidth: 1 }}
+            onPress={() => handleAccept()}
+          >
             <Text style={{ paddingHorizontal: 2, paddingVertical: 2 }}>
               Accept
             </Text>

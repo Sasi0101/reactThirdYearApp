@@ -2,10 +2,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
-  Image,
-  PermissionsAndroid,
-  Platform,
   TouchableOpacity,
   Dimensions,
   TextInput,
@@ -27,7 +23,6 @@ export default function ProfileScreen() {
 
   const [editUsername, setEditUsername] = useState("");
   const [editDescription, setEditDescription] = useState("");
-  const [editImage, setEditImage] = useState(null);
 
   useLayoutEffect(() => {
     async function fetchData() {
@@ -64,8 +59,6 @@ export default function ProfileScreen() {
   }, []);
 
   async function UploadPicture(uri) {
-    console.log("Updating picture");
-
     const storage = firebase.storage();
     const imageName = auth.currentUser?.email + ".png";
     const imageRef = storage.ref().child(`images/${imageName}`);
@@ -94,7 +87,6 @@ export default function ProfileScreen() {
       );
 
     if (image) UploadPicture(image);
-    console.log("should save changes");
   };
 
   const chooseImage = async () => {
