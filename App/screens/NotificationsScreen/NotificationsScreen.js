@@ -1,11 +1,24 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { auth, firestore } from "../../firebase";
 import OneNotification from "./OneNotification";
-import notifee from "@notifee/react-native";
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function NotificationsScreen() {
   const [notifications, setNotifications] = useState([]);
+
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   useLayoutEffect(() => {
     const unsubscribe = firestore
@@ -25,8 +38,33 @@ export default function NotificationsScreen() {
 
   useEffect(() => {}, [notifications]);
 
+  useEffect(() => {
+    Notifications.getDevicePushTokenAsync().then((token) => {
+      console.log(token);
+      setExpoPushToken(token);
+    });
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) =>
+        setNotification(notification)
+      );
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
   return (
     <View>
+      <Text> hello</Text>
       <FlatList
         data={notifications}
         renderItem={({ item }) => (

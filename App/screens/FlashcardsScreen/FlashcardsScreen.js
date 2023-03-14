@@ -14,7 +14,6 @@ import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Overlay } from "@rneui/themed";
 import OneDeck from "./OneDeck";
-import { useFocusEffect } from "@react-navigation/native";
 
 export default function FlashcardsScreen(props) {
   const [deckNames, setDeckNames] = useState([]);
@@ -55,24 +54,22 @@ export default function FlashcardsScreen(props) {
   }, [deckNames]);
 
   const DeckItem = ({ name }) => (
-    <View style={{ alignItems: "center" }}>
-      <TouchableOpacity
-        style={{
-          width: "100%",
-          borderWidth: 1,
-          borderColor: "gray",
-          height: 40,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        onPress={() => {
-          setSelectedOption(name);
-          setChooseDeckOverlay(!chooseDeckOverlay);
-        }}
-      >
-        <Text>{name}</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={{
+        width: "100%",
+        borderWidth: 1,
+        borderColor: "gray",
+        height: 40,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onPress={() => {
+        setSelectedOption(name);
+        setChooseDeckOverlay(!chooseDeckOverlay);
+      }}
+    >
+      <Text>{name}</Text>
+    </TouchableOpacity>
   );
 
   const HandleCardAddition = async () => {
@@ -103,20 +100,18 @@ export default function FlashcardsScreen(props) {
     setUpdateFlatlist(false);
   };
 
-  //refresh every time it is focused
-  /*useFocusEffect(() => {
-    if (!deckOverlay && !cardsOverlay && !chooseDeckOverlay) {
-      console.log("Screen is focused jeej");
-      setUpdateFlatlist(true);
-      setUpdateFlatlist(false);
-      setReloadItem(!reloadItem);
-    }
-    //console.log(deckNames);
-  });*/
+  const forTesting = async () => {
+    const tempCards = JSON.parse(await AsyncStorage.getItem("test1"));
+    //console.log("Length is ", tempCards[0]);
+    if (tempCards) tempCards.map((item) => console.log(item.cardState));
+  };
 
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       <View style={{ height: "90%" }}>
+        <TouchableOpacity onPress={() => forTesting()}>
+          <Text>Test</Text>
+        </TouchableOpacity>
         <FlatList
           key={updateFlatlist ? "forceUpdate" : "noUpdate"}
           data={deckNames}

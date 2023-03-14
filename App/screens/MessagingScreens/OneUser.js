@@ -1,6 +1,11 @@
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { auth, firestore } from "../../firebase";
 import { Avatar } from "react-native-paper";
@@ -58,15 +63,16 @@ export default function OneUser(props) {
 
   return (
     <TouchableOpacity
-      style={{ width: Dimensions.get("window").width * 1 }}
+      style={{}}
       onPress={() => {
+        console.log("It was pressed");
         navigation.navigate("PrivateMessageScreen", {
           username: props.username,
           email: props.email,
         });
       }}
     >
-      <View style={[{ flexDirection: "row", flex: 1 }, styles.boxContainer]}>
+      <View style={[{ flexDirection: "row" }, styles.boxContainer]}>
         <View style={{ paddingLeft: 5, flex: 1 }}>
           {doesUserHaveAvatar && (
             <Avatar.Image

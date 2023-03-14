@@ -41,6 +41,21 @@ export default function OneNotification(props) {
   };
 
   const handleAccept = async () => {
+    let tempData = [];
+    await firestore
+      .collection("groups")
+      .doc(props.data.groupID)
+      .get()
+      .then((data) => {
+        tempData = data.data();
+      })
+      .catch((error) =>
+        console.error(
+          "Error when asking for group info in oneNotification: ",
+          error
+        )
+      );
+
     //handleOnIgnore();
   };
 

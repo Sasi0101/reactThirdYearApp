@@ -3,7 +3,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Button,
   Dimensions,
   TextInput,
   Alert,
@@ -18,7 +17,8 @@ export default function OneGroup(props) {
   const [showInfoOverlay, setShowInfoOverlay] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
   const [isThereSpaceLeft, setIsThereSpaceLeft] = useState(true);
-
+  const [isBanned, setIsBanned] = useState(false);
+  const [data, setData] = useState(null);
   const [showPasswordOverLay, setShowPasswordOverlay] = useState(false);
   const [password, setPassword] = useState("");
   const [lastMessage, setLastMessage] = useState("");
@@ -44,46 +44,51 @@ export default function OneGroup(props) {
         }
       });
 
-    const unsubscribe2 = firestore
-      .collection("groups")
-      .doc(props.data.id)
-      .onSnapshot((doc) => {
-        const data = doc.data();
-        if (data) {
-          data.members.includes(auth.currentUser?.email)
-            ? setIsJoined(true)
-            : setIsJoined(false);
-        }
-      });
-
     return () => {
       unsubscribe();
-      unsubscribe2();
     };
   }, []);
 
   useEffect(() => {
-    props.data.data.members.length >= props.data.data.numberlimit
-      ? setIsThereSpaceLeft(false)
-      : setIsThereSpaceLeft(true);
+    if (data) {
+      data.members.length >= data.numberlimit
+        ? setIsThereSpaceLeft(false)
+        : setIsThereSpaceLeft(true);
 
-    props.data.data.members.includes(auth.currentUser?.email)
-      ? setIsJoined(true)
-      : setIsJoined(false);
+      data.members.includes(auth.currentUser?.email)
+        ? setIsJoined(true)
+        : setIsJoined(false);
+    }
+  }, [data]);
 
-    console.log(isJoined, " ", isThereSpaceLeft);
-  }, []);
+  useEffect(() => {
+    const tempData = props.data.data;
+    if (tempData) {
+      setData(tempData);
+      tempData.members.includes(auth.currentUser?.email)
+        ? setIsJoined(true)
+        : setIsJoined(false);
+      if (
+        tempData.bannedUsers &&
+        tempData.bannedUsers.includes(auth.currentUser?.email)
+      ) {
+        setIsBanned(true);
+      } else {
+        setIsBanned(false);
+      }
+    }
+  }, [props.data]);
 
   useEffect(() => {}, [isJoined, isThereSpaceLeft]);
 
   function handleJoin() {
-    if (props.data.data.password.length !== 0 && password.length === 0) {
+    if (data.password.length !== 0 && password.length === 0) {
       setShowPasswordOverlay(true);
       return;
     }
 
-    if (props.data.data.password.length !== 0 && password.length !== 0) {
-      if (password !== props.data.data.password) {
+    if (data.password.length !== 0 && password.length !== 0) {
+      if (password !== data.password) {
         Alert.alert("Error", "Password is not correct");
         return;
       }
@@ -92,7 +97,7 @@ export default function OneGroup(props) {
     setIsJoined(true);
     setShowPasswordOverlay(false);
     let prevMembers = [];
-    prevMembers = props.data.data.members;
+    prevMembers = data.members;
     let newMembers = [...prevMembers, auth.currentUser?.email];
 
     firestore
@@ -104,7 +109,7 @@ export default function OneGroup(props) {
       .then(() => {
         navigation.navigate("GroupMessageScreen", {
           id: props.data.id,
-          data: props.data.data,
+          data: data,
         });
       })
       .catch((error) => {
@@ -112,10 +117,25 @@ export default function OneGroup(props) {
       });
   }
 
+  async function handleExit() {
+    const updatedMembers = data.members.filter(
+      (item) => item !== auth.currentUser?.email
+    );
+
+    firestore
+      .collection("groups")
+      .doc(props.data.id)
+      .update({
+        members: updatedMembers,
+      })
+      .catch((error) => {
+        console.error("Error when exiting from group: ", error);
+      });
+  }
+
   const handleRequestForAccess = async () => {
-    console.log(props.data.data.owner);
     // Get the previous notifications data
-    const userRef = firestore.collection("users").doc(props.data.data.owner);
+    const userRef = firestore.collection("users").doc(data.owner);
     const userSnapshot = await userRef.get();
 
     let previousNotifications = [];
@@ -132,6 +152,7 @@ export default function OneGroup(props) {
       type: "groupAddition",
       email: auth.currentUser?.email,
       note: "test note",
+      groupID: props.data.id,
     };
 
     await userRef.set(
@@ -144,11 +165,11 @@ export default function OneGroup(props) {
 
   return (
     <>
-      {!isJoined && isThereSpaceLeft && (
+      {!isJoined && isThereSpaceLeft && data && !isBanned && (
         <View style={styles.item}>
-          <Text style={styles.title}>{props.data.data.name}</Text>
+          <Text style={styles.title}>{data.name}</Text>
           <Text style={styles.subtitle} numberOfLines={1}>
-            {props.data.data.description}
+            {data.description}
           </Text>
 
           <View style={{ flex: 1, flexDirection: "row", top: 5 }}>
@@ -215,33 +236,30 @@ export default function OneGroup(props) {
                 paddingHorizontal: 5,
               }}
             >
-              {props.data.data.description}
+              {data.description}
             </Text>
             <View style={{ flexDirection: "row", paddingTop: 10 }}>
               <Text style={{ fontSize: 20 }}>Members: </Text>
-              <Text style={{ fontSize: 20 }}>
-                {props.data.data.members.join(", ")}
-              </Text>
+              <Text style={{ fontSize: 20 }}>{data.members.join(", ")}</Text>
             </View>
 
             <Text style={{ fontSize: 20, paddingTop: 10 }}>
-              Number of people: {props.data.data.members.length}/
-              {props.data.data.numberlimit}
+              Number of people: {data.members.length}/{data.numberlimit}
             </Text>
 
             <Text style={{ fontSize: 20, paddingTop: 10 }}>
-              Owner: {props.data.data.owner}
+              Owner: {data.owner}
             </Text>
           </Overlay>
         </View>
       )}
 
-      {!isThereSpaceLeft && !isJoined && (
+      {!isThereSpaceLeft && !isJoined && data && !isBanned && (
         <TouchableOpacity onPress={() => setShowInfoOverlay(true)}>
           <View style={styles.item}>
-            <Text style={styles.title}>{props.data.data.name}</Text>
+            <Text style={styles.title}>{data.name}</Text>
             <Text style={styles.subtitle} numberOfLines={1}>
-              {props.data.data.description}
+              {data.description}
             </Text>
 
             <View style={{ flex: 1, flexDirection: "row", top: 5 }}>
@@ -276,39 +294,46 @@ export default function OneGroup(props) {
                   paddingHorizontal: 5,
                 }}
               >
-                {props.data.data.description}
+                {data.description}
               </Text>
               <View style={{ flexDirection: "row", paddingTop: 10 }}>
                 <Text style={{ fontSize: 20 }}>Members: </Text>
-                <Text style={{ fontSize: 20 }}>
-                  {props.data.data.members.join(", ")}
-                </Text>
+                <Text style={{ fontSize: 20 }}>{data.members.join(", ")}</Text>
               </View>
 
               <Text style={{ fontSize: 20, paddingTop: 10 }}>
-                Number of people: {props.data.data.members.length}/
-                {props.data.data.numberlimit}
+                Number of people: {data.members.length}/{data.numberlimit}
               </Text>
 
               <Text style={{ fontSize: 20, paddingTop: 10 }}>
-                Owner: {props.data.data.owner}
+                Owner: {data.owner}
               </Text>
             </Overlay>
           </View>
         </TouchableOpacity>
       )}
 
-      {isJoined && (
+      {isJoined && data && !isBanned && (
         <TouchableOpacity
           onPress={() => {
             navigation.navigate("GroupMessageScreen", {
-              data: props.data.data,
+              data: data,
               id: props.data.id,
             });
           }}
+          onLongPress={() => {
+            Alert.alert(
+              "Exitting",
+              "Are you sure you want to exit from this group?",
+              [
+                { text: "No", onPress: () => {} },
+                { text: "Yes", onPress: () => handleExit() },
+              ]
+            );
+          }}
         >
           <View style={styles.item}>
-            <Text style={styles.title}>{props.data.data.name}</Text>
+            <Text style={styles.title}>{data.name}</Text>
             <Text style={styles.subtitle} numberOfLines={1}>
               {lastMessage.text}
             </Text>
@@ -326,7 +351,6 @@ export default function OneGroup(props) {
         <View
           style={{
             width: Dimensions.get("window").width * 0.8,
-            //height: Dimensions.get("window").height * 0.1,
           }}
         >
           <TextInput

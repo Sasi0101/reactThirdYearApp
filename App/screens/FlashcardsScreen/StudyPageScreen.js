@@ -17,6 +17,7 @@ export default function StudyPageScreen({ route }) {
   useLayoutEffect(() => {
     setNewCardsNumber(route.params.newCards.length);
     setLearningCardsNumber(route.params.learningCards.length);
+    console.log("length is ", route.params.reviewCards.length);
     setReviewCardsNumber(route.params.reviewCards.length);
 
     const tempCards = [

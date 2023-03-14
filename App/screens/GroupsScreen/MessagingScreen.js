@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
 } from "react-native";
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { CheckBox } from "@rneui/themed";
 //import { Checkbox } from "@react-native-community/checkbox";
 import { useState, useEffect } from "react";
@@ -25,10 +25,12 @@ export default function MessagingScreen() {
   const [groupDescription, setGroupDescription] = useState("");
   const [groupPassword, setGroupPassword] = useState("");
   const [checked, setChecked] = useState(false);
+  const [updateFlatlist, setUpdateFlatlist] = useState(false);
 
-  useEffect(() => {
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useLayoutEffect(() => {
     const groupNamesRef = firestore.collection("groups");
-
     //sort by if the user is joined or not and than by last message
 
     groupNamesRef.onSnapshot((element) => {
@@ -38,9 +40,11 @@ export default function MessagingScreen() {
           data: doc.data(),
           id: doc.id,
         };
+
         groups.push(dataToPush);
       });
       setGroupNames(groups);
+      setUpdateFlatlist(!updateFlatlist);
     });
   }, []);
 
@@ -73,14 +77,23 @@ export default function MessagingScreen() {
     setShowAddOverlay(false);
   };
 
+  useEffect(() => {
+    if (groupNames) {
+      setShouldLoad(true);
+    }
+  }, [groupNames]);
+
   return (
     <View style={{ flex: 1 }}>
       <View style={{ height: "90%" }}>
-        <FlatList
-          data={groupNames}
-          renderItem={({ item }) => <OneGroup data={item} />}
-          keyExtractor={(item, index) => index.toString()}
-        />
+        {shouldLoad && (
+          <FlatList
+            key={updateFlatlist ? "forceUpdate" : "forceUpdate"}
+            data={groupNames}
+            renderItem={({ item }) => <OneGroup data={item} />}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        )}
       </View>
 
       <View style={{ height: "10%" }}>

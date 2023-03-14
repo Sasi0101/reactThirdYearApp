@@ -5,8 +5,10 @@ import { GiftedChat } from "react-native-gifted-chat";
 import { auth, firestore } from "../../firebase";
 import "firebase/storage";
 import firebase from "firebase/app";
+import BadWordsFilter from "bad-words";
 
 export default function PrivateMessagesGiftedChat(props) {
+  const filter = new BadWordsFilter();
   const [messages, setMessages] = useState([]);
   const [user_id, setUserId] = useState();
   const [downloadURL, setDownloadURl] = useState();
@@ -133,11 +135,18 @@ export default function PrivateMessagesGiftedChat(props) {
     (messages = []) => {
       handleSpokenTo2();
       //adding the element to the database
+      const dataToUpload = {
+        _id: messages[0]._id,
+        createdAt: messages[0].createdAt,
+        text: filter.clean(messages[0].text),
+        user: messages[0].user,
+      };
+
       firestore
         .collection("privateMessages")
         .doc(user_id)
         .collection("messages")
-        .add(messages[0])
+        .add(dataToUpload)
         .catch((error) => {
           console.error(
             "Error adding an element when the user hit send: ",

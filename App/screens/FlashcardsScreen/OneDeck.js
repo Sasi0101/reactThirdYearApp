@@ -1,14 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useState,
-  useCallback,
-} from "react";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { DeviceEventEmitter } from "react-native";
+import { Overlay } from "@rneui/themed";
 
 const NEW_PER_DAY = 20;
 //cardState can be new, learning, learning2 and review
@@ -22,10 +17,11 @@ export default function OneDeck(props) {
   const [reviewCards, setReviewCards] = useState([]);
   const [newCardsStudiedToday, setNewCardsStudiedToday] = useState(0);
   const [didReceiveEmit, setDidReceiveEmit] = useState(false);
+  const [isOverlayOn, setIsOverlayOn] = useState(false);
 
   useEffect(() => {
     const onEvent = () => {
-      console.log("emit received");
+      //console.log("emit received");
       if (!didReceiveEmit) {
         setDidReceiveEmit(true);
         loadData();
@@ -86,7 +82,7 @@ export default function OneDeck(props) {
           learningCardsArr.push(item);
           break;
         case "review": // check here if the card should be shown or not
-          if (item.nextTime && item.nextTime < new Date())
+          if (item.nextTime && new Date(item.nextTime) <= new Date())
             reviewCardsArr.push(item);
           break;
       }
@@ -107,6 +103,9 @@ export default function OneDeck(props) {
           reviewCards: reviewCards,
         });
       }}
+      onLongPress={() => {
+        setIsOverlayOn(true);
+      }}
     >
       <View style={styles.boxContainer}>
         <Text style={{ fontWeight: "600", fontSize: 18 }}>
@@ -120,6 +119,23 @@ export default function OneDeck(props) {
           <Text style={{ color: "green" }}> {reviewCards.length} </Text>
         </View>
       </View>
+
+      <Overlay
+        isVisible={isOverlayOn}
+        onBackdropPress={() => {
+          setIsOverlayOn(false);
+        }}
+        style={{}}
+      >
+        <TouchableOpacity
+          style={{ borderWidth: 1 }}
+          onPress={() => {
+            console.log("Should publish deck");
+          }}
+        >
+          <Text>Publish deck: {props.deckName}</Text>
+        </TouchableOpacity>
+      </Overlay>
     </TouchableOpacity>
   );
 }
