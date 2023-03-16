@@ -1,42 +1,49 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Dimensions,
+  FlatList,
+  TextInput,
+} from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { DeviceEventEmitter } from "react-native";
 import { Overlay } from "@rneui/themed";
+import { auth, firestore } from "../../firebase";
 
 const NEW_PER_DAY = 20;
 //cardState can be new, learning, learning2 and review
 export default function OneDeck(props) {
   const navigation = useNavigation();
 
+  const [isEditCardOverlayOn, setIsEditCardOverlayOn] = useState(false);
   const [cards, setCards] = useState([]);
-
+  const [isCardsOverlayOn, setIsCardsOverlayOn] = useState(false);
   const [newCards, setNewCards] = useState([]);
   const [learningCards, setLearningCards] = useState([]);
   const [reviewCards, setReviewCards] = useState([]);
   const [newCardsStudiedToday, setNewCardsStudiedToday] = useState(0);
-  const [didReceiveEmit, setDidReceiveEmit] = useState(false);
   const [isOverlayOn, setIsOverlayOn] = useState(false);
+  const [newCardsLength, setNewCardsLength] = useState(null);
+  const [tempCard, setTempCard] = useState(null);
+  const [frontCard, setFrontCard] = useState("");
+  const [backCard, setBackCard] = useState("");
 
   useEffect(() => {
     const onEvent = () => {
-      //console.log("emit received");
-      if (!didReceiveEmit) {
-        setDidReceiveEmit(true);
-        loadData();
-        setTimeout(() => {
-          setDidReceiveEmit(false);
-        }, 2000);
-      }
+      console.log("emitter received");
+      loadData();
     };
 
-    DeviceEventEmitter.addListener("testEvent", onEvent);
+    DeviceEventEmitter.addListener(props.deckName, onEvent);
 
     return () => {
-      DeviceEventEmitter.removeAllListeners("testEvent");
+      DeviceEventEmitter.removeAllListeners(props.deckName);
     };
-  }, [didReceiveEmit]);
+  }, []);
 
   useLayoutEffect(() => {
     loadData();
@@ -68,11 +75,16 @@ export default function OneDeck(props) {
   };
 
   useEffect(() => {
-    const newCardsArr = [];
-    const learningCardsArr = [];
-    const reviewCardsArr = [];
+    let newCardsArr = [];
+    let learningCardsArr = [];
+    let reviewCardsArr = [];
 
     cards.forEach((item) => {
+      const tempDate = new Date(item.createdAt);
+      item.createdAt = tempDate.toISOString();
+      const tempDate2 = new Date(item.nextTime);
+      item.nextTime = tempDate2.toISOString();
+
       switch (item.cardState) {
         case "new":
           newCardsArr.push(item);
@@ -82,8 +94,10 @@ export default function OneDeck(props) {
           learningCardsArr.push(item);
           break;
         case "review": // check here if the card should be shown or not
-          if (item.nextTime && new Date(item.nextTime) <= new Date())
+          if (item.nextTime && new Date(item.nextTime) <= new Date()) {
             reviewCardsArr.push(item);
+          }
+
           break;
       }
     });
@@ -91,7 +105,126 @@ export default function OneDeck(props) {
     setNewCards(newCardsArr);
     setLearningCards(learningCardsArr);
     setReviewCards(reviewCardsArr);
+
+    setNewCardsLength(newCardsArr.slice(0, NEW_PER_DAY - newCardsStudiedToday));
   }, [cards]);
+
+  const handleOnPublish = async () => {
+    const dataToUpload = {
+      email: auth.currentUser?.email,
+      cards: cards,
+      deckName: props.deckName + " - " + auth.currentUser?.email,
+    };
+
+    await firestore
+      .collection("flashcards")
+      .where("deckName", "==", props.deckName + " - " + auth.currentUser?.email)
+      .get()
+      .then(async (querySnapshot) => {
+        if (!querySnapshot.empty) {
+          let tempData;
+          querySnapshot.docs.map((doc) => (tempData = doc.id));
+
+          await firestore
+            .collection("flashcards")
+            .doc(tempData)
+            .update(
+              {
+                cards: cards,
+              },
+              { merge: true }
+            )
+            .catch((error) =>
+              console.error("Error while updating a deck: ", error)
+            );
+        } else {
+          await firestore
+            .collection("flashcards")
+            .add(dataToUpload)
+            .catch((error) =>
+              console.error("Error while uploading flashcards: ", error)
+            );
+        }
+      });
+  };
+
+  const OneCard = ({ card }) => (
+    <TouchableOpacity
+      onPress={() => {
+        setTempCard(card);
+        setFrontCard(card.front);
+        setBackCard(card.back);
+        setIsEditCardOverlayOn(true);
+      }}
+    >
+      <View
+        style={{
+          flex: 2,
+          flexDirection: "row",
+
+          borderWidth: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <View style={{ flex: 1, borderRightWidth: 1 }}>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 18,
+            }}
+          >
+            {card.front}
+          </Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 18,
+            }}
+          >
+            {card.back}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+  const handleEditCard = async () => {
+    const newData = cards.map((item) => {
+      if (item.id === tempCard.id) {
+        const dataToUpdate = {
+          id: tempCard.id,
+          front: frontCard,
+          back: backCard,
+          createdAt: tempCard.createdAt,
+          nextTime: tempCard.nextTime,
+          cardState: tempCard.cardState,
+          easeFactor: tempCard.easeFactor,
+        };
+        return dataToUpdate;
+      } else {
+        return item;
+      }
+    });
+
+    await AsyncStorage.setItem(props.deckName, JSON.stringify(newData));
+    setCards(newData);
+    setIsEditCardOverlayOn(false);
+  };
+
+  const handleDeleteDeck = async () => {
+    setIsOverlayOn(false);
+    await AsyncStorage.removeItem(props.deckName);
+    const currentDeckNames = JSON.parse(
+      await AsyncStorage.getItem("deckNames")
+    );
+    const updatedDeckNames = currentDeckNames.filter(
+      (item) => item !== props.deckName
+    );
+    await AsyncStorage.setItem("deckNames", JSON.stringify(updatedDeckNames));
+    DeviceEventEmitter.emit("deckDeleted", {});
+  };
 
   return (
     <TouchableOpacity
@@ -130,11 +263,136 @@ export default function OneDeck(props) {
         <TouchableOpacity
           style={{ borderWidth: 1 }}
           onPress={() => {
-            console.log("Should publish deck");
+            handleOnPublish();
           }}
         >
           <Text>Publish deck: {props.deckName}</Text>
         </TouchableOpacity>
+        <View style={{ paddingVertical: 10 }} />
+        <TouchableOpacity
+          style={{ borderWidth: 1 }}
+          onPress={() => {
+            setIsCardsOverlayOn(true);
+          }}
+        >
+          <Text>View cards</Text>
+        </TouchableOpacity>
+        <View style={{ paddingVertical: 10 }} />
+        <TouchableOpacity
+          style={{ borderWidth: 1 }}
+          onPress={() => {
+            handleDeleteDeck();
+          }}
+        >
+          <Text>Delete deck</Text>
+        </TouchableOpacity>
+      </Overlay>
+
+      <Overlay
+        isVisible={isCardsOverlayOn}
+        onBackdropPress={() => {
+          setIsCardsOverlayOn(false);
+        }}
+      >
+        <View
+          style={{
+            width: Dimensions.get("window").width * 0.9,
+            maxHeight: Dimensions.get("window").height * 0.9,
+          }}
+        >
+          <View
+            style={{
+              alignItems: "center",
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => setIsCardsOverlayOn(false)}
+              style={{ borderWidth: 1 }}
+            >
+              <Text style={{ paddingVertical: 2, paddingHorizontal: 2 }}>
+                Close cards page
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ paddingTop: 7 }}>
+            <FlatList
+              data={cards}
+              renderItem={({ item }) => <OneCard card={item} />}
+            />
+          </View>
+        </View>
+      </Overlay>
+
+      <Overlay
+        isVisible={isEditCardOverlayOn}
+        onBackdropPress={() => setIsEditCardOverlayOn(false)}
+      >
+        <Text>Front:</Text>
+        <TextInput
+          style={{
+            borderColor: "gray",
+            borderWidth: 1,
+            width: Dimensions.get("window").width * 0.8,
+          }}
+          placeholder=" Enter front of the card"
+          value={frontCard}
+          onChangeText={(text) => setFrontCard(text)}
+          maxLength={256}
+        />
+
+        <Text>Back:</Text>
+        <TextInput
+          style={{
+            borderColor: "gray",
+            borderWidth: 1,
+            width: Dimensions.get("window").width * 0.8,
+          }}
+          placeholder=" Enter back of the card"
+          value={backCard}
+          onChangeText={(text) => setBackCard(text)}
+          maxLength={256}
+        />
+        <View>
+          <View
+            style={{
+              flexDirection: "row",
+              paddingTop: 10,
+              maxHeight: Dimensions.get("window").height * 0.5,
+            }}
+          >
+            <View>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsEditCardOverlayOn(false);
+                }}
+                style={{
+                  paddingVertical: 2,
+                  paddingHorizontal: 2,
+                  alignItems: "center",
+                  borderWidth: 1,
+                }}
+              >
+                <Text>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ position: "absolute", bottom: 0, right: 0 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  handleEditCard();
+                }}
+                style={{
+                  paddingVertical: 2,
+                  paddingHorizontal: 2,
+                  alignItems: "center",
+                  borderWidth: 1,
+                }}
+              >
+                <Text>Save edit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </Overlay>
     </TouchableOpacity>
   );

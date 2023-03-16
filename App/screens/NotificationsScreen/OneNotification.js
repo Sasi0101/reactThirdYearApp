@@ -12,17 +12,32 @@ export default function OneNotification(props) {
   const [type, setType] = useState("");
   const [email, setEmail] = useState("");
   const [note, setNote] = useState("");
+  const [groupID, setGroupID] = useState();
+  const [typeAddition, setTypeAddition] = useState(null);
+  const [groupName, setGroupName] = useState("");
 
   const [allNotifications, setAllNotifications] = useState([]);
 
-  useLayoutEffect(() => {
-    setType(props.data.type);
-    setEmail(props.data.email);
-    setNote(props.data.note);
-    setAllNotifications(props.allNotifications);
-  }, []);
+  useEffect(() => {
+    if (props.data.note) setNote(props.data.note);
+    if (props.allNotifications) setAllNotifications(props.allNotifications);
 
-  useEffect(() => {}, [allNotifications]);
+    switch (props.data.type) {
+      case "groupAddition":
+        setTypeAddition(
+          <Text>
+            <Text style={{ fontWeight: "bold" }}>{props.data.email}</Text>
+            {" would like to join your "}
+            <Text style={{ fontWeight: "bold" }}>{props.data.groupName}</Text>
+            {" group."}
+          </Text>
+        );
+    }
+  }, [props]);
+
+  useEffect(() => {
+    setAllNotifications(props.allNotifications);
+  }, [allNotifications]);
 
   const handleOnIgnore = async () => {
     const newNotifcations = allNotifications.filter(
@@ -42,12 +57,18 @@ export default function OneNotification(props) {
 
   const handleAccept = async () => {
     let tempData = [];
+    let doesDocumentExist;
     await firestore
       .collection("groups")
       .doc(props.data.groupID)
       .get()
       .then((data) => {
-        tempData = data.data();
+        if (data.exists) {
+          doesDocumentExist = true;
+          if (data.data().members) tempData = data.data().members;
+        } else {
+          doesDocumentExist = false;
+        }
       })
       .catch((error) =>
         console.error(
@@ -56,14 +77,32 @@ export default function OneNotification(props) {
         )
       );
 
-    //handleOnIgnore();
+    const toUpload = tempData.filter((item) => item !== props.data.email);
+
+    if (doesDocumentExist) {
+      await firestore
+        .collection("groups")
+        .doc(props.data.groupID)
+        .update({
+          members: [...toUpload, props.data.email],
+        })
+        .catch((error) =>
+          console.error(
+            "Error when updating members in oneNotification: ",
+            error
+          )
+        );
+    } else {
+      console.log("group no longer exists");
+    }
+
+    handleOnIgnore();
   };
 
   return (
     <View>
       <View style={styles.item}>
-        <Text style={{ paddingTop: 5 }}>{type}</Text>
-        <Text>Sender: {email}</Text>
+        <Text style={{ paddingTop: 5 }}>{typeAddition}</Text>
         <Text>Note: {note}</Text>
         <View
           style={{

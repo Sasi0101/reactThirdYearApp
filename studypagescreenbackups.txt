@@ -1,0 +1,87 @@
+    /*
+    if (currentCard.cardState == "review") {
+      //here we should not change the ease factor and make it remain in review
+      if (index !== -1) {
+        setReviewCardsNumber(reviewCardsNumber - 1);
+
+        if (combinedCards.length <= 1) {
+          setCombinedCards([]);
+        } else {
+          const tempArr = combinedCards.splice(index, 1);
+          setCombinedCards(tempArr);
+        }
+
+        //changing it in the all cards deck
+        allCards[secondIndex].easeFactor =
+          allCards[secondIndex].easeFactor + 15;
+        allCards[secondIndex].interval =
+          ((allCards[secondIndex].interval * allCards[secondIndex].easeFactor) /
+            100) *
+          1.3;
+
+        allCards[secondIndex].nextTime = new Date(
+          new Date().getTime() + combinedCards[index].interval * 60 * 1000
+        );
+      }
+    } else if (currentCard.cardState == "new") {
+      handleNewCardSeen();
+      setNewCardsNumber(newCardsNumber - 1);
+      if (combinedCards.length <= 1) {
+        setCombinedCards([]);
+      } else {
+        const tempArr = combinedCards.splice(index, 1);
+        setCombinedCards(tempArr);
+      }
+
+      allCards[secondIndex].easeFactor = allCards[secondIndex].easeFactor + 15;
+      allCards[secondIndex].cardState = "review";
+      allCards[secondIndex].interval = 1440;
+
+      allCards[secondIndex].nextTime = new Date(
+        new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
+      );
+    } else if (currentCard.cardState == "learning") {
+      if (combinedCards.length <= 1) {
+        setCombinedCards([]);
+      } else {
+        const tempArr = combinedCards.splice(index, 1);
+        setCombinedCards(tempArr);
+      }
+
+      setLearningCardsNumber(learningCardsNumber - 1);
+      allCards[secondIndex].easeFactor = allCards[secondIndex].easeFactor + 15;
+      allCards[secondIndex].cardState = "review";
+      if (allCards[secondIndex].interval > 1440) {
+        allCards[secondIndex].interval =
+          ((allCards[secondIndex].interval * allCards[secondIndex].easeFactor) /
+            100) *
+          1.3;
+      } else {
+        allCards[secondIndex].interval = 1440;
+      }
+      allCards[secondIndex].nextTime = new Date(
+        new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
+      );
+    } else if (currentCard.cardState == "learning2") {
+      if (combinedCards.length <= 1) {
+        setCombinedCards([]);
+      } else {
+        const tempArr = combinedCards.splice(index, 1);
+        setCombinedCards(tempArr);
+      }
+
+      setLearningCardsNumber(learningCardsNumber - 1);
+      allCards[secondIndex].easeFactor = allCards[secondIndex].easeFactor + 15;
+      allCards[secondIndex].cardState = "review";
+      if (allCards[secondIndex].interval > 1440) {
+        allCards[secondIndex].interval =
+          (allCards[secondIndex].interval / 100) *
+          allCards[secondIndex].easeFactor *
+          1.3;
+      } else {
+        allCards[secondIndex].interval = 1440;
+      }
+      allCards[secondIndex].nextTime = new Date(
+        new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
+      );
+    }*/

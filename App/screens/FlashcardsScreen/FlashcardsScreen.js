@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Overlay } from "@rneui/themed";
 import OneDeck from "./OneDeck";
+import { DeviceEventEmitter } from "react-native";
 
 export default function FlashcardsScreen(props) {
   const [deckNames, setDeckNames] = useState([]);
@@ -25,7 +26,6 @@ export default function FlashcardsScreen(props) {
   const [cardsOverlay, setCardsOverlay] = useState(false);
   const [chooseDeckOverlay, setChooseDeckOverlay] = useState(false);
   const [updateFlatlist, setUpdateFlatlist] = useState(false);
-  const [reloadItem, setReloadItem] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -37,11 +37,20 @@ export default function FlashcardsScreen(props) {
           return string !== "";
         });
         setDeckNames(filteredArray);
-      } else {
-        console.log("Its empty");
       }
     })();
+
+    DeviceEventEmitter.addListener("deckDeleted", handleDeckDeleted);
+
+    return () => {
+      DeviceEventEmitter.removeAllListeners("deckDeleted");
+    };
   }, []);
+
+  const handleDeckDeleted = async () => {
+    const tempItem = await AsyncStorage.getItem("deckNames");
+    setDeckNames(JSON.parse(tempItem));
+  };
 
   //updates the right value the rigth value
   useEffect(() => {
@@ -96,22 +105,12 @@ export default function FlashcardsScreen(props) {
     await AsyncStorage.setItem(newDeckName, JSON.stringify(sortedArray));
 
     //not the best idea as we have to rerender all of them
-    setUpdateFlatlist(true);
-    setUpdateFlatlist(false);
-  };
-
-  const forTesting = async () => {
-    const tempCards = JSON.parse(await AsyncStorage.getItem("test1"));
-    //console.log("Length is ", tempCards[0]);
-    if (tempCards) tempCards.map((item) => console.log(item.cardState));
+    setUpdateFlatlist(!updateFlatlist);
   };
 
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       <View style={{ height: "90%" }}>
-        <TouchableOpacity onPress={() => forTesting()}>
-          <Text>Test</Text>
-        </TouchableOpacity>
         <FlatList
           key={updateFlatlist ? "forceUpdate" : "noUpdate"}
           data={deckNames}
@@ -188,9 +187,18 @@ export default function FlashcardsScreen(props) {
           <TouchableOpacity
             style={{ position: "absolute", right: 0 }}
             onPress={() => {
-              setDeckNames([...deckNames, inputValue]);
-              setInputValue("");
-              setDeckOverlay(!deckOverlay);
+              const checkIfThereIsSameDeckName = deckNames.includes(inputValue);
+
+              if (checkIfThereIsSameDeckName) {
+                Alert.alert(
+                  "Similar deck name",
+                  "There is already a deck with the same name please change this name"
+                );
+              } else {
+                setDeckNames([...deckNames, inputValue]);
+                setInputValue("");
+                setDeckOverlay(!deckOverlay);
+              }
             }}
           >
             <Text>Add deck</Text>

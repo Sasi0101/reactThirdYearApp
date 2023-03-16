@@ -17,6 +17,7 @@ export default function NotificationsScreen() {
 
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
+  const [updateFlatlist, setUpdateFlatlist] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
 
@@ -28,7 +29,9 @@ export default function NotificationsScreen() {
         const data = doc.data();
         if (data.notifications) {
           setNotifications(data.notifications);
+          console.log("Should update");
         }
+        setUpdateFlatlist(!updateFlatlist);
       });
 
     return () => {
@@ -64,8 +67,8 @@ export default function NotificationsScreen() {
 
   return (
     <View>
-      <Text> hello</Text>
       <FlatList
+        key={updateFlatlist ? "forceUpdate" : "forceUpdate"}
         data={notifications}
         renderItem={({ item }) => (
           <OneNotification data={item} allNotifications={notifications} />

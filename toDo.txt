@@ -1,10 +1,13 @@
 exit from group - done
 report someone - done
 admin can kick someone  - done
-notifications
-publish flashcards deck
+notifications - group addition done
+push notifications
+publish flashcards deck - done
 voting for flashcards deck
 finding users maybe?
 maybe delete message if user wants?
 invite people to group?
 maybe implement a word check - a basic one done
+delete decks from flashcards
+edit flashcards cards

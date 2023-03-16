@@ -7,6 +7,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ScrollView,
+  Alert,
 } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
 import * as ImagePickerExpo from "expo-image-picker";
@@ -14,6 +15,7 @@ import "firebase/storage";
 import firebase from "firebase/app";
 import { auth, firestore } from "../../firebase";
 import { Avatar } from "react-native-paper";
+import * as FileSystem from "expo-file-system";
 
 export default function ProfileScreen() {
   const [image, setImage] = useState(null);
@@ -94,7 +96,7 @@ export default function ProfileScreen() {
       mediaTypes: ImagePickerExpo.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.5,
+      quality: 0.8,
       base64: true,
       selectionLimit: 1,
     });
@@ -102,7 +104,16 @@ export default function ProfileScreen() {
     //handle error messages and cancel
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const fileInfo = await FileSystem.getInfoAsync(result.assets[0].uri);
+      const fileSizeInMB = fileInfo.size / (1024 * 1024);
+      if (fileSizeInMB > 5) {
+        Alert.alert(
+          "Image too big",
+          "Image is too big please select a lower resolution image."
+        );
+      } else {
+        setImage(result.assets[0].uri);
+      }
     }
   };
 

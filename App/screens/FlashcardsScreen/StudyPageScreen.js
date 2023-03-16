@@ -12,22 +12,22 @@ export default function StudyPageScreen({ route }) {
   const [newCardsNumber, setNewCardsNumber] = useState(0);
   const [learningCardsNumber, setLearningCardsNumber] = useState(0);
   const [reviewCardsNumber, setReviewCardsNumber] = useState(0);
-  const [eventEmitted, setEventEmitted] = useState(false);
 
   useLayoutEffect(() => {
     setNewCardsNumber(route.params.newCards.length);
     setLearningCardsNumber(route.params.learningCards.length);
-    console.log("length is ", route.params.reviewCards.length);
     setReviewCardsNumber(route.params.reviewCards.length);
 
-    const tempCards = [
+    let tempCards = [
       ...route.params.newCards,
       ...route.params.learningCards,
       ...route.params.reviewCards,
     ];
+    console.log(tempCards);
     const sortedArray = tempCards.sort(
       (a, b) => new Date(a.nextTime) - new Date(b.nextTime)
     );
+
     setCombinedCards(sortedArray);
     setShouldShowAnswer(false);
 
@@ -45,13 +45,9 @@ export default function StudyPageScreen({ route }) {
     };
 
     loadData();
-  }, []);
+  }, [route.params]);
 
   useEffect(() => {}, [currentCard, areThereCards]);
-
-  const handleRevealAnswer = () => {
-    setShouldShowAnswer(true);
-  };
 
   //handle again should work
   const handleAgain = async () => {
@@ -89,18 +85,8 @@ export default function StudyPageScreen({ route }) {
           handleNewCardSeen();
           setLearningCardsNumber(learningCardsNumber + 1);
           setNewCardsNumber(newCardsNumber - 1);
-
-          combinedCards[index].cardState = "learning";
-          combinedCards[index].interval = 1;
-          combinedCards[index].nextTime = new Date(
-            new Date().getTime() + 1 * 60 * 1000
-          );
-          //changing it in the all cards deck
-          allCards[secondIndex].cardState = "learning";
           allCards[secondIndex].interval = 1;
-          allCards[secondIndex].nextTime = new Date(
-            new Date().getTime() + 1 * 60 * 1000
-          );
+          combinedCards[index].interval = 1;
         } else {
           if (combinedCards[index].interval < 1440) {
             combinedCards[index].interval = 1;
@@ -111,39 +97,21 @@ export default function StudyPageScreen({ route }) {
             combinedCards[index].easeFactor =
               combinedCards[index].easeFactor - 20;
           }
-
-          combinedCards[index].cardState = "learning";
-          combinedCards[index].nextTime = new Date(
-            new Date().getTime() + 1 * 60 * 1000
-          );
-          //changing it in the all cards deck
-          allCards[secondIndex].cardState = "learning";
-          allCards[secondIndex].nextTime = new Date(
-            new Date().getTime() + 1 * 60 * 1000
-          );
         }
-        //changing it in the currentDeck that we are using
+
+        combinedCards[index].cardState = "learning";
+        combinedCards[index].nextTime = new Date(
+          new Date().getTime() + 1 * 60 * 1000
+        );
+        allCards[secondIndex].cardState = "learning";
+        allCards[secondIndex].nextTime = new Date(
+          new Date().getTime() + 1 * 60 * 1000
+        );
       }
     }
 
-    //after changing the card we sort it based on time again
-    if (combinedCards.length == 0) {
-      setAreThereCards(false);
-      return;
-    } else {
-      const sortedArray = combinedCards.sort(
-        (a, b) => new Date(a.nextTime) - new Date(b.nextTime)
-      );
-      setCombinedCards(sortedArray);
-      setCurrentCard(sortedArray[0]);
-
-      await AsyncStorage.setItem(
-        route.params.deckName,
-        JSON.stringify(allCards)
-      );
-    }
-
-    DeviceEventEmitter.emit("testEvent", {});
+    sorting();
+    DeviceEventEmitter.emit(route.params.deckName, {});
   };
 
   const handleNewCardSeen = async () => {
@@ -167,18 +135,24 @@ export default function StudyPageScreen({ route }) {
 
     if (currentCard.cardState == "review") {
       //here we should not change the ease factor and make it remain in review
-      if (index !== -1) {
-        setReviewCardsNumber(reviewCardsNumber - 1);
-        const tempArr = combinedCards.splice(index, 1);
-        setCombinedCards(tempArr);
-        //changing it in the all cards deck
-        allCards[secondIndex].interval =
-          (allCards[secondIndex].interval * allCards[secondIndex].easeFactor) /
-          100;
-        allCards[secondIndex].nextTime = new Date(
-          new Date().getTime() + combinedCards[index].interval * 60 * 1000
-        );
+      setReviewCardsNumber(reviewCardsNumber - 1);
+
+      if (
+        allCards[secondIndex].interval < 1 ||
+        !allCards[secondIndex].interval
+      ) {
+        allCards[secondIndex].interval = 1;
+      } else {
+        console.log("updated this");
       }
+
+      allCards[secondIndex].interval =
+        (allCards[secondIndex].interval * allCards[secondIndex].easeFactor) /
+        100;
+      allCards[secondIndex].nextTime = new Date(
+        new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
+      );
+      combinedCardSlicer(index);
     } else if (currentCard.cardState == "new") {
       handleNewCardSeen();
       setLearningCardsNumber(learningCardsNumber + 1);
@@ -210,17 +184,17 @@ export default function StudyPageScreen({ route }) {
         new Date().getTime() + 10 * 60 * 1000
       );
     } else if (currentCard.cardState == "learning2") {
-      const tempArr = combinedCards.splice(index, 1);
-      setCombinedCards(tempArr);
+      console.log("doing good wit learning2 cardstate");
+      combinedCardSlicer(index);
+
       setLearningCardsNumber(learningCardsNumber - 1);
 
-      if (allCards[secondIndex].interval < 1440) {
-        allCards[secondIndex].interval = 1440;
-      } else {
-        allCards[secondIndex].interval =
-          (allCards[secondIndex].interval * allCards[secondIndex].easeFactor) /
-          100;
-      }
+      allCards[secondIndex].interval < 1440
+        ? (allCards[secondIndex].interval = 1440)
+        : (allCards[secondIndex].interval =
+            (allCards[secondIndex].interval *
+              allCards[secondIndex].easeFactor) /
+            100);
 
       allCards[secondIndex].cardState = "review";
       allCards[secondIndex].nextTime = new Date(
@@ -228,116 +202,74 @@ export default function StudyPageScreen({ route }) {
       );
     }
 
+    sorting();
+    DeviceEventEmitter.emit(route.params.deckName, {});
     //after changing the card we sort it based on time again
-    if (combinedCards.length == 0) {
-      setAreThereCards(false);
-      return;
-    } else {
-      const sortedArray = combinedCards.sort(
-        (a, b) => new Date(a.nextTime) - new Date(b.nextTime)
-      );
-      setCombinedCards(sortedArray);
-      setCurrentCard(sortedArray[0]);
-
-      await AsyncStorage.setItem(
-        route.params.deckName,
-        JSON.stringify(allCards)
-      );
-    }
-
-    DeviceEventEmitter.emit("testEvent", {});
   };
 
   //easy should work
   const handleEasy = async () => {
     setShouldShowAnswer(false);
+
     let index = combinedCards.findIndex((item) => item.id === currentCard.id);
     let secondIndex = allCards.findIndex((item) => item.id === currentCard.id);
 
-    if (currentCard.cardState == "review") {
-      //here we should not change the ease factor and make it remain in review
-      if (index !== -1) {
-        setReviewCardsNumber(reviewCardsNumber - 1);
-        const tempArr = combinedCards.splice(index, 1);
-        setCombinedCards(tempArr);
-        //changing it in the all cards deck
-        allCards[secondIndex].easeFactor =
-          allCards[secondIndex].easeFactor + 15;
-        allCards[secondIndex].interval =
-          ((allCards[secondIndex].interval * allCards[secondIndex].easeFactor) /
-            100) *
-          1.3;
+    allCards[secondIndex].easeFactor = allCards[secondIndex].easeFactor + 15;
+    allCards[secondIndex].cardState = "review";
 
-        allCards[secondIndex].nextTime = new Date(
-          new Date().getTime() + combinedCards[index].interval * 60 * 1000
-        );
-      }
-    } else if (currentCard.cardState == "new") {
-      handleNewCardSeen();
-      setNewCardsNumber(newCardsNumber - 1);
-      const tempArr = combinedCards.splice(index, 1);
-      setCombinedCards(tempArr);
+    if (!allCards[secondIndex].interval) allCards[secondIndex].interval = 1439;
 
-      allCards[secondIndex].easeFactor = allCards[secondIndex].easeFactor + 15;
-      allCards[secondIndex].cardState = "review";
-      allCards[secondIndex].interval = 1440;
-
-      allCards[secondIndex].nextTime = new Date(
-        new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
-      );
-    } else if (currentCard.cardState == "learning") {
-      const tempArr = combinedCards.splice(index, 1);
-      setCombinedCards(tempArr);
-      setLearningCardsNumber(learningCardsNumber - 1);
-      allCards[secondIndex].easeFactor = allCards[secondIndex].easeFactor + 15;
-      allCards[secondIndex].cardState = "review";
-      if (allCards[secondIndex].interval > 1440) {
-        allCards[secondIndex].interval =
-          ((allCards[secondIndex].interval * allCards[secondIndex].easeFactor) /
-            100) *
-          1.3;
-      } else {
-        allCards[secondIndex].interval = 1440;
-      }
-      allCards[secondIndex].nextTime = new Date(
-        new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
-      );
-    } else if (currentCard.cardState == "learning2") {
-      const tempArr = combinedCards.splice(index, 1);
-      setCombinedCards(tempArr);
-      setLearningCardsNumber(learningCardsNumber - 1);
-      allCards[secondIndex].easeFactor = allCards[secondIndex].easeFactor + 15;
-      allCards[secondIndex].cardState = "review";
-      if (allCards[secondIndex].interval > 1440) {
-        allCards[secondIndex].interval =
+    allCards[secondIndex].interval < 1440
+      ? (allCards[secondIndex].interval = 1440)
+      : (allCards[secondIndex].interval =
           (allCards[secondIndex].interval / 100) *
           allCards[secondIndex].easeFactor *
-          1.3;
-      } else {
-        allCards[secondIndex].interval = 1440;
-      }
-      allCards[secondIndex].nextTime = new Date(
-        new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
-      );
+          1.3);
+    allCards[secondIndex].nextTime = new Date(
+      new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
+    );
+
+    if (currentCard.cardState == "review")
+      setReviewCardsNumber(reviewCardsNumber - 1);
+    if (
+      currentCard.cardState == "learning" ||
+      currentCard.cardState == "learning2"
+    )
+      setLearningCardsNumber(learningCardsNumber - 1);
+    if (currentCard.cardState == "new") {
+      handleNewCardSeen();
+      setNewCardsNumber(newCardsNumber - 1);
     }
 
-    //after changing the card we sort it based on time again
-    if (combinedCards.length == 0) {
+    combinedCardSlicer(index);
+    sorting();
+    DeviceEventEmitter.emit(route.params.deckName, {});
+  };
+
+  const combinedCardSlicer = (index) => {
+    if (combinedCards.length == 1) {
       setAreThereCards(false);
-      return;
     } else {
-      const sortedArray = combinedCards.sort(
+      const tempArr = combinedCards.splice(index, 1);
+      if (tempArr.length == 0) {
+        setAreThereCards(false);
+      } else {
+        setCombinedCards(tempArr);
+      }
+    }
+  };
+
+  const sorting = async () => {
+    let sortedArray = combinedCards;
+    if (combinedCards.length > 1) {
+      sortedArray = combinedCards.sort(
         (a, b) => new Date(a.nextTime) - new Date(b.nextTime)
       );
       setCombinedCards(sortedArray);
-      setCurrentCard(sortedArray[0]);
-
-      await AsyncStorage.setItem(
-        route.params.deckName,
-        JSON.stringify(allCards)
-      );
     }
-    DeviceEventEmitter.emit("testEvent", {});
+    setCurrentCard(sortedArray[0]);
+
+    await AsyncStorage.setItem(route.params.deckName, JSON.stringify(allCards));
   };
 
   return (
@@ -384,10 +316,10 @@ export default function StudyPageScreen({ route }) {
       )}
 
       <View style={{ flex: 1, alignItems: "center", paddingTop: 10 }}>
-        {!shouldShowAnswer && (
+        {!shouldShowAnswer && areThereCards && (
           <TouchableOpacity
             onPress={() => {
-              handleRevealAnswer();
+              setShouldShowAnswer(true);
             }}
           >
             <Text>Show answer</Text>

@@ -153,6 +153,7 @@ export default function OneGroup(props) {
       email: auth.currentUser?.email,
       note: "test note",
       groupID: props.data.id,
+      groupName: data.name,
     };
 
     await userRef.set(
@@ -220,36 +221,42 @@ export default function OneGroup(props) {
             isVisible={showInfoOverlay}
             onBackdropPress={() => setShowInfoOverlay(false)}
           >
-            <Text
+            <View
               style={{
-                width: Dimensions.get("window").width * 0.9,
-                fontSize: 23,
+                maxWidth: Dimensions.get("window").width * 0.8,
               }}
             >
-              Description:
-            </Text>
-            <Text
-              style={{
-                fontSize: 20,
-                backgroundColor: "#E7DECC",
-                borderRadius: 5,
-                paddingHorizontal: 5,
-              }}
-            >
-              {data.description}
-            </Text>
-            <View style={{ flexDirection: "row", paddingTop: 10 }}>
-              <Text style={{ fontSize: 20 }}>Members: </Text>
-              <Text style={{ fontSize: 20 }}>{data.members.join(", ")}</Text>
+              <Text
+                style={{
+                  width: Dimensions.get("window").width * 0.9,
+                  fontSize: 23,
+                }}
+              >
+                Description:
+              </Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  backgroundColor: "#E7DECC",
+                  borderRadius: 5,
+                  paddingHorizontal: 5,
+                }}
+              >
+                {data.description}
+              </Text>
+              <View style={{ flexDirection: "row", paddingTop: 10 }}>
+                <Text style={{ fontSize: 20 }}>Members: </Text>
+                <Text style={{ fontSize: 20 }}>{data.members.join(", ")}</Text>
+              </View>
+
+              <Text style={{ fontSize: 20, paddingTop: 10 }}>
+                Number of people: {data.members.length}/{data.numberlimit}
+              </Text>
+
+              <Text style={{ fontSize: 20, paddingTop: 10 }}>
+                Owner: {data.owner}
+              </Text>
             </View>
-
-            <Text style={{ fontSize: 20, paddingTop: 10 }}>
-              Number of people: {data.members.length}/{data.numberlimit}
-            </Text>
-
-            <Text style={{ fontSize: 20, paddingTop: 10 }}>
-              Owner: {data.owner}
-            </Text>
           </Overlay>
         </View>
       )}
@@ -280,7 +287,7 @@ export default function OneGroup(props) {
             >
               <Text
                 style={{
-                  width: Dimensions.get("window").width * 0.9,
+                  maxWidth: Dimensions.get("window").width * 0.8,
                   fontSize: 23,
                 }}
               >
@@ -350,7 +357,7 @@ export default function OneGroup(props) {
       >
         <View
           style={{
-            width: Dimensions.get("window").width * 0.8,
+            maxWidth: Dimensions.get("window").width * 0.8,
           }}
         >
           <TextInput
