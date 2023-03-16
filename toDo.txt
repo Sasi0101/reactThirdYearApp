@@ -4,10 +4,11 @@ admin can kick someone  - done
 notifications - group addition done
 push notifications
 publish flashcards deck - done
-voting for flashcards deck
+voting for flashcards deck - done
 finding users maybe?
 maybe delete message if user wants?
 invite people to group?
 maybe implement a word check - a basic one done
-delete decks from flashcards
-edit flashcards cards
+delete decks from flashcards - done
+edit flashcards cards - dones
+make sure that @ can not be in the decksName and when uploading one - done

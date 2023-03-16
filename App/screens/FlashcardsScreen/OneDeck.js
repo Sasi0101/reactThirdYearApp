@@ -6,6 +6,7 @@ import {
   Dimensions,
   FlatList,
   TextInput,
+  Alert,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -110,10 +111,20 @@ export default function OneDeck(props) {
   }, [cards]);
 
   const handleOnPublish = async () => {
+    if (props.deckName.includes("@")) {
+      Alert.alert(
+        "Wrong deck name",
+        "You can not publish decks with @ character in it."
+      );
+      return;
+    }
+
     const dataToUpload = {
       email: auth.currentUser?.email,
       cards: cards,
       deckName: props.deckName + " - " + auth.currentUser?.email,
+      rating: 0,
+      usersVoted: [],
     };
 
     await firestore
@@ -240,11 +251,20 @@ export default function OneDeck(props) {
         setIsOverlayOn(true);
       }}
     >
-      <View style={styles.boxContainer}>
-        <Text style={{ fontWeight: "600", fontSize: 18 }}>
+      <View style={[styles.boxContainer, { flex: 10, flexDirection: "row" }]}>
+        <Text
+          style={{ fontWeight: "600", fontSize: 18, flex: 8 }}
+          numberOfLines={2}
+        >
           {props.deckName}
         </Text>
-        <View style={{ position: "absolute", right: 10, flexDirection: "row" }}>
+        <View
+          style={{
+            flex: 2,
+            flexDirection: "row",
+            justifyContent: "flex-end",
+          }}
+        >
           <Text style={{ color: "blue" }}>
             {newCards.slice(0, NEW_PER_DAY - newCardsStudiedToday).length}
           </Text>

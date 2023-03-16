@@ -10,11 +10,14 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Overlay } from "@rneui/themed";
 import OneDeck from "./OneDeck";
 import { DeviceEventEmitter } from "react-native";
+import { auth, firestore } from "../../firebase";
+import NetInfo from "@react-native-community/netinfo";
+import VotingFlashcardsScreen from "./VotingFlashcardsScreen";
 
 export default function FlashcardsScreen(props) {
   const [deckNames, setDeckNames] = useState([]);
@@ -26,6 +29,9 @@ export default function FlashcardsScreen(props) {
   const [cardsOverlay, setCardsOverlay] = useState(false);
   const [chooseDeckOverlay, setChooseDeckOverlay] = useState(false);
   const [updateFlatlist, setUpdateFlatlist] = useState(false);
+  const [shouldShowOnlineDeck, setShouldShowOnlineDecks] = useState(false);
+  const [onlineCards, setOnlineCards] = useState([]);
+  const [isThereWifi, setIsThereWifi] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -47,9 +53,38 @@ export default function FlashcardsScreen(props) {
     };
   }, []);
 
+  useLayoutEffect(() => {
+    const unsubsribe = NetInfo.addEventListener((state) => {
+      if (state.isConnected) {
+        setIsThereWifi(true);
+      } else {
+        setIsThereWifi(false);
+      }
+    });
+
+    DeviceEventEmitter.addListener("closeFlashcardsRank", onEvent);
+    DeviceEventEmitter.addListener("deckDownloaded", onDownload);
+
+    return () => {
+      unsubsribe();
+      DeviceEventEmitter.removeAllListeners("closeFlashcardsRank");
+      DeviceEventEmitter.removeAllListeners("deckDownload");
+    };
+  }, []);
+
   const handleDeckDeleted = async () => {
     const tempItem = await AsyncStorage.getItem("deckNames");
     setDeckNames(JSON.parse(tempItem));
+  };
+
+  const onEvent = () => {
+    setShouldShowOnlineDecks(false);
+  };
+
+  const onDownload = async () => {
+    const decks = JSON.parse(await AsyncStorage.getItem("deckNames"));
+    setDeckNames(decks);
+    console.log("updated in flashcardsScreen");
   };
 
   //updates the right value the rigth value
@@ -122,7 +157,15 @@ export default function FlashcardsScreen(props) {
         <TouchableOpacity
           style={styles.openPopupButton}
           onPress={() => {
-            console.log(deckNames);
+            if (isThereWifi) {
+              setShouldShowOnlineDecks(true);
+              console.log("should open other decks");
+            } else {
+              Alert.alert(
+                "Network failure",
+                "Please connect to the network to view this page."
+              );
+            }
           }}
         >
           <Text>Open Popup</Text>
@@ -195,9 +238,16 @@ export default function FlashcardsScreen(props) {
                   "There is already a deck with the same name please change this name"
                 );
               } else {
-                setDeckNames([...deckNames, inputValue]);
-                setInputValue("");
-                setDeckOverlay(!deckOverlay);
+                if (inputValue.includes("@")) {
+                  Alert.alert(
+                    "Wrong deck name",
+                    "You can not publish decks with @ character in it."
+                  );
+                } else {
+                  setDeckNames([...deckNames, inputValue]);
+                  setInputValue("");
+                  setDeckOverlay(!deckOverlay);
+                }
               }
             }}
           >
@@ -327,6 +377,15 @@ export default function FlashcardsScreen(props) {
           </View>
         </Overlay>
       </View>
+
+      <Overlay
+        isVisible={shouldShowOnlineDeck}
+        onBackdropPress={() => {
+          setShouldShowOnlineDecks(false);
+        }}
+      >
+        <VotingFlashcardsScreen />
+      </Overlay>
     </View>
   );
 }
