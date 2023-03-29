@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ImageBackground,
 } from "react-native";
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { auth, firestore } from "../../firebase";
@@ -29,7 +30,7 @@ const RegisterScreen = () => {
       }
     });
 
-    return unsubsribe;
+    return unsubsribe();
   }, []);
 
   useEffect(() => {
@@ -90,54 +91,47 @@ const RegisterScreen = () => {
   };
 
   return (
-    <View style={styles.container} behavior="padding">
-      <View style={styles.inputContainer}>
+    <View style={styles.container}>
+      <View style={styles.card}>
         <TextInput
+          style={styles.input}
           placeholder="Email"
+          maxLength={50}
           value={email}
           onChangeText={(text) => setEmail(text)}
-          style={[styles.input]}
-          maxLength={50}
         />
-
         <TextInput
+          style={styles.input}
           placeholder="Password"
+          secureTextEntry={true}
           value={password}
           onChangeText={(text) => setPassword(text)}
-          style={styles.input}
-          secureTextEntry={isSecureTextEntry}
           maxLength={32}
         />
-
         <TextInput
-          placeholder="Re-enter password"
+          style={styles.input}
+          placeholder="Confirm password"
           value={password2}
           onChangeText={(text) => setPassword2(text)}
-          style={styles.input}
-          secureTextEntry={isSecureTextEntry}
           maxLength={32}
         />
-
         <TextInput
+          style={styles.input}
           placeholder="Username"
           value={username}
           onChangeText={(text) => setUsername(text)}
-          style={styles.input}
           maxLength={24}
         />
-      </View>
 
-      <View style={styles.buttonContainer}>
-        {/** Register button */}
-        <TouchableOpacity onPress={handleSignUp} style={styles.button}>
-          <Text style={styles.buttonText}>Register</Text>
+        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+          <Text style={styles.buttonText}>Create Account</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={styles.createAccountButton}
           onPress={handleLogin}
-          style={[styles.button, styles.buttonOutline]}
         >
-          <Text style={styles.buttonOutlineText}> Login </Text>
+          <Text style={styles.createAccountButtonText}>Login</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -149,46 +143,76 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: "#20B2AA",
     alignItems: "center",
+    justifyContent: "center",
   },
-  inputContainer: {
-    width: "80%",
+  header: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 50,
+    paddingBottom: 20,
+    width: "100%",
+    height: 200,
+  },
+  heading: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 10,
+  },
+  forgotPasswordButton: {
+    width: "100%",
+    textAlign: "flex-end",
+  },
+  forgotPasswordButtonText: {
+    color: "#20B2AA",
+    fontSize: 12,
+    fontWeight: "bold",
+    textAlign: "right",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    padding: 20,
+    marginTop: 40,
+    width: "90%",
+    alignItems: "center",
   },
   input: {
-    backgroundColor: "white",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 5,
-  },
-  buttonContainer: {
-    width: "60%",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 40,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginVertical: 10,
+    width: "100%",
   },
   button: {
-    backgroundColor: "#0782F9",
+    backgroundColor: "#20B2AA",
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 10,
     width: "100%",
-    padding: 15,
-    borderRadius: 10,
     alignItems: "center",
   },
-  buttonOutline: {
-    backgroundColor: "white",
-    marginTop: 5,
-    borderColor: "#0782F9",
-    borderWidth: 2,
-  },
-  buttonOutlineText: {
-    color: "#0782F9",
-    fontWeight: "700",
-    fontSize: 16,
-  },
   buttonText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  createAccountButton: {
+    marginTop: 20,
+  },
+  createAccountButtonText: {
+    color: "#20B2AA",
+    fontSize: 12,
+    fontWeight: "bold",
   },
 });

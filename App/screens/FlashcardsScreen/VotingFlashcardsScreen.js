@@ -6,6 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   DeviceEventEmitter,
+  SafeAreaView,
 } from "react-native";
 import React, { useState, useLayoutEffect } from "react";
 import { auth, firestore } from "../../firebase";
@@ -36,7 +37,7 @@ export default function VotingFlashcardsScreen() {
   }, []);
 
   return (
-    <View
+    <SafeAreaView
       style={{
         height: Dimensions.get("window").height,
         width: Dimensions.get("window").width,
@@ -60,7 +61,7 @@ export default function VotingFlashcardsScreen() {
           <Text> Close page</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

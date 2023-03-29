@@ -1,87 +1,91 @@
-    /*
-    if (currentCard.cardState == "review") {
-      //here we should not change the ease factor and make it remain in review
-      if (index !== -1) {
-        setReviewCardsNumber(reviewCardsNumber - 1);
+    <>
+      <View style={styles.container} behavior="padding">
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            style={styles.input}
+            maxLength={50}
+          />
 
-        if (combinedCards.length <= 1) {
-          setCombinedCards([]);
-        } else {
-          const tempArr = combinedCards.splice(index, 1);
-          setCombinedCards(tempArr);
-        }
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            style={styles.input}
+            secureTextEntry
+            maxLength={32}
+          />
+        </View>
 
-        //changing it in the all cards deck
-        allCards[secondIndex].easeFactor =
-          allCards[secondIndex].easeFactor + 15;
-        allCards[secondIndex].interval =
-          ((allCards[secondIndex].interval * allCards[secondIndex].easeFactor) /
-            100) *
-          1.3;
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={handleLogin} style={styles.button}>
+            <Text style={styles.buttonText}> Login </Text>
+          </TouchableOpacity>
 
-        allCards[secondIndex].nextTime = new Date(
-          new Date().getTime() + combinedCards[index].interval * 60 * 1000
-        );
-      }
-    } else if (currentCard.cardState == "new") {
-      handleNewCardSeen();
-      setNewCardsNumber(newCardsNumber - 1);
-      if (combinedCards.length <= 1) {
-        setCombinedCards([]);
-      } else {
-        const tempArr = combinedCards.splice(index, 1);
-        setCombinedCards(tempArr);
-      }
+          <TouchableOpacity
+            onPress={changeToRegister}
+            style={[styles.button, styles.buttonOutline]}
+          >
+            <Text style={styles.buttonOutlineText}>Register</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </>
 
-      allCards[secondIndex].easeFactor = allCards[secondIndex].easeFactor + 15;
-      allCards[secondIndex].cardState = "review";
-      allCards[secondIndex].interval = 1440;
 
-      allCards[secondIndex].nextTime = new Date(
-        new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
-      );
-    } else if (currentCard.cardState == "learning") {
-      if (combinedCards.length <= 1) {
-        setCombinedCards([]);
-      } else {
-        const tempArr = combinedCards.splice(index, 1);
-        setCombinedCards(tempArr);
-      }
 
-      setLearningCardsNumber(learningCardsNumber - 1);
-      allCards[secondIndex].easeFactor = allCards[secondIndex].easeFactor + 15;
-      allCards[secondIndex].cardState = "review";
-      if (allCards[secondIndex].interval > 1440) {
-        allCards[secondIndex].interval =
-          ((allCards[secondIndex].interval * allCards[secondIndex].easeFactor) /
-            100) *
-          1.3;
-      } else {
-        allCards[secondIndex].interval = 1440;
-      }
-      allCards[secondIndex].nextTime = new Date(
-        new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
-      );
-    } else if (currentCard.cardState == "learning2") {
-      if (combinedCards.length <= 1) {
-        setCombinedCards([]);
-      } else {
-        const tempArr = combinedCards.splice(index, 1);
-        setCombinedCards(tempArr);
-      }
 
-      setLearningCardsNumber(learningCardsNumber - 1);
-      allCards[secondIndex].easeFactor = allCards[secondIndex].easeFactor + 15;
-      allCards[secondIndex].cardState = "review";
-      if (allCards[secondIndex].interval > 1440) {
-        allCards[secondIndex].interval =
-          (allCards[secondIndex].interval / 100) *
-          allCards[secondIndex].easeFactor *
-          1.3;
-      } else {
-        allCards[secondIndex].interval = 1440;
-      }
-      allCards[secondIndex].nextTime = new Date(
-        new Date().getTime() + allCards[secondIndex].interval * 60 * 1000
-      );
-    }*/
+
+Register: 
+    <View style={styles.container} behavior="padding">
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          style={[styles.input]}
+          maxLength={50}
+        />
+
+        <TextInput
+          placeholder="Password"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          style={styles.input}
+          secureTextEntry={isSecureTextEntry}
+          maxLength={32}
+        />
+
+        <TextInput
+          placeholder="Re-enter password"
+          value={password2}
+          onChangeText={(text) => setPassword2(text)}
+          style={styles.input}
+          secureTextEntry={isSecureTextEntry}
+          maxLength={32}
+        />
+
+        <TextInput
+          placeholder="Username"
+          value={username}
+          onChangeText={(text) => setUsername(text)}
+          style={styles.input}
+          maxLength={24}
+        />
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={handleSignUp} style={styles.button}>
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleLogin}
+          style={[styles.button, styles.buttonOutline]}
+        >
+          <Text style={styles.buttonOutlineText}> Login </Text>
+        </TouchableOpacity>
+      </View>
+    </View>

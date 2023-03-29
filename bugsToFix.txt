@@ -2,10 +2,12 @@ check whether there is internet or not - probably fixed
 limit description and username - should be done
 make sure text boxes dont get too big - should be done
 when you are added toa  group or removed refresh the page - should be done
+sort for groups - done
+make sure that no two deck names exist in the flashcards screen - done
+make the avatars picture lower than 5mb - done
+
 
 Non-serializable values were found in the navigation state. Check:DrawerNavigator > StudyPageScreen > params.newCards[0].nextTime (Wed Mar 08 2023 22:56:47 GMT+0000 (GMT))
 
-sort for groups
-make sure that no two deck names exist in the flashcards screen - done
-make the avatars picture lower than 5mb - done
+
 add a deviceEmitter to profile screen so it updates the picture in the drawer navigator

@@ -292,6 +292,7 @@ export default function OneDeck(props) {
         <TouchableOpacity
           style={{ borderWidth: 1 }}
           onPress={() => {
+            setIsOverlayOn(false);
             setIsCardsOverlayOn(true);
           }}
         >
@@ -312,6 +313,7 @@ export default function OneDeck(props) {
         isVisible={isCardsOverlayOn}
         onBackdropPress={() => {
           setIsCardsOverlayOn(false);
+          setIsOverlayOn(true);
         }}
       >
         <View
@@ -326,7 +328,10 @@ export default function OneDeck(props) {
             }}
           >
             <TouchableOpacity
-              onPress={() => setIsCardsOverlayOn(false)}
+              onPress={() => {
+                setIsCardsOverlayOn(false);
+                setIsOverlayOn(true);
+              }}
               style={{ borderWidth: 1 }}
             >
               <Text style={{ paddingVertical: 2, paddingHorizontal: 2 }}>

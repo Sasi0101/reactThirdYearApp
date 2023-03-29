@@ -9,11 +9,13 @@ import {
   Alert,
   FlatList,
   Dimensions,
+  SafeAreaView,
 } from "react-native";
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Overlay } from "@rneui/themed";
 import OneDeck from "./OneDeck";
+
 import { DeviceEventEmitter } from "react-native";
 import { auth, firestore } from "../../firebase";
 import NetInfo from "@react-native-community/netinfo";
@@ -30,7 +32,6 @@ export default function FlashcardsScreen(props) {
   const [chooseDeckOverlay, setChooseDeckOverlay] = useState(false);
   const [updateFlatlist, setUpdateFlatlist] = useState(false);
   const [shouldShowOnlineDeck, setShouldShowOnlineDecks] = useState(false);
-  const [onlineCards, setOnlineCards] = useState([]);
   const [isThereWifi, setIsThereWifi] = useState(true);
 
   useEffect(() => {
@@ -109,7 +110,8 @@ export default function FlashcardsScreen(props) {
       }}
       onPress={() => {
         setSelectedOption(name);
-        setChooseDeckOverlay(!chooseDeckOverlay);
+        setChooseDeckOverlay(false);
+        setCardsOverlay(true);
       }}
     >
       <Text>{name}</Text>
@@ -144,53 +146,57 @@ export default function FlashcardsScreen(props) {
   };
 
   return (
-    <View style={{ flex: 1, flexDirection: "column" }}>
-      <View style={{ height: "90%" }}>
-        <FlatList
-          key={updateFlatlist ? "forceUpdate" : "noUpdate"}
-          data={deckNames}
-          renderItem={({ item }) => <OneDeck deckName={item} />}
-        />
-      </View>
+    <SafeAreaView style={{ flex: 1, flexDirection: "column" }}>
+      {!shouldShowOnlineDeck && (
+        <>
+          <View style={{ height: "90%" }}>
+            <FlatList
+              key={updateFlatlist ? "forceUpdate" : "noUpdate"}
+              data={deckNames}
+              renderItem={({ item }) => <OneDeck deckName={item} />}
+            />
+          </View>
 
-      <View style={{ height: "10%" }}>
-        <TouchableOpacity
-          style={styles.openPopupButton}
-          onPress={() => {
-            if (isThereWifi) {
-              setShouldShowOnlineDecks(true);
-              console.log("should open other decks");
-            } else {
-              Alert.alert(
-                "Network failure",
-                "Please connect to the network to view this page."
-              );
-            }
-          }}
-        >
-          <Text>Open Popup</Text>
-        </TouchableOpacity>
+          <View style={{ height: "10%" }}>
+            <TouchableOpacity
+              style={[styles.openPopupButton, { paddingBottom: 50 }]}
+              onPress={() => {
+                if (isThereWifi) {
+                  setShouldShowOnlineDecks(true);
+                  console.log("should open other decks");
+                } else {
+                  Alert.alert(
+                    "Network failure",
+                    "Please connect to the network to view this page."
+                  );
+                }
+              }}
+            >
+              <Text>Open Popup</Text>
+            </TouchableOpacity>
 
-        <View style={styles.optionsContainer}>
-          <TouchableOpacity
-            style={styles.optionButton}
-            onPress={() => {
-              setCardsOverlay(true);
-            }}
-          >
-            <Text>Add a card</Text>
-          </TouchableOpacity>
+            <View style={styles.optionsContainer}>
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => {
+                  setCardsOverlay(true);
+                }}
+              >
+                <Text>Add a card</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.optionButton}
-            onPress={() => {
-              setDeckOverlay(!deckOverlay);
-            }}
-          >
-            <Text>Add decks</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => {
+                  setDeckOverlay(!deckOverlay);
+                }}
+              >
+                <Text>Add decks</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
 
       <Overlay
         isVisible={deckOverlay}
@@ -259,7 +265,7 @@ export default function FlashcardsScreen(props) {
       <Overlay
         isVisible={cardsOverlay}
         onBackdropPress={() => {
-          setCardsOverlay(!cardsOverlay);
+          setCardsOverlay(false);
         }}
       >
         <View
@@ -273,7 +279,8 @@ export default function FlashcardsScreen(props) {
           <TouchableOpacity
             style={{ width: "70%" }}
             onPress={() => {
-              setChooseDeckOverlay(!chooseDeckOverlay);
+              setCardsOverlay(false);
+              setChooseDeckOverlay(true);
             }}
           >
             <Text> {selectedOption}</Text>
@@ -351,42 +358,34 @@ export default function FlashcardsScreen(props) {
         </View>
       </Overlay>
 
-      <View>
-        <Overlay
-          isVisible={chooseDeckOverlay}
-          onBackdropPress={() => {
-            setChooseDeckOverlay(!chooseDeckOverlay);
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              width: "90%",
-              height: Dimensions.get("screen").height / 2,
-            }}
-          >
-            <FlatList
-              data={deckNames}
-              renderItem={({ item }) => <DeckItem name={item} />}
-              style={{ flex: 1 }}
-              keyExtractor={(item) => item}
-              contentContainerStyle={{
-                flexGrow: 1,
-              }}
-            />
-          </View>
-        </Overlay>
-      </View>
-
       <Overlay
-        isVisible={shouldShowOnlineDeck}
+        isVisible={chooseDeckOverlay}
         onBackdropPress={() => {
-          setShouldShowOnlineDecks(false);
+          setChooseDeckOverlay(false);
+          setCardsOverlay(true);
         }}
       >
-        <VotingFlashcardsScreen />
+        <View
+          style={{
+            flexDirection: "row",
+            width: "90%",
+            height: Dimensions.get("screen").height / 2,
+          }}
+        >
+          <FlatList
+            data={deckNames}
+            renderItem={({ item }) => <DeckItem name={item} />}
+            style={{ flex: 1 }}
+            keyExtractor={(item) => item}
+            contentContainerStyle={{
+              flexGrow: 1,
+            }}
+          />
+        </View>
       </Overlay>
-    </View>
+
+      {shouldShowOnlineDeck && <VotingFlashcardsScreen />}
+    </SafeAreaView>
   );
 }
 

@@ -1,43 +1,34 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useEffect } from "react";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function OneTask(props) {
   useEffect(() => {}, []);
+  //<Icon name="home-outline" color={color} size={size} />
+  //closecircle:1 or checkcircle:2 or questioncircle:0
+
+  const getDescriptionStyle = () => {
+    if (props.data.completed == 1) {
+      return {
+        textDecorationLine: "line-through",
+        fontStyle: "italic",
+        color: "#808080",
+      };
+    }
+  };
 
   return (
-    <View style={[{ flexDirection: "row" }, styles.item]}>
-      <TouchableOpacity
-        style={{ flex: 8 }}
-        onPress={() => {
-          props.onShow(props.data);
-          //console.log("should show info");
-        }}
-      >
-        <View style={{ flexDirection: "column" }}>
-          <Text style={[styles.title]} numberOfLines={1}>
-            {props.data.title}
-          </Text>
-          <Text style={[styles.subtitle]} numberOfLines={1}>
-            {props.data.description}
-          </Text>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        onPress={() => {
-          props.onDelete(props.data);
-        }}
-      >
-        <View style={{}}>
-          <Text>Delete</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={[styles.card, { borderColor: "red" }]}
+      onPress={() => clickEventListener(item)}
+    >
+      <Icon name="close-circle" color={"red"} size={25} />
+      <View style={styles.cardContent}>
+        <Text style={[styles.description, getDescriptionStyle()]}>
+          {props.data.task}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -51,14 +42,53 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 5,
   },
-  title: {
-    color: "#000000",
-    fontSize: 30,
-    margin: 5,
+  container: {
+    flex: 1,
+    marginTop: 20,
+    backgroundColor: "#eeeeee",
   },
-  subtitle: {
-    color: "#999999",
-    fontSize: 20,
-    margin: 5,
+  tasks: {
+    flex: 1,
+  },
+  cardContent: {
+    marginLeft: 20,
+    marginTop: 10,
+  },
+  image: {
+    width: 25,
+    height: 25,
+  },
+
+  card: {
+    shadowColor: "#00000021",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.37,
+    shadowRadius: 7.49,
+    elevation: 12,
+
+    marginVertical: 10,
+    marginHorizontal: 20,
+    backgroundColor: "white",
+    flexBasis: "46%",
+    padding: 10,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    borderLeftWidth: 6,
+  },
+
+  description: {
+    fontSize: 18,
+    flex: 1,
+    color: "#008080",
+    fontWeight: "bold",
+  },
+  date: {
+    fontSize: 14,
+    flex: 1,
+    color: "#696969",
+    marginTop: 5,
   },
 });

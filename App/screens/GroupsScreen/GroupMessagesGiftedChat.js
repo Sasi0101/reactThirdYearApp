@@ -12,6 +12,9 @@ import { GiftedChat } from "react-native-gifted-chat";
 import { Overlay } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import BadWordsFilter from "bad-words";
+import "firebase/storage";
+import firebase from "firebase/app";
+import { DeviceEventEmitter } from "react-native";
 
 export default function GroupMessagesGiftedChat(props) {
   const filter = new BadWordsFilter();
@@ -20,13 +23,17 @@ export default function GroupMessagesGiftedChat(props) {
   const [isOwnerOverlayOn, setIsOwnerOverLayOn] = useState(false);
   const [isNotOwnerOverlayOn, setIsNotOwnerOverlayOn] = useState(false);
   const [reportData, setreportData] = useState();
+  const [downloadURL, setDownloadURl] = useState();
+  const [userID, setUserID] = useState();
+  const [isTyping, setIsTyping] = useState(false);
 
   useLayoutEffect(() => {
-    props.navigation.setOptions({ title: props.route.params.data.name });
-  }, [props.route.params.data.name]);
+    getImageUrl(auth.currentUser?.email);
+  }, []);
 
   useEffect(() => {
-    let unsubscribe = firestore
+    props.navigation.setOptions({ title: props.route.params.data.name });
+    const unsubscribe = firestore
       .collection("groups")
       .doc(props.route.params.id)
       .collection("messages")
@@ -42,7 +49,7 @@ export default function GroupMessagesGiftedChat(props) {
         );
       });
 
-    let unsubscribe2 = firestore
+    const unsubscribe2 = firestore
       .collection("groups")
       .doc(props.route.params.id)
       .onSnapshot((doc) => {
@@ -59,7 +66,32 @@ export default function GroupMessagesGiftedChat(props) {
       unsubscribe();
       unsubscribe2();
     };
-  }, []);
+  }, [props]);
+
+  useEffect(() => {
+    if (
+      props.route.params.data.bannedUsers &&
+      props.route.params.data.bannedUsers.includes(auth.currentUser?.email)
+    ) {
+      console.log("Should leave the screen");
+    }
+  }, [props.route.params.data]);
+
+  const getImageUrl = async (filename) => {
+    const storageRef = firebase.storage().ref();
+    const imageRef = storageRef.child("images/" + filename + ".png");
+
+    imageRef
+      .getDownloadURL()
+      .then((url) => {
+        setDownloadURl(url);
+      })
+      .catch(() => {
+        setDownloadURl(
+          "https://firebasestorage.googleapis.com/v0/b/third-year-project-4e8dd.appspot.com/o/images%2Fanonymous-user.png?alt=media&token=cde172df-d191-47b3-af3d-92b7c05f8b8b"
+        );
+      });
+  };
 
   function handleLongPress(tempMessage) {
     setreportData(tempMessage);
@@ -150,39 +182,65 @@ export default function GroupMessagesGiftedChat(props) {
     setIsOwnerOverLayOn(false);
   }
 
-  let onSend = useCallback((messages = []) => {
-    //adding the element to the database
-    //console.log(filter.clean(messages[0]));
+  let onSend = useCallback(
+    (messages = []) => {
+      //adding the element to the database
 
-    const dataToUpload = {
-      _id: messages[0]._id,
-      createdAt: messages[0].createdAt,
-      text: filter.clean(messages[0].text),
-      user: messages[0].user,
-    };
+      const dataToUpload = {
+        _id: messages[0]._id,
+        createdAt: messages[0].createdAt,
+        text: filter.clean(messages[0].text),
+        user: messages[0].user,
+      };
 
-    firestore
-      .collection("groups")
-      .doc(props.route.params.id)
-      .collection("messages")
-      .add(dataToUpload)
-      .catch((error) => {
-        console.error(
-          "Error adding an element when the user hit send: ",
-          error
+      firestore
+        .collection("groups")
+        .doc(props.route.params.id)
+        .collection("messages")
+        .add(dataToUpload)
+        .catch((error) => {
+          console.error(
+            "Error adding an element when the user hit send: ",
+            error
+          );
+        });
+
+      firestore
+        .collection("groups")
+        .doc(props.route.params.id)
+        .update(
+          {
+            lastMessageSent: messages[0],
+          },
+          { merge: true }
+        )
+        .catch((error) =>
+          console.error(
+            "Error while updating lastMessageSent in groupMessagesGiftedChat: ",
+            error
+          )
         );
-      });
-  }, []);
+    },
+    [props]
+  );
 
   return (
     <View style={{ flex: 1 }}>
       <GiftedChat
         messages={messages}
-        onSend={(messages) => onSend(messages)}
+        onSend={(messages) => {
+          onSend(messages);
+        }}
         user={{
           _id: auth.currentUser?.email,
+          avatar: downloadURL,
+          name: auth.currentUser?.email,
         }}
         onLongPress={(context, message) => handleLongPress(message)}
+        //onPressAvatar={(test) => console.log(test)}
+        //onPress={(context, message) => showUserId(message)}
+        showAvatarForEveryMessage={true}
+        renderUsernameOnMessage={true}
       />
 
       <Overlay

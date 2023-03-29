@@ -4,6 +4,8 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
+  Alert,
+  DeviceEventEmitter,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -62,18 +64,19 @@ export default function OneUser(props) {
   }, [props.email]);
 
   return (
-    <TouchableOpacity
-      style={{}}
-      onPress={() => {
-        console.log("It was pressed");
-        navigation.navigate("PrivateMessageScreen", {
-          username: props.username,
-          email: props.email,
-        });
-      }}
-    >
-      <View style={[{ flexDirection: "row" }, styles.boxContainer]}>
-        <View style={{ paddingLeft: 5, flex: 1 }}>
+    <View>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("PrivateMessageScreen", {
+            username: props.username,
+            email: props.email,
+          });
+        }}
+        onLongPress={() => {
+          DeviceEventEmitter.emit("userProfile", { email: props.email });
+        }}
+      >
+        <View style={[styles.box, { backgroundColor: "transparent" }]}>
           {doesUserHaveAvatar && (
             <Avatar.Image
               source={{
@@ -89,49 +92,68 @@ export default function OneUser(props) {
               size={50}
             />
           )}
-        </View>
-        <View style={{ paddingLeft: 5, flex: 5 }}>
-          <Text style={styles.textContainer}>{props.username}</Text>
 
-          {lastMessage.text === "No previous message" && (
-            <Text style={styles.textContainer}>No previous conversation</Text>
-          )}
+          <View style={styles.boxContent}>
+            <Text style={styles.title}>{props.username}</Text>
 
-          {lastMessage.text !== "No previous message" && (
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              style={
-                !lastMessage || lastMessage.user._id !== auth.currentUser?.email
-                  ? styles.blackTextContainer
-                  : styles.textContainer
-              }
-            >
-              {lastMessage.text}
-            </Text>
-          )}
+            {lastMessage.text === "No previous message" && (
+              <Text style={styles.description}>No previous conversation</Text>
+            )}
+
+            {lastMessage.text !== "No previous message" && (
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={
+                  !lastMessage ||
+                  lastMessage.user._id !== auth.currentUser?.email
+                    ? styles.blackDescription
+                    : styles.description
+                }
+              >
+                {lastMessage.text}
+              </Text>
+            )}
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   );
 }
-
 const styles = StyleSheet.create({
-  boxContainer: {
-    borderWidth: 1,
-    borderColor: "black",
+  image: {
+    width: 100,
+    height: 100,
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    alignSelf: "center",
+    marginRight: 10,
+  },
+  box: {
     padding: 10,
-    margin: 10,
-
-    alignItems: "center",
+    marginTop: 5,
+    marginBottom: 5,
+    backgroundColor: "white",
+    flexDirection: "row",
   },
-  textContainer: {
-    fontSize: 16,
-    marginVertical: 5,
+  boxContent: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "flex-start",
+    marginLeft: 10,
   },
-  blackTextContainer: {
-    fontSize: 16,
-    marginVertical: 5,
-    fontWeight: "bold",
+  description: {
+    fontSize: 15,
+    color: "#646464",
+  },
+  blackDescription: {
+    fontSize: 15,
+    color: "black",
+  },
+  title: {
+    fontSize: 18,
+    color: "#151515",
   },
 });

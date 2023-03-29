@@ -23,7 +23,6 @@ export default function StudyPageScreen({ route }) {
       ...route.params.learningCards,
       ...route.params.reviewCards,
     ];
-    console.log(tempCards);
     const sortedArray = tempCards.sort(
       (a, b) => new Date(a.nextTime) - new Date(b.nextTime)
     );

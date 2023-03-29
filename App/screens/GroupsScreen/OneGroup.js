@@ -21,33 +21,35 @@ export default function OneGroup(props) {
   const [data, setData] = useState(null);
   const [showPasswordOverLay, setShowPasswordOverlay] = useState(false);
   const [password, setPassword] = useState("");
-  const [lastMessage, setLastMessage] = useState("");
+  const [lastMessage, setLastMessage] = useState({});
+  const [showGroupMessagesGiftedChat, setShowGroupMessagesGfitedChat] =
+    useState(false);
 
   //useLayoutEffect if it needs to
 
   useLayoutEffect(() => {
-    const unsubscribe = firestore
-      .collection("groups")
-      .doc(props.data.id)
-      .collection("messages")
-      .orderBy("createdAt", "desc")
-      .limit(1)
-      .onSnapshot((snapshot) => {
-        if (snapshot.empty) {
-          const tempMessage = {
-            user: { _id: auth.currentUser?.email },
-            text: "No previous message",
-          };
-          setLastMessage(tempMessage);
-        } else {
-          setLastMessage(snapshot.docs[0].data());
-        }
-      });
+    setLastMessage(props.data.data.lastMessageSent);
+    if (props.data.data) {
+      setData(props.data.data);
 
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+      //checking if user is joined or not
+      props.data.data.members.includes(auth.currentUser?.email)
+        ? setIsJoined(true)
+        : setIsJoined(false);
+
+      //checking if user is banned or not
+      if (
+        props.data.data.bannedUsers &&
+        props.data.data.bannedUsers.includes(auth.currentUser?.email)
+      ) {
+        setIsBanned(true);
+      } else {
+        setIsBanned(false);
+      }
+
+      //checking if there is space in the group
+    }
+  }, [props.data]);
 
   useEffect(() => {
     if (data) {
@@ -60,24 +62,6 @@ export default function OneGroup(props) {
         : setIsJoined(false);
     }
   }, [data]);
-
-  useEffect(() => {
-    const tempData = props.data.data;
-    if (tempData) {
-      setData(tempData);
-      tempData.members.includes(auth.currentUser?.email)
-        ? setIsJoined(true)
-        : setIsJoined(false);
-      if (
-        tempData.bannedUsers &&
-        tempData.bannedUsers.includes(auth.currentUser?.email)
-      ) {
-        setIsBanned(true);
-      } else {
-        setIsBanned(false);
-      }
-    }
-  }, [props.data]);
 
   useEffect(() => {}, [isJoined, isThereSpaceLeft]);
 
@@ -223,12 +207,12 @@ export default function OneGroup(props) {
           >
             <View
               style={{
-                maxWidth: Dimensions.get("window").width * 0.8,
+                width: Dimensions.get("window").width * 0.8,
               }}
             >
               <Text
                 style={{
-                  width: Dimensions.get("window").width * 0.9,
+                  width: Dimensions.get("window").width * 0.8,
                   fontSize: 23,
                 }}
               >
@@ -244,12 +228,30 @@ export default function OneGroup(props) {
               >
                 {data.description}
               </Text>
-              <View style={{ flexDirection: "row", paddingTop: 10 }}>
+              <View
+                style={{
+                  flexDirection: "column",
+                  paddingTop: 10,
+                  width: Dimensions.get("window").width * 0.8,
+                }}
+              >
                 <Text style={{ fontSize: 20 }}>Members: </Text>
-                <Text style={{ fontSize: 20 }}>{data.members.join(", ")}</Text>
+                <Text
+                  style={{
+                    fontSize: 20,
+                  }}
+                >
+                  {data.members.join(", ")}
+                </Text>
               </View>
 
-              <Text style={{ fontSize: 20, paddingTop: 10 }}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  paddingTop: 10,
+                  maxWidth: Dimensions.get("window").width * 0.8,
+                }}
+              >
                 Number of people: {data.members.length}/{data.numberlimit}
               </Text>
 
@@ -327,6 +329,7 @@ export default function OneGroup(props) {
               data: data,
               id: props.data.id,
             });
+            //setShowGroupMessagesGfitedChat(true);
           }}
           onLongPress={() => {
             Alert.alert(
@@ -357,7 +360,7 @@ export default function OneGroup(props) {
       >
         <View
           style={{
-            maxWidth: Dimensions.get("window").width * 0.8,
+            width: Dimensions.get("window").width * 0.8,
           }}
         >
           <TextInput
@@ -379,7 +382,7 @@ export default function OneGroup(props) {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{ paddingLeft: 70 }}
+              style={{ paddingLeft: 50 }}
               onPress={() => {
                 setShowPasswordOverlay(!showPasswordOverLay);
                 setPassword("");

@@ -8,24 +8,27 @@ import {
   Dimensions,
   FlatList,
   ScrollView,
+  Alert,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Overlay } from "@rneui/themed";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import OneTask from "./OneTask";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function TodoScreen() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [isOverlayOn, setIsOverlayOn] = useState(false);
   const [task, setTasks] = useState(null);
   const [showingDetailedSpecs, setShowingDetailedSpecs] = useState(false);
-  const [specTitle, setSpecTitle] = useState("");
-  const [specDescription, setSpecDescription] = useState("");
   const [isEditOverlay, setIsEditOverlay] = useState(false);
   const [currentId, setCurrentId] = useState(null);
+  const [updateFlatlist, setUpdateFlatlist] = useState(false);
 
-  useEffect(() => {
+  const [taskWriting, setTaskWriting] = useState("");
+  const [specTaskWriting, setSpecTaskWriting] = useState("");
+
+  useLayoutEffect(() => {
+    setTaskWriting("");
     const loadData = async () => {
       try {
         const tempData = await AsyncStorage.getItem("tasks");
@@ -45,48 +48,80 @@ export default function TodoScreen() {
   useEffect(() => {}, [task]);
 
   const setTask = async () => {
-    let toUpload = task;
-
     const dataToUpload = {
-      title: title,
-      description: description,
+      task: taskWriting,
+      completed: 0,
       id: Math.random(),
     };
-    toUpload.push(dataToUpload);
-
+    let toUpload = [dataToUpload, ...task];
     await AsyncStorage.setItem("tasks", JSON.stringify(toUpload));
-
     setTasks(toUpload);
-    setTitle("");
-    setDescription("");
+    setTaskWriting("");
   };
 
   const handleOnDelete = async (data) => {
     const updatedTasks = task.filter((item) => item.id !== data.id);
-
     await AsyncStorage.setItem("tasks", JSON.stringify(updatedTasks));
     setTasks(updatedTasks);
   };
 
   const handleOnShow = (data) => {
-    setSpecTitle(data.title);
-    setSpecDescription(data.description);
+    setSpecTaskWriting(data.task);
     setCurrentId(data.id);
     setShowingDetailedSpecs(true);
   };
 
   const handleOnEdit = () => {
-    setDescription(specDescription);
-    setTitle(specTitle);
+    setTaskWriting(specTaskWriting);
     setIsEditOverlay(true);
   };
 
   const handleEditChange = async () => {
     const itemToUpdate = task.find((item) => item.id === currentId);
-    itemToUpdate.description = description;
-    itemToUpdate.title = title;
+    itemToUpdate.task = specTaskWriting;
     await AsyncStorage.setItem("tasks", JSON.stringify(task));
     setIsEditOverlay(false);
+  };
+
+  const getDescriptionStyle = (item) => {
+    if (item.completed == 1) {
+      return {
+        textDecorationLine: "line-through",
+        fontStyle: "italic",
+        color: "#808080",
+      };
+    }
+  };
+
+  const getColour = (item) => {
+    if (item.completed == 0) {
+      return "grey";
+    }
+    if (item.completed == 1) {
+      return "green";
+    }
+    if (item.completed == 2) {
+      return "red";
+    }
+  };
+
+  const getIconName = (item) => {
+    if (item.completed == 0) {
+      return "help-circle-outline";
+    }
+    if (item.completed == 1) {
+      return "check-circle";
+    }
+    if (item.completed == 2) {
+      return "close-circle";
+    }
+  };
+
+  const handleNextPhase = async (item) => {
+    const itemToUpdate = task.find((item2) => item2.id === item.id);
+    itemToUpdate.completed = (itemToUpdate.completed + 1) % 3;
+    await AsyncStorage.setItem("tasks", JSON.stringify(task));
+    setUpdateFlatlist(!updateFlatlist);
   };
 
   return (
@@ -94,17 +129,42 @@ export default function TodoScreen() {
       <View style={{ flex: 1 }}>
         <FlatList
           data={task}
+          key={updateFlatlist ? "forceUpdate" : "noUpdate"}
+          keyExtractor={(item) => {
+            return item.id;
+          }}
           renderItem={({ item }) => (
-            <OneTask
-              data={item}
-              onDelete={(data) => handleOnDelete(data)}
-              onShow={(data) => handleOnShow(data)}
-            />
+            <TouchableOpacity
+              style={[styles.card, { borderColor: getColour(item) }]}
+              onPress={() => handleNextPhase(item)}
+            >
+              <View style={{ flexDirection: "column" }}>
+                <View style={{ flexDirection: "row" }}>
+                  <Icon
+                    name={getIconName(item)}
+                    color={getColour(item)}
+                    size={30}
+                  />
+                  <TouchableOpacity onPress={() => handleOnShow(item)}>
+                    <Icon name="information" color="" size={30} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleOnDelete(item)}>
+                    <Icon name="delete-forever" color="black" size={30} />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.cardContent}>
+                  <Text style={[styles.description, getDescriptionStyle(item)]}>
+                    {item.task}
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
           )}
         />
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
+            setTaskWriting("");
             setIsOverlayOn(true);
           }}
         >
@@ -116,29 +176,31 @@ export default function TodoScreen() {
         isVisible={showingDetailedSpecs}
         onBackdropPress={() => {
           setShowingDetailedSpecs(false);
-          setSpecTitle("");
-          setSpecDescription("");
+          setSpecTaskWriting("");
         }}
       >
-        <View style={styles.body}>
-          <Text>Title</Text>
-          <Text style={[styles.input, { fontSize: 25, fontWeight: "bold" }]}>
-            {specTitle}
-          </Text>
-          <Text>Description:</Text>
-          <ScrollView
+        <View
+          style={{
+            width: Dimensions.get("window").width * 0.8,
+            paddingBottom: 15,
+          }}
+        >
+          <Text
             style={[
-              styles.input,
               {
-                maxHeight: Dimensions.get("window").height * 0.2,
-                flex: 2,
-                textAlignVertical: "top",
-                textAlign: "left",
+                borderWidth: 1,
+                borderColor: "#555555",
+                borderRadius: 10,
+                backgroundColor: "#ffffff",
+                fontSize: 20,
+                margin: 5,
+                paddingVertical: 7,
+                paddingHorizontal: 7,
               },
             ]}
           >
-            <Text>{specDescription}</Text>
-          </ScrollView>
+            {specTaskWriting}
+          </Text>
         </View>
         <View>
           <Button
@@ -158,31 +220,35 @@ export default function TodoScreen() {
           setIsOverlayOn(false);
         }}
       >
-        <View style={styles.body}>
+        <View style={[styles.body]}>
           <TextInput
-            value={title}
-            style={[styles.input, { fontSize: 25, fontWeight: "bold" }]}
-            placeholder="Title"
-            onChangeText={(value) => setTitle(value)}
-            maxLength={64}
-          />
-          <TextInput
-            value={description}
-            style={[
-              styles.input,
-              { flex: 2, textAlignVertical: "top", textAlign: "left" },
-            ]}
-            placeholder="Description"
-            multiline
-            onChangeText={(value) => setDescription(value)}
-            maxLength={512}
+            value={taskWriting}
+            style={{
+              fontSize: 25,
+              fontWeight: "bold",
+              textAlign: "left",
+              width: "100%",
+              borderWidth: 1,
+              paddingVertical: 5,
+              paddingHorizontal: 5,
+              marginBottom: 10,
+            }}
+            placeholder="Task"
+            onChangeText={(value) => setTaskWriting(value)}
+            maxLength={256}
           />
           <Button
             title="Save Task"
-            style={{ width: "100%" }}
             onPress={() => {
-              setIsOverlayOn(false);
-              setTask();
+              if (taskWriting.length < 1)
+                Alert.alert(
+                  "Body missing",
+                  "You must write something as a task!"
+                );
+              else {
+                setIsOverlayOn(false);
+                setTask();
+              }
             }}
           />
         </View>
@@ -194,42 +260,54 @@ export default function TodoScreen() {
           setIsEditOverlay(false);
         }}
       >
-        <View style={styles.body}>
+        <View style={{ width: Dimensions.get("window").width * 0.8 }}>
           <TextInput
-            value={title}
-            style={[styles.input, { fontSize: 25, fontWeight: "bold" }]}
-            placeholder="Title"
-            onChangeText={(value) => setTitle(value)}
-            maxLength={64}
-          />
-          <TextInput
-            value={description}
+            value={specTaskWriting}
             style={[
-              styles.input,
-              { flex: 2, textAlignVertical: "top", textAlign: "left" },
+              {
+                borderWidth: 1,
+                borderColor: "#555555",
+                borderRadius: 10,
+                backgroundColor: "#ffffff",
+                fontSize: 20,
+                margin: 5,
+                paddingVertical: 7,
+                paddingHorizontal: 7,
+              },
             ]}
-            placeholder="Description"
-            multiline
-            onChangeText={(value) => setDescription(value)}
-            maxLength={512}
+            multiline={true}
+            placeholder="Title"
+            onChangeText={(value) => setSpecTaskWriting(value)}
+            maxLength={256}
           />
 
-          <View style={{ flexDirection: "row" }}>
+          <View
+            style={{
+              paddingTop: 15,
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+            }}
+          >
             <Button
               title="Cancel"
-              style={{ width: "100%" }}
               onPress={() => {
                 setIsEditOverlay(false);
-                setDescription("");
-                setTitle("");
+                setTaskWriting("");
               }}
             />
 
             <Button
               title="Save Task"
-              style={{ width: "100%" }}
               onPress={() => {
-                handleEditChange();
+                if (specTaskWriting.length < 1)
+                  Alert.alert(
+                    "Body missing",
+                    "You must write something as a task!"
+                  );
+                else {
+                  handleEditChange();
+                }
               }}
             />
           </View>
@@ -241,12 +319,9 @@ export default function TodoScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    //flex: 1,
-    //justifyContent: "space-between",
     alignItems: "center",
     padding: 10,
     width: Dimensions.get("window").width * 0.85,
-    height: Dimensions.get("window").height * 0.4,
   },
   input: {
     flex: 1,
@@ -271,5 +346,61 @@ const styles = StyleSheet.create({
     bottom: 10,
     right: 10,
     elevation: 5,
+  },
+  item: {
+    marginHorizontal: 10,
+    marginVertical: 7,
+    paddingHorizontal: 10,
+    backgroundColor: "#ffffff",
+    justifyContent: "center",
+    borderRadius: 10,
+    elevation: 5,
+  },
+  container: {
+    flex: 1,
+    marginTop: 20,
+    backgroundColor: "#eeeeee",
+  },
+  tasks: {
+    flex: 1,
+  },
+  cardContent: {
+    marginLeft: 20,
+    marginTop: 10,
+  },
+  image: {
+    width: 25,
+    height: 25,
+  },
+  card: {
+    shadowColor: "#00000021",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.37,
+    shadowRadius: 7.49,
+    elevation: 12,
+
+    marginVertical: 10,
+    marginHorizontal: 20,
+    backgroundColor: "white",
+    flexBasis: "46%",
+    padding: 10,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    borderLeftWidth: 6,
+  },
+  description: {
+    fontSize: 18,
+    flex: 1,
+    color: "#008080",
+    fontWeight: "bold",
+  },
+  date: {
+    fontSize: 14,
+    flex: 1,
+    color: "#696969",
+    marginTop: 5,
   },
 });

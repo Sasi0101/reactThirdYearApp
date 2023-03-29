@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   View,
   FlatList,
+  SafeAreaView,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Overlay } from "@rneui/themed";
-import { Rating, AirbnbRating } from "react-native-ratings";
+import { Rating } from "react-native-ratings";
 import { auth, firestore } from "../../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -155,9 +156,8 @@ export default function OneFlashcard(props) {
       props.data.data.deckName,
       JSON.stringify(cardsToUpload)
     );
-    console.log("Should be done");
+
     DeviceEventEmitter.emit("deckDownloaded", {});
-    s;
   };
 
   const OneCard = ({ card }) => (
@@ -195,10 +195,9 @@ export default function OneFlashcard(props) {
   );
 
   return (
-    <View style={{ paddingBottom: 15 }}>
+    <SafeAreaView style={{ paddingBottom: 15 }}>
       <TouchableOpacity
         onPress={() => {
-          console.log("Show options");
           setIsOptionsOverlayOn(true);
         }}
         style={{ borderWidth: 1, height: 80 }}
@@ -207,14 +206,17 @@ export default function OneFlashcard(props) {
           <Text style={{ fontSize: 20, textAlign: "center" }} numberOfLines={2}>
             {deckName}
           </Text>
-          <Rating
-            type="star"
-            ratingCount={5}
-            imageSize={20}
-            fractions={1}
-            startingValue={allRating}
-            readonly={true}
-          />
+          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+            <Rating
+              type="star"
+              ratingCount={5}
+              imageSize={20}
+              fractions={1}
+              startingValue={allRating}
+              readonly={true}
+            />
+            <Text> {props.data.data.usersVoted.length} votes</Text>
+          </View>
         </View>
 
         <Overlay
@@ -249,7 +251,12 @@ export default function OneFlashcard(props) {
               <TouchableOpacity onPress={() => handleDownload()}>
                 <Text style={{ fontSize: 20 }}>Download deck</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setIsCardsOverlayOn(true)}>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsOptionsOverlayOn(false);
+                  setIsCardsOverlayOn(true);
+                }}
+              >
                 <Text style={{ fontSize: 20 }}>View cards</Text>
               </TouchableOpacity>
             </View>
@@ -260,6 +267,7 @@ export default function OneFlashcard(props) {
           isVisible={isCardsOverlayOn}
           onBackdropPress={() => {
             setIsCardsOverlayOn(false);
+            setIsOptionsOverlayOn(true);
           }}
         >
           <View
@@ -274,7 +282,10 @@ export default function OneFlashcard(props) {
               }}
             >
               <TouchableOpacity
-                onPress={() => setIsCardsOverlayOn(false)}
+                onPress={() => {
+                  setIsCardsOverlayOn(false);
+                  setIsOptionsOverlayOn(true);
+                }}
                 style={{ borderWidth: 1 }}
               >
                 <Text style={{ paddingVertical: 2, paddingHorizontal: 2 }}>
@@ -291,7 +302,7 @@ export default function OneFlashcard(props) {
           </View>
         </Overlay>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 

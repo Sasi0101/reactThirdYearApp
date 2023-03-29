@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useState, useLayoutEffect, useCallback } from "react";
 import { auth, firestore } from "../firebase";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import {
@@ -41,7 +41,7 @@ export function DrawerContent(props) {
         });
       })
       .catch((error) => {
-        //console.log("Error getting image metadata:", error);
+        console.error("Error getting image metadata:", error);
       });
   }, [props.data]);
 
@@ -56,27 +56,36 @@ export function DrawerContent(props) {
           <View
             style={[
               styles.userInfoSection,
-              { backgroundColor: "white", borderRadius: 5 },
+              { backgroundColor: "#20B2AA", borderRadius: 5, flex: 4 },
             ]}
           >
-            <View style={{ flexDirection: "row", marginTop: 15 }}>
-              {doesUserHaveAvatar && (
-                <Avatar.Image
-                  source={{
-                    uri: imageURL,
-                  }}
-                  size={50}
-                />
-              )}
+            <View style={{ flexDirection: "row", marginTop: 15, flex: 4 }}>
+              <View style={{ flex: 1, paddingBottom: 10 }}>
+                {doesUserHaveAvatar && (
+                  <Avatar.Image
+                    source={{
+                      uri: imageURL,
+                    }}
+                    size={70}
+                  />
+                )}
 
-              {!doesUserHaveAvatar && (
-                <Avatar.Image
-                  source={require("../assets/anonymous-user.png")}
-                  size={50}
-                />
-              )}
-              <View style={{ marginLeft: 15, flexDirection: "column" }}>
-                <Title style={styles.title}> {userName} </Title>
+                {!doesUserHaveAvatar && (
+                  <Avatar.Image
+                    source={require("../assets/anonymous-user.png")}
+                    size={70}
+                  />
+                )}
+              </View>
+              <View
+                style={{
+                  marginLeft: 15,
+                  flexDirection: "column",
+                  flex: 3,
+                  marginRight: 5,
+                }}
+              >
+                <Title style={[styles.title]}>{userName}</Title>
                 <Caption style={styles.caption}>
                   {auth.currentUser?.email}
                 </Caption>
@@ -87,9 +96,9 @@ export function DrawerContent(props) {
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
               icon={(color, size) => (
-                <Icon name="home-outline" color={color} size={size} />
+                <Icon name="account-group" color={color} size={25} />
               )}
-              label="Messaging Screen"
+              label="Groups"
               onPress={() => {
                 props.navigation.navigate("MessagingScreen");
               }}
@@ -97,7 +106,7 @@ export function DrawerContent(props) {
 
             <DrawerItem
               icon={(color, size) => (
-                <Icon name="home-outline" color={color} size={size} />
+                <Icon name="chat" color={color} size={25} />
               )}
               label="Users screen"
               onPress={() => {
@@ -107,7 +116,7 @@ export function DrawerContent(props) {
 
             <DrawerItem
               icon={(color, size) => (
-                <Icon name="home-outline" color={color} size={size} />
+                <Icon name="calendar-month" color={color} size={25} />
               )}
               label="Calendar"
               onPress={() => {
@@ -117,7 +126,7 @@ export function DrawerContent(props) {
 
             <DrawerItem
               icon={(color, size) => (
-                <Icon name="home-outline" color={color} size={size} />
+                <Icon name="school" color={color} size={25} />
               )}
               label="Flashcards"
               onPress={() => {
@@ -127,7 +136,7 @@ export function DrawerContent(props) {
 
             <DrawerItem
               icon={(color, size) => (
-                <Icon name="home-outline" color={color} size={size} />
+                <Icon name="calendar-check" color={color} size={25} />
               )}
               label="Tasks"
               onPress={() => {
@@ -137,7 +146,7 @@ export function DrawerContent(props) {
 
             <DrawerItem
               icon={(color, size) => (
-                <Icon name="account-outline" color={color} size={size} />
+                <Icon name="account-outline" color={color} size={25} />
               )}
               label="Profile"
               onPress={() => {
@@ -147,7 +156,7 @@ export function DrawerContent(props) {
 
             <DrawerItem
               icon={(color, size) => (
-                <Icon name="home-outline" color={color} size={size} />
+                <Icon name="bell" color={color} size={25} />
               )}
               label="Notifications"
               onPress={() => {
@@ -155,28 +164,13 @@ export function DrawerContent(props) {
               }}
             />
           </Drawer.Section>
-
-          <Drawer.Section title="Preferences">
-            <TouchableRipple
-              onPress={() => {
-                toggleTheme();
-              }}
-            >
-              <View style={styles.preference}>
-                <Text> Dark theme</Text>
-                <View pointerEvents="none">
-                  <Switch value={isDarkTheme} />
-                </View>
-              </View>
-            </TouchableRipple>
-          </Drawer.Section>
         </View>
       </DrawerContentScrollView>
 
       <DrawerItem
         style={styles.bottomDrawerSection}
         icon={(color, size) => (
-          <Icon name="exit-to-app" color={color} size={size} />
+          <Icon name="exit-to-app" color={color} size={25} />
         )}
         label="Sign out"
         onPress={() => {
@@ -238,3 +232,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 });
+
+/* 
+          <Drawer.Section title="Preferences">
+            <TouchableRipple
+              onPress={() => {
+                toggleTheme();
+              }}
+            >
+              <View style={styles.preference}>
+                <Text> Dark theme</Text>
+                <View pointerEvents="none">
+                  <Switch value={isDarkTheme} />
+                </View>
+              </View>
+            </TouchableRipple>
+          </Drawer.Section>
+
+*/

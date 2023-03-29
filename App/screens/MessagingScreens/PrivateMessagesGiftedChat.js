@@ -1,7 +1,7 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
 import { useState, useLayoutEffect, useCallback, useEffect } from "react";
-import { GiftedChat } from "react-native-gifted-chat";
+import { GiftedChat, Actions, ActionsProps } from "react-native-gifted-chat";
 import { auth, firestore } from "../../firebase";
 import "firebase/storage";
 import firebase from "firebase/app";
@@ -164,7 +164,6 @@ export default function PrivateMessagesGiftedChat(props) {
     imageRef
       .getDownloadURL()
       .then((url) => {
-        console.log();
         setDownloadURl(url);
       })
       .catch(() => {
@@ -173,6 +172,37 @@ export default function PrivateMessagesGiftedChat(props) {
         );
       });
   };
+
+  //choose image here and then when sent save it
+  const handlePickImage = () => {
+    console.log("should pick image");
+  };
+
+  const handleAttachFile = () => {
+    console.log("should handle attach of a file");
+  };
+
+  function renderActions(props) {
+    return (
+      <>
+        <Actions
+          {...props}
+          options={{
+            ["Send Image"]: handlePickImage,
+          }}
+          onSend={(args) => console.log(args)}
+        />
+
+        <Actions
+          {...props}
+          options={{
+            ["Attach File"]: handleAttachFile,
+          }}
+          onSend={(args) => console.log(args)}
+        />
+      </>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -190,6 +220,7 @@ export default function PrivateMessagesGiftedChat(props) {
           console.log(`Avatar pressed for user ${user._id}`)
         }
         onPress={() => console.log("message was pressed")}
+        renderActions={renderActions}
       />
     </View>
   );

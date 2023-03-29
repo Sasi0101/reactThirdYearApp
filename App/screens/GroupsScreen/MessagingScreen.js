@@ -6,8 +6,6 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
-  KeyboardAvoidingView,
-  SafeAreaView,
 } from "react-native";
 import React, { useLayoutEffect } from "react";
 import { CheckBox } from "@rneui/themed";
@@ -18,7 +16,7 @@ import OneGroup from "./OneGroup";
 import { Overlay } from "@rneui/themed";
 
 export default function MessagingScreen() {
-  const [groupNames, setGroupNames] = useState(null);
+  const [groupNames, setGroupNames] = useState([]);
   const [showAddOverlay, setShowAddOverlay] = useState(false);
 
   const [groupName, setGroupName] = useState("");
@@ -27,26 +25,41 @@ export default function MessagingScreen() {
   const [checked, setChecked] = useState(false);
   const [updateFlatlist, setUpdateFlatlist] = useState(false);
 
-  const [shouldLoad, setShouldLoad] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(true);
 
   useLayoutEffect(() => {
     const groupNamesRef = firestore.collection("groups");
     //sort by if the user is joined or not and than by last message
 
-    groupNamesRef.onSnapshot((element) => {
-      let groups = [];
-      element.forEach((doc) => {
-        const dataToPush = {
-          data: doc.data(),
-          id: doc.id,
-        };
+    const unsubscribe = groupNamesRef
+      .orderBy("lastMessageSent.createdAt", "desc")
+      .onSnapshot((element) => {
+        let groupsWithoutUser = [];
+        let groupsWithUser = [];
+        element.forEach((doc) => {
+          const tempData = doc.data();
+          const dataToPush = {
+            data: tempData,
+            id: doc.id,
+          };
 
-        groups.push(dataToPush);
+          tempData.members.includes(auth.currentUser?.email)
+            ? groupsWithUser.push(dataToPush)
+            : groupsWithoutUser.push(dataToPush);
+        });
+
+        setGroupNames([...groupsWithUser, ...groupsWithoutUser]);
+        setUpdateFlatlist(!updateFlatlist);
       });
-      setGroupNames(groups);
-      setUpdateFlatlist(!updateFlatlist);
-    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
+  useEffect(() => {
+    setUpdateFlatlist(!updateFlatlist);
+  }, [groupNames]);
 
   const returnToOriginal = () => {
     setGroupDescription("");
@@ -56,7 +69,6 @@ export default function MessagingScreen() {
   };
 
   const handleGroupCreate = () => {
-    console.log("Should create group");
     const newData = {
       description: groupDescription,
       members: [auth.currentUser?.email],
@@ -64,6 +76,11 @@ export default function MessagingScreen() {
       numberlimit: 8,
       owner: auth.currentUser?.email,
       password: groupPassword,
+      lastMessageSent: {
+        user: { _id: auth.currentUser?.email },
+        text: "No previous message",
+        createdAt: new Date(),
+      },
     };
 
     firestore
@@ -76,12 +93,6 @@ export default function MessagingScreen() {
     returnToOriginal();
     setShowAddOverlay(false);
   };
-
-  useEffect(() => {
-    if (groupNames) {
-      setShouldLoad(true);
-    }
-  }, [groupNames]);
 
   return (
     <View style={{ flex: 1 }}>

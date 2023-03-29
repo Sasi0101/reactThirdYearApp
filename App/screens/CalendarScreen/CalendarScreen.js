@@ -244,8 +244,12 @@ export default function CalendarScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{}}>
+      <View>
         <Calendar
+          theme={{
+            //calendarBackground: "white",
+            monthTextColor: "green",
+          }}
           onDayPress={(day) => {
             setSelectedDate(day.dateString);
           }}

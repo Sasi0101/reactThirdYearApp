@@ -8,6 +8,8 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Alert,
+  Image,
+  SafeAreaView,
 } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
 import * as ImagePickerExpo from "expo-image-picker";
@@ -21,8 +23,9 @@ export default function ProfileScreen() {
   const [image, setImage] = useState(null);
   const [username, setUsername] = useState("");
   const [description, setDescription] = useState("");
-  const [isEdit, setIsEdit] = useState(false);
+  const [email, setEmail] = useState("");
 
+  const [isEdit, setIsEdit] = useState(false);
   const [editUsername, setEditUsername] = useState("");
   const [editDescription, setEditDescription] = useState("");
 
@@ -33,8 +36,10 @@ export default function ProfileScreen() {
         .doc(auth.currentUser?.email)
         .get()
         .then((doc) => {
-          if (doc.data().username) setUsername(doc.data().username);
-          if (doc.data().description) setDescription(doc.data().description);
+          let temp = doc.data();
+          if (temp.username) setUsername(temp.username);
+          if (temp.description) setDescription(temp.description);
+          if (temp.email) setEmail(temp.email);
         })
         .catch((error) => {
           console.error(
@@ -116,7 +121,7 @@ export default function ProfileScreen() {
       }
     }
   };
-
+  /*
   return (
     <KeyboardAvoidingView
       style={{ flex: 6, alignItems: "center", justifyContent: "center" }}
@@ -132,21 +137,17 @@ export default function ProfileScreen() {
           paddingLeft: 10,
         }}
       >
-        {image && (
-          <Avatar.Image
-            source={{
-              uri: image,
-            }}
-            size={Dimensions.get("window").height * 0.15}
-          />
-        )}
+        <Avatar.Image
+          source={
+            image
+              ? {
+                  uri: image,
+                }
+              : require("../../assets/anonymous-user.png")
+          }
+          size={Dimensions.get("window").height * 0.15}
+        />
 
-        {!image && (
-          <Avatar.Image
-            source={require("../../assets/anonymous-user.png")}
-            size={Dimensions.get("window").height * 0.15}
-          />
-        )}
         {isEdit && (
           <TouchableOpacity
             onPress={chooseImage}
@@ -189,10 +190,6 @@ export default function ProfileScreen() {
                   <Text
                     style={{
                       fontSize: 20,
-                      //backgroundColor: "#FFFDD0",
-                      //flexGrow: 1, // Allow the Text component to fill the available space
-                      //paddingHorizontal: 10,
-                      //paddingVertical: 5,
                     }}
                     numberOfLines={null}
                   >
@@ -343,7 +340,211 @@ export default function ProfileScreen() {
         )}
       </View>
     </KeyboardAvoidingView>
+  ); */
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={[styles.coverImage, { backgroundColor: "#20B2AA" }]} />
+
+      <View style={styles.avatarContainer}>
+        <Image
+          source={
+            image
+              ? {
+                  uri: image,
+                }
+              : require("../../assets/anonymous-user.png")
+          }
+          style={styles.avatar}
+        />
+        {isEdit ? (
+          <TouchableOpacity onPress={chooseImage}>
+            <Text style={{ fontSize: 20 }}>Change profile picture</Text>
+          </TouchableOpacity>
+        ) : (
+          <Text style={[styles.name, styles.textWithShadow]}>{username}</Text>
+        )}
+      </View>
+
+      {isEdit ? (
+        <View style={{ flex: 8 }}>
+          <View style={[styles.content, { flex: 7 }]}>
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoLabel}>Username:</Text>
+              <TextInput
+                style={styles.infoValue}
+                value={editUsername}
+                placeholder="Username"
+                onChangeText={(text) => setEditUsername(text)}
+                maxLength={24}
+              />
+            </View>
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoLabel}>Email:</Text>
+              <Text style={styles.infoValue}>{email}</Text>
+            </View>
+
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior="position"
+              keyboardVerticalOffset={10}
+            >
+              <Text style={styles.infoLabel}>Bio:</Text>
+              <TextInput
+                style={styles.infoValue}
+                numberOfLines={5}
+                multiline={true}
+                textAlignVertical="top"
+                value={editDescription}
+                placeholder="Write something about yourself."
+                onChangeText={(text) => setEditDescription(text)}
+                maxLength={512}
+              />
+            </KeyboardAvoidingView>
+          </View>
+
+          <View
+            style={{
+              flex: 1,
+              paddingTop: 10,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => setIsEdit(false)}
+              style={{
+                borderWidth: 1,
+                alignContent: "center",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 5,
+              }}
+            >
+              <Text
+                style={{
+                  paddingVertical: 5,
+                  paddingHorizontal: 5,
+                }}
+              >
+                Cancel edit
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => saveChanges()}
+              style={{
+                borderWidth: 1,
+                alignContent: "center",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 5,
+              }}
+            >
+              <Text
+                style={{
+                  paddingVertical: 5,
+                  paddingHorizontal: 5,
+                }}
+              >
+                Save changes
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <View style={{ flex: 8 }}>
+          <View style={[styles.content, { flex: 7 }]}>
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoLabel}>Email:</Text>
+              <Text style={styles.infoValue}>{email}</Text>
+            </View>
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoLabel}>Bio:</Text>
+              {description.length > 0 ? (
+                <ScrollView
+                  style={{ maxHeight: Dimensions.get("window").height * 0.3 }}
+                >
+                  <Text style={styles.infoValue} numberOfLines={null}>
+                    {description}
+                  </Text>
+                </ScrollView>
+              ) : (
+                <Text style={styles.infoValue}>You do not have a bio yet!</Text>
+              )}
+            </View>
+          </View>
+          <View style={{ flex: 1 }}>
+            <View style={{ paddingTop: 10 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (username) setEditUsername(username);
+                  if (description) setEditDescription(description);
+                  setIsEdit(true);
+                }}
+                style={{
+                  borderWidth: 1,
+                  alignContent: "center",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 5,
+                }}
+              >
+                <Text
+                  style={{
+                    paddingVertical: 5,
+                    paddingHorizontal: 5,
+                  }}
+                >
+                  Edit profile
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 20,
+  },
+  coverImage: {
+    height: 200,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+  },
+  avatarContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  avatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 10,
+    color: "white",
+  },
+  content: {
+    marginTop: 20,
+  },
+  infoContainer: {
+    marginTop: 20,
+  },
+  infoLabel: {
+    fontWeight: "bold",
+  },
+  infoValue: {
+    marginTop: 5,
+  },
+});
