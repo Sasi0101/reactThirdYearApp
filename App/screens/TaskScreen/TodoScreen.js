@@ -16,7 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import OneTask from "./OneTask";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-export default function TodoScreen() {
+export default function TodoScreen(props) {
   const [isOverlayOn, setIsOverlayOn] = useState(false);
   const [task, setTasks] = useState(null);
   const [showingDetailedSpecs, setShowingDetailedSpecs] = useState(false);
@@ -28,6 +28,7 @@ export default function TodoScreen() {
   const [specTaskWriting, setSpecTaskWriting] = useState("");
 
   useLayoutEffect(() => {
+    props.navigation.setOptions({ title: "To-do list" });
     setTaskWriting("");
     const loadData = async () => {
       try {

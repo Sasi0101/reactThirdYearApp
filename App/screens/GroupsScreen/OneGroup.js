@@ -153,10 +153,16 @@ export default function OneGroup(props) {
       {!isJoined && isThereSpaceLeft && data && !isBanned && (
         <View style={styles.item}>
           <Text style={styles.title}>{data.name}</Text>
-          <Text style={styles.subtitle} numberOfLines={1}>
-            {data.description}
-          </Text>
+          {data.description.length > 0 && (
+            <Text style={styles.subtitle} numberOfLines={1}>
+              {data.description}
+            </Text>
+          )}
 
+          <Text style={[styles.countMembers, { paddingBottom: 5 }]}>
+            {data.members.length}
+            {data.members.length === 1 ? " member" : " members"}
+          </Text>
           <View style={{ flex: 1, flexDirection: "row", top: 5 }}>
             <TouchableOpacity
               style={{ width: "50%" }}
@@ -343,7 +349,11 @@ export default function OneGroup(props) {
           }}
         >
           <View style={styles.item}>
-            <Text style={styles.title}>{data.name}</Text>
+            <Text style={styles.groupName}>{data.name}</Text>
+            <Text style={styles.countMembers}>
+              {data.members.length}
+              {data.members.length === 1 ? " member" : " members"}
+            </Text>
             <Text style={styles.subtitle} numberOfLines={1}>
               {lastMessage.text}
             </Text>
@@ -423,5 +433,15 @@ const styles = StyleSheet.create({
     color: "#999999",
     fontSize: 20,
     margin: 5,
+  },
+  countMembers: {
+    color: "#1E90FF",
+    marginLeft: 5,
+    fontSize: 18,
+  },
+  groupName: {
+    fontSize: 28,
+    color: "black",
+    marginLeft: 5,
   },
 });

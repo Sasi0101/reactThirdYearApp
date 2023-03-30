@@ -116,6 +116,16 @@ export function DrawerContent(props) {
 
             <DrawerItem
               icon={(color, size) => (
+                <Icon name="comment" color={color} size={25} />
+              )}
+              label="Questions"
+              onPress={() => {
+                props.navigation.navigate("QuestionsScreen");
+              }}
+            />
+
+            <DrawerItem
+              icon={(color, size) => (
                 <Icon name="calendar-month" color={color} size={25} />
               )}
               label="Calendar"
@@ -138,7 +148,7 @@ export function DrawerContent(props) {
               icon={(color, size) => (
                 <Icon name="calendar-check" color={color} size={25} />
               )}
-              label="Tasks"
+              label="To-do list"
               onPress={() => {
                 props.navigation.navigate("TodoScreen");
               }}

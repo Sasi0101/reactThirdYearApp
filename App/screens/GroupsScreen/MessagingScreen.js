@@ -15,7 +15,7 @@ import { auth, firestore } from "../../firebase";
 import OneGroup from "./OneGroup";
 import { Overlay } from "@rneui/themed";
 
-export default function MessagingScreen() {
+export default function MessagingScreen(props) {
   const [groupNames, setGroupNames] = useState([]);
   const [showAddOverlay, setShowAddOverlay] = useState(false);
 
@@ -28,6 +28,7 @@ export default function MessagingScreen() {
   const [shouldLoad, setShouldLoad] = useState(true);
 
   useLayoutEffect(() => {
+    props.navigation.setOptions({ title: "Groups" });
     const groupNamesRef = firestore.collection("groups");
     //sort by if the user is joined or not and than by last message
 

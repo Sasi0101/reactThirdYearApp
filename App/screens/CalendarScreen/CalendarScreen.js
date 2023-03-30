@@ -15,7 +15,7 @@ import { Overlay } from "@rneui/themed";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import OneEvent from "./OneEvent";
 
-export default function CalendarScreen() {
+export default function CalendarScreen(props) {
   const [selectedDate, setSelectedDate] = useState(
     getDateInGoodFormat(new Date())
   );
@@ -37,6 +37,7 @@ export default function CalendarScreen() {
   const [editedData, setEditedData] = useState(null);
 
   useEffect(() => {
+    props.navigation.setOptions({ title: "Calendar" });
     const retrieveMarkedDates = async () => {
       try {
         const temp = await AsyncStorage.getItem("eventDates");

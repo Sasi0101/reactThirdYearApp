@@ -18,6 +18,7 @@ import "firebase/storage";
 import firebase from "firebase/app";
 import { auth, firestore } from "../../firebase";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function UsersScreen(props) {
   const [usersToPrint, setUsersToPrint] = useState([]);
@@ -79,35 +80,43 @@ export default function UsersScreen(props) {
 
     fetchData();
 
-    props.navigation.setOptions({ title: "Chats" });
+    props.navigation.setOptions({ title: "Private chat messages" });
     DeviceEventEmitter.addListener("userProfile", (userData) => {
       loadUser(userData);
     });
+
+    props.navigation.setOptions({ headerShown: false });
 
     /*
     props.navigation.setOptions({
       header: () => (
         <View
           style={{
+            width: Dimensions.get("window").width,
             paddingHorizontal: Dimensions.get("window").width * 0.05,
             flexDirection: "row",
             paddingTop: Dimensions.get("window").height * 0.05,
             alignItems: "center",
           }}
         >
-          <TouchableOpacity onPress={() => handleOpenDrawer()}>
-            <Text>Od icon</Text>
-          </TouchableOpacity>
-
-          <TextInput
-            placeholder="Search"
-            value={searchText}
-            onChangeText={(text) => handleSearch(text)}
-          />
+          <View style={{ width: "10%" }}>
+            <TouchableOpacity onPress={() => handleOpenDrawer()}>
+              <Icon name="arrow-expand-right" size={25} color={"black"} />
+            </TouchableOpacity>
+          </View>
+          <View style={{ width: "90%" }}>
+            <TextInput
+              placeholder="Search"
+              value={searchText}
+              onChangeText={(text) => setSearchText(text)}
+              //onChangeText={(text) => handleSearch(text)}
+              style={styles.searchInput}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
         </View>
-      ),
-      
-    }); */
+      ), 
+    });*/
 
     return () => {
       DeviceEventEmitter.removeAllListeners("userProfile");
@@ -167,6 +176,32 @@ export default function UsersScreen(props) {
 
   return (
     <>
+      <View
+        style={{
+          width: Dimensions.get("window").width,
+          paddingHorizontal: Dimensions.get("window").width * 0.05,
+          flexDirection: "row",
+          paddingTop: Dimensions.get("window").height * 0.05,
+          alignItems: "center",
+        }}
+      >
+        <View style={{ width: "10%" }}>
+          <TouchableOpacity onPress={() => handleOpenDrawer()}>
+            <Icon name="arrow-expand-right" size={25} color={"black"} />
+          </TouchableOpacity>
+        </View>
+        <View style={{ width: "90%" }}>
+          <TextInput
+            placeholder="Search"
+            value={searchText}
+            //onChangeText={(text) => setSearchText(text)}
+            onChangeText={(text) => handleSearch(text)}
+            style={styles.searchInput}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
+      </View>
+
       {isShowingUserProfile ? (
         <SafeAreaView style={styles.container}>
           <View style={[styles.coverImage, { backgroundColor: "#20B2AA" }]} />
@@ -238,7 +273,7 @@ export default function UsersScreen(props) {
         </SafeAreaView>
       ) : (
         <SafeAreaView style={{ flex: 11 }}>
-          <View style={{ flex: 10 }}>
+          <View style={{ flex: 11 }}>
             {usersToPrint.length !== 0 && (
               <FlatList
                 data={filteredContacts}
@@ -249,22 +284,6 @@ export default function UsersScreen(props) {
               />
             )}
           </View>
-
-          <KeyboardAvoidingView
-            style={{
-              flex: 1,
-              paddingHorizontal: Dimensions.get("window").width * 0.02,
-            }}
-            behavior="position"
-            keyboardVerticalOffset={Dimensions.get("window").height * 0.085}
-          >
-            <TextInput
-              placeholder="Search"
-              value={searchText}
-              onChangeText={(text) => handleSearch(text)}
-              style={styles.searchInput}
-            />
-          </KeyboardAvoidingView>
         </SafeAreaView>
       )}
     </>

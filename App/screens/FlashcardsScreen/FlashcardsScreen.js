@@ -55,6 +55,7 @@ export default function FlashcardsScreen(props) {
   }, []);
 
   useLayoutEffect(() => {
+    props.navigation.setOptions({ title: "Flashcards" });
     const unsubsribe = NetInfo.addEventListener((state) => {
       if (state.isConnected) {
         setIsThereWifi(true);
@@ -157,25 +158,13 @@ export default function FlashcardsScreen(props) {
             />
           </View>
 
-          <View style={{ height: "10%" }}>
-            <TouchableOpacity
-              style={[styles.openPopupButton, { paddingBottom: 50 }]}
-              onPress={() => {
-                if (isThereWifi) {
-                  setShouldShowOnlineDecks(true);
-                  console.log("should open other decks");
-                } else {
-                  Alert.alert(
-                    "Network failure",
-                    "Please connect to the network to view this page."
-                  );
-                }
-              }}
+          <View style={{ height: "10%", width: Dimensions.get("window") }}>
+            <View
+              style={[
+                styles.optionsContainer,
+                { justifyContent: "space-between", flexDirection: "row" },
+              ]}
             >
-              <Text>Open Popup</Text>
-            </TouchableOpacity>
-
-            <View style={styles.optionsContainer}>
               <TouchableOpacity
                 style={styles.optionButton}
                 onPress={() => {
@@ -191,7 +180,23 @@ export default function FlashcardsScreen(props) {
                   setDeckOverlay(!deckOverlay);
                 }}
               >
-                <Text>Add decks</Text>
+                <Text>Add a deck</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => {
+                  if (isThereWifi) {
+                    setShouldShowOnlineDecks(true);
+                  } else {
+                    Alert.alert(
+                      "Network failure",
+                      "Please connect to the network to view uploaded decks."
+                    );
+                  }
+                }}
+              >
+                <Text>Decks online</Text>
               </TouchableOpacity>
             </View>
           </View>

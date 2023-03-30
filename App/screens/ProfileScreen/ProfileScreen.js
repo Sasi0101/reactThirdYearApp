@@ -19,7 +19,7 @@ import { auth, firestore } from "../../firebase";
 import { Avatar } from "react-native-paper";
 import * as FileSystem from "expo-file-system";
 
-export default function ProfileScreen() {
+export default function ProfileScreen(props) {
   const [image, setImage] = useState(null);
   const [username, setUsername] = useState("");
   const [description, setDescription] = useState("");
@@ -30,6 +30,7 @@ export default function ProfileScreen() {
   const [editDescription, setEditDescription] = useState("");
 
   useLayoutEffect(() => {
+    props.navigation.setOptions({ title: "Profile" });
     async function fetchData() {
       await firestore
         .collection("users")

@@ -12,7 +12,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export default function NotificationsScreen() {
+export default function NotificationsScreen(props) {
   const [notifications, setNotifications] = useState([]);
 
   const [expoPushToken, setExpoPushToken] = useState("");
@@ -22,6 +22,7 @@ export default function NotificationsScreen() {
   const responseListener = useRef();
 
   useLayoutEffect(() => {
+    props.navigation.setOptions({ title: "Notifications" });
     const unsubscribe = firestore
       .collection("users")
       .doc(auth.currentUser?.email)
