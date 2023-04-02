@@ -433,5 +433,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
+    backgroundColor: "white",
+    elevation: 4,
+    borderRadius: 5,
   },
 });

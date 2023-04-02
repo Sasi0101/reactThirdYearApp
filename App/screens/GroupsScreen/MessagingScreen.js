@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import { auth, firestore } from "../../firebase";
 import OneGroup from "./OneGroup";
 import { Overlay } from "@rneui/themed";
+import { Button } from "react-native";
 
 export default function MessagingScreen(props) {
   const [groupNames, setGroupNames] = useState([]);
@@ -24,9 +25,8 @@ export default function MessagingScreen(props) {
   const [groupPassword, setGroupPassword] = useState("");
   const [checked, setChecked] = useState(false);
   const [updateFlatlist, setUpdateFlatlist] = useState(false);
-
+  //const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(true);
-
   useLayoutEffect(() => {
     props.navigation.setOptions({ title: "Groups" });
     const groupNamesRef = firestore.collection("groups");

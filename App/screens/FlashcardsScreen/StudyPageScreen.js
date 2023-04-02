@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DeviceEventEmitter } from "react-native";
+import { Button } from "react-native";
 
 export default function StudyPageScreen({ route }) {
   const [shouldShowAnswer, setShouldShowAnswer] = useState(false);
@@ -314,15 +315,20 @@ export default function StudyPageScreen({ route }) {
         </View>
       )}
 
-      <View style={{ flex: 1, alignItems: "center", paddingTop: 10 }}>
+      <View
+        style={{
+          flex: 1,
+          width: "100%",
+          alignItems: "center",
+          paddingBottom: 15,
+        }}
+      >
         {!shouldShowAnswer && areThereCards && (
-          <TouchableOpacity
-            onPress={() => {
-              setShouldShowAnswer(true);
-            }}
-          >
-            <Text>Show answer</Text>
-          </TouchableOpacity>
+          <Button
+            title="Show answer"
+            onPress={() => setShouldShowAnswer(true)}
+            color="#20B2AA"
+          />
         )}
         {shouldShowAnswer && (
           <View
@@ -332,29 +338,76 @@ export default function StudyPageScreen({ route }) {
             }}
           >
             <TouchableOpacity
-              onPress={() => {
-                handleAgain();
+              onPress={() => handleAgain()}
+              style={{
+                backgroundColor: "red",
+                elevation: 4,
+                borderWidth: 1,
+                borderRadius: 5,
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Text>Again</Text>
+              <Text
+                style={{
+                  paddingHorizontal: 20,
+                  color: "white",
+                  paddingVertical: 5,
+                  fontSize: 16,
+                }}
+              >
+                AGAIN
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={{ paddingLeft: 25 }}
-              onPress={() => {
-                handleGood();
-              }}
-            >
-              <Text>Good</Text>
-            </TouchableOpacity>
+            <View style={{ paddingLeft: 50 }} />
 
             <TouchableOpacity
-              style={{ paddingLeft: 25 }}
-              onPress={() => {
-                handleEasy();
+              onPress={() => handleGood()}
+              style={{
+                backgroundColor: "green",
+                elevation: 4,
+                borderWidth: 1,
+                borderRadius: 5,
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Text>Easy</Text>
+              <Text
+                style={{
+                  paddingHorizontal: 20,
+                  color: "white",
+                  paddingVertical: 5,
+                  fontSize: 16,
+                }}
+              >
+                GOOD
+              </Text>
+            </TouchableOpacity>
+
+            <View style={{ paddingLeft: 50 }} />
+
+            <TouchableOpacity
+              onPress={() => handleEasy()}
+              style={{
+                backgroundColor: "blue",
+                elevation: 4,
+                borderWidth: 1,
+                borderRadius: 5,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{
+                  paddingHorizontal: 20,
+                  color: "white",
+                  paddingVertical: 5,
+                  fontSize: 16,
+                }}
+              >
+                EASY
+              </Text>
             </TouchableOpacity>
           </View>
         )}

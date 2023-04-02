@@ -1,21 +1,14 @@
 import React, { useEffect } from "react";
-import { useState, useLayoutEffect, useCallback } from "react";
-import { auth, firestore } from "../firebase";
-import { View, StyleSheet, Dimensions } from "react-native";
+import { useState } from "react";
+import { auth } from "../firebase";
+import { View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import {
-  Avatar,
-  Title,
-  Caption,
-  Drawer,
-  Text,
-  TouchableRipple,
-  Switch,
-} from "react-native-paper";
+import { Avatar, Title, Caption, Drawer, Text } from "react-native-paper";
 import "firebase/storage";
 import firebase from "firebase/app";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Tooltip } from "@rneui/themed";
 
 export function DrawerContent(props) {
   const [isDarkTheme, setIsDarkTheme] = useState("");
@@ -23,6 +16,18 @@ export function DrawerContent(props) {
   const [userName, setUsername] = useState("");
   const [imageURL, setImageURL] = useState(null);
   const [doesUserHaveAvatar, setDoesUserHaveAvatar] = useState(false);
+  const [isGroupToolTipVisible, setIsGroupTooltipVisible] = useState(false);
+  const [isUserTooltipVisible, setIsUserTooltipVisible] = useState(false);
+  const [isQuestionsTooltipVisible, setIsQuestionTooltipVisible] =
+    useState(false);
+  const [isCalendarTooltipVisible, setIsCalendarTooltipVisible] =
+    useState(false);
+  const [isFlashcardTooltipVisible, setIsFlashcardTooltipVisible] =
+    useState(false);
+  const [isTodoTooltipVisible, setIsTodoTooltipVisible] = useState(false);
+  const [isProfileTooltipVisible, setIsProfileTooltipVisible] = useState(false);
+  const [isNotificationTooltipVisible, setIsNotificationTooltipVisible] =
+    useState(false);
 
   useEffect(() => {
     setUsername(props.data.username);
@@ -48,6 +53,25 @@ export function DrawerContent(props) {
   const toggleTheme = () => {
     setIsDarkTheme(!isDarkTheme);
   };
+
+  const CustomDrawerItem = ({ iconName, label, onPress, onLongPress }) => (
+    <TouchableOpacity onPress={onPress} onLongPress={onLongPress}>
+      <View style={{ flexDirection: "row", paddingLeft: 20 }}>
+        <Icon name={iconName} size={25} />
+        <Text
+          style={{
+            paddingLeft: 30,
+            alignSelf: "center",
+            fontSize: 16,
+            fontWeight: "600",
+            color: "#000",
+          }}
+        >
+          {label}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -94,85 +118,212 @@ export function DrawerContent(props) {
           </View>
 
           <Drawer.Section style={styles.drawerSection}>
-            <DrawerItem
-              icon={(color, size) => (
-                <Icon name="account-group" color={color} size={25} />
-              )}
-              label="Groups"
-              onPress={() => {
-                props.navigation.navigate("MessagingScreen");
-              }}
-            />
+            <Tooltip
+              width={Dimensions.get("window").width * 0.9}
+              height={100}
+              popover={
+                <Text>
+                  You can join or create group and ask for help or help others
+                  with their questions. Please behave according to the rules.
+                </Text>
+              }
+              visible={isGroupToolTipVisible}
+            >
+              <CustomDrawerItem
+                iconName="account-group"
+                label="Groups"
+                onPress={() => {
+                  props.navigation.navigate("MessagingScreen");
+                }}
+                onLongPress={() => {
+                  setIsGroupTooltipVisible(true);
+                  setTimeout(() => {
+                    setIsGroupTooltipVisible(false);
+                  }, 3000);
+                }}
+              />
+            </Tooltip>
+            <View style={{ paddingTop: 25 }} />
+            <Tooltip
+              visible={isUserTooltipVisible}
+              width={Dimensions.get("window").width * 0.9}
+              height={100}
+              popover={
+                <Text>
+                  You can talk with others and view their profiles by clicking
+                  on their profile pictures.
+                </Text>
+              }
+            >
+              <CustomDrawerItem
+                iconName="chat"
+                label="Users"
+                onPress={() => {
+                  props.navigation.navigate("UsersScreen");
+                }}
+                onLongPress={() => {
+                  setIsUserTooltipVisible(true);
+                  setTimeout(() => {
+                    setIsUserTooltipVisible(false);
+                  }, 3000);
+                }}
+              />
+            </Tooltip>
+            <View style={{ paddingTop: 25 }} />
+            <Tooltip
+              visible={isQuestionsTooltipVisible}
+              width={Dimensions.get("window").width * 0.9}
+              height={100}
+              popover={
+                <Text>
+                  You can ask a question or answer an already existing question.
+                </Text>
+              }
+            >
+              <CustomDrawerItem
+                iconName="comment"
+                label="Questions"
+                onPress={() => {
+                  props.navigation.navigate("QuestionsScreen");
+                }}
+                onLongPress={() => {
+                  setIsQuestionTooltipVisible(true);
+                  setTimeout(() => {
+                    setIsQuestionTooltipVisible(false);
+                  }, 3000);
+                }}
+              />
+            </Tooltip>
+            <View style={{ paddingTop: 25 }} />
+            <Tooltip
+              visible={isCalendarTooltipVisible}
+              width={Dimensions.get("window").width * 0.9}
+              height={100}
+              popover={
+                <Text>View your events and add new ones to your day.</Text>
+              }
+            >
+              <CustomDrawerItem
+                iconName="calendar-month"
+                label="Calendar"
+                onPress={() => {
+                  props.navigation.navigate("CalendarScreen");
+                }}
+                onLongPress={() => {
+                  setIsCalendarTooltipVisible(true);
+                  setTimeout(() => {
+                    setIsCalendarTooltipVisible(false);
+                  }, 3000);
+                }}
+              />
+            </Tooltip>
+            <View style={{ paddingTop: 25 }} />
+            <Tooltip
+              visible={isFlashcardTooltipVisible}
+              width={Dimensions.get("window").width * 0.9}
+              height={100}
+              popover={
+                <Text>
+                  Create decks and add cards to those decks to study. You can
+                  view already uploaded decks and download them.
+                </Text>
+              }
+            >
+              <CustomDrawerItem
+                iconName="school"
+                label="Flashcards"
+                onPress={() => {
+                  props.navigation.navigate("FlashcardsScreen");
+                }}
+                onLongPress={() => {
+                  setIsFlashcardTooltipVisible(true);
+                  setTimeout(() => {
+                    setIsFlashcardTooltipVisible(false);
+                  }, 3000);
+                }}
+              />
+            </Tooltip>
+            <View style={{ paddingTop: 25 }} />
+            <Tooltip
+              visible={isTodoTooltipVisible}
+              width={Dimensions.get("window").width * 0.9}
+              height={100}
+              popover={
+                <Text>
+                  Add tasks that you plan to do that day. You can change a tasks
+                  state by clicking on it.
+                </Text>
+              }
+            >
+              <CustomDrawerItem
+                iconName="calendar-check"
+                label="To-do list"
+                onPress={() => {
+                  props.navigation.navigate("TodoScreen");
+                }}
+                onLongPress={() => {
+                  setIsTodoTooltipVisible(true);
+                  setTimeout(() => {
+                    setIsTodoTooltipVisible(false);
+                  }, 3000);
+                }}
+              />
+            </Tooltip>
 
-            <DrawerItem
-              icon={(color, size) => (
-                <Icon name="chat" color={color} size={25} />
-              )}
-              label="Users screen"
-              onPress={() => {
-                props.navigation.navigate("UsersScreen");
-              }}
-            />
+            <View style={{ paddingTop: 25 }} />
+            <Tooltip
+              visible={isProfileTooltipVisible}
+              width={Dimensions.get("window").width * 0.9}
+              height={100}
+              popover={
+                <Text>
+                  View and update your profile. Others can see your profile as
+                  well.
+                </Text>
+              }
+            >
+              <CustomDrawerItem
+                iconName="account-outline"
+                label="Profile"
+                onPress={() => {
+                  props.navigation.navigate("ProfileScreen");
+                }}
+                onLongPress={() => {
+                  setIsProfileTooltipVisible(true);
+                  setTimeout(() => {
+                    setIsProfileTooltipVisible(false);
+                  }, 3000);
+                }}
+              />
+            </Tooltip>
 
-            <DrawerItem
-              icon={(color, size) => (
-                <Icon name="comment" color={color} size={25} />
-              )}
-              label="Questions"
-              onPress={() => {
-                props.navigation.navigate("QuestionsScreen");
-              }}
-            />
-
-            <DrawerItem
-              icon={(color, size) => (
-                <Icon name="calendar-month" color={color} size={25} />
-              )}
-              label="Calendar"
-              onPress={() => {
-                props.navigation.navigate("CalendarScreen");
-              }}
-            />
-
-            <DrawerItem
-              icon={(color, size) => (
-                <Icon name="school" color={color} size={25} />
-              )}
-              label="Flashcards"
-              onPress={() => {
-                props.navigation.navigate("FlashcardsScreen");
-              }}
-            />
-
-            <DrawerItem
-              icon={(color, size) => (
-                <Icon name="calendar-check" color={color} size={25} />
-              )}
-              label="To-do list"
-              onPress={() => {
-                props.navigation.navigate("TodoScreen");
-              }}
-            />
-
-            <DrawerItem
-              icon={(color, size) => (
-                <Icon name="account-outline" color={color} size={25} />
-              )}
-              label="Profile"
-              onPress={() => {
-                props.navigation.navigate("ProfileScreen");
-              }}
-            />
-
-            <DrawerItem
-              icon={(color, size) => (
-                <Icon name="bell" color={color} size={25} />
-              )}
-              label="Notifications"
-              onPress={() => {
-                props.navigation.navigate("NotificationScreen");
-              }}
-            />
+            <View style={{ paddingTop: 25 }} />
+            <Tooltip
+              visible={isNotificationTooltipVisible}
+              width={Dimensions.get("window").width * 0.9}
+              height={100}
+              popover={
+                <Text>
+                  You can view if someone asks you for permission to join a
+                  group created by you.
+                </Text>
+              }
+            >
+              <CustomDrawerItem
+                iconName="bell"
+                label="Notifications"
+                onPress={() => {
+                  props.navigation.navigate("NotificationScreen");
+                }}
+                onLongPress={() => {
+                  setIsNotificationTooltipVisible(true);
+                  setTimeout(() => {
+                    setIsNotificationTooltipVisible(false);
+                  }, 3000);
+                }}
+              />
+            </Tooltip>
+            <View style={{ paddingBottom: 5 }} />
           </Drawer.Section>
         </View>
       </DrawerContentScrollView>

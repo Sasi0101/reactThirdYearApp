@@ -176,13 +176,16 @@ export default function UsersScreen(props) {
 
   return (
     <>
-      <View
+      <SafeAreaView
         style={{
+          justifyContent: "center",
+          backgroundColor: "white",
           width: Dimensions.get("window").width,
           paddingHorizontal: Dimensions.get("window").width * 0.05,
           flexDirection: "row",
           paddingTop: Dimensions.get("window").height * 0.05,
           alignItems: "center",
+          paddingBottom: Dimensions.get("window").height * 0.02,
         }}
       >
         <View style={{ width: "10%" }}>
@@ -194,13 +197,12 @@ export default function UsersScreen(props) {
           <TextInput
             placeholder="Search"
             value={searchText}
-            //onChangeText={(text) => setSearchText(text)}
             onChangeText={(text) => handleSearch(text)}
             style={styles.searchInput}
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
-      </View>
+      </SafeAreaView>
 
       {isShowingUserProfile ? (
         <SafeAreaView style={styles.container}>

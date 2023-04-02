@@ -73,21 +73,30 @@ export default function QuestionsScreen(props) {
   };
 
   const OneQuestion = ({ data }) => (
-    <View style={styles.item}>
+    <View style={[styles.item]}>
       <View>
         <Text style={{ fontSize: 25, alignSelf: "center" }}>
           {data.data.question}
         </Text>
         <Text style={{ alignSelf: "center" }}>{data.data.whoAsked}</Text>
       </View>
-      <View style={{ paddingVertical: 10 }}>
+      <View
+        style={{
+          paddingVertical: 10,
+          maxWidth: Dimensions.get("window").width * 0.7,
+        }}
+      >
         {data.data.answers.length < 1 ? (
           <Text>No answers yet</Text>
         ) : (
           <FlatList
             data={data.data.answers.slice(0, 3)}
             renderItem={({ item }) => (
-              <View style={{ flexDirection: "row" }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                }}
+              >
                 <Text style={{ fontSize: 16 }}>{item.answerer}: </Text>
                 <Text style={{ fontSize: 16 }}>{item.answer}</Text>
               </View>
@@ -101,10 +110,11 @@ export default function QuestionsScreen(props) {
 
         <View
           style={{
+            flex: 1,
             alignItems: "center",
             justifyContent: "center",
-            margin: 5,
             paddingTop: 5,
+            width: Dimensions.get("window").width * 0.9,
           }}
         >
           <Button
@@ -193,7 +203,7 @@ export default function QuestionsScreen(props) {
         }}
       >
         <View style={{ width: Dimensions.get("window").width * 0.9 }}>
-          <View style={{}}>
+          <View>
             <Text style={{ fontSize: 22, paddingLeft: 5 }}>Question:</Text>
             <View style={{ elevation: 1, borderWidth: 0.5, borderRadius: 5 }}>
               <TextInput
@@ -244,7 +254,13 @@ export default function QuestionsScreen(props) {
             setIsAnswerOverlayOn(false);
           }}
         >
-          <View style={{ width: Dimensions.get("window").width * 0.9 }}>
+          <View
+            style={{
+              flex: 10,
+              margin: 5,
+              width: Dimensions.get("window").width * 0.95,
+            }}
+          >
             <View>
               <Text style={{ fontSize: 25, alignSelf: "center" }}>
                 {currentData.data.question}
@@ -253,19 +269,36 @@ export default function QuestionsScreen(props) {
                 {currentData.data.whoAsked}
               </Text>
             </View>
-            <View style={{ paddingTop: 10, paddingBottom: 10 }}>
+            <View
+              style={{
+                paddingTop: 10,
+                paddingBottom: 10,
+                flex: 8,
+                paddingHorizontal: 2,
+              }}
+            >
               <FlatList
                 data={currentData.data.answers}
                 renderItem={({ item }) => (
-                  <View style={{ flexDirection: "row" }}>
-                    <Text style={{ fontSize: 16 }}>{item.answerer}: </Text>
-                    <Text style={{ fontSize: 16 }}>{item.answer}</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      paddingTop: 5,
+                    }}
+                  >
+                    <Text style={{ fontSize: 16 }}>
+                      <Text style={{ fontWeight: "bold" }}>
+                        {item.answerer}:{" "}
+                      </Text>
+                      {item.answer}
+                    </Text>
                   </View>
                 )}
               />
             </View>
             <KeyboardAvoidingView
               style={{
+                flex: 1,
                 elevation: 1,
                 borderWidth: 0.5,
                 borderRadius: 5,
@@ -277,7 +310,6 @@ export default function QuestionsScreen(props) {
                 value={questionAnswer}
                 onChangeText={(text) => setQuestionAnswer(text)}
                 maxLength={256}
-                multiline={true}
               />
             </KeyboardAvoidingView>
           </View>

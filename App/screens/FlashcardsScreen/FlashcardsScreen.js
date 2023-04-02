@@ -21,7 +21,7 @@ import { auth, firestore } from "../../firebase";
 import NetInfo from "@react-native-community/netinfo";
 import VotingFlashcardsScreen from "./VotingFlashcardsScreen";
 
-export default function FlashcardsScreen(props) {
+export default function FlashcardsScreen() {
   const [deckNames, setDeckNames] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedOption, setSelectedOption] = useState("Select deck");
@@ -55,7 +55,7 @@ export default function FlashcardsScreen(props) {
   }, []);
 
   useLayoutEffect(() => {
-    props.navigation.setOptions({ title: "Flashcards" });
+    //props.navigation.setOptions({ title: "Flashcards" });
     const unsubsribe = NetInfo.addEventListener((state) => {
       if (state.isConnected) {
         setIsThereWifi(true);
@@ -158,7 +158,9 @@ export default function FlashcardsScreen(props) {
             />
           </View>
 
-          <View style={{ height: "10%", width: Dimensions.get("window") }}>
+          <View
+            style={{ height: "10%", width: Dimensions.get("window").width }}
+          >
             <View
               style={[
                 styles.optionsContainer,

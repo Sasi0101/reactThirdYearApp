@@ -11,3 +11,9 @@ Non-serializable values were found in the navigation state. Check:DrawerNavigato
 
 
 add a deviceEmitter to profile screen so it updates the picture in the drawer navigator
+when first pressing the + on the calendar screen without selecting anything it does not show the date good
+
+DESIGN:
+calendar screen
+Flashards bottom 3 buttons
+groups when adding a group and when joining
