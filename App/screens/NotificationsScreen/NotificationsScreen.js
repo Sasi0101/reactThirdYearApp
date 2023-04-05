@@ -3,23 +3,11 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { auth, firestore } from "../../firebase";
 import OneNotification from "./OneNotification";
 import * as Notifications from "expo-notifications";
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+import { COLORS } from "../../constants/COLORS";
 
 export default function NotificationsScreen(props) {
   const [notifications, setNotifications] = useState([]);
-
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState(false);
   const [updateFlatlist, setUpdateFlatlist] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
 
   useLayoutEffect(() => {
     props.navigation.setOptions({ title: "Notifications" });
@@ -30,7 +18,6 @@ export default function NotificationsScreen(props) {
         const data = doc.data();
         if (data.notifications) {
           setNotifications(data.notifications);
-          console.log("Should update");
         }
         setUpdateFlatlist(!updateFlatlist);
       });
@@ -41,30 +28,6 @@ export default function NotificationsScreen(props) {
   }, []);
 
   useEffect(() => {}, [notifications]);
-
-  useEffect(() => {
-    Notifications.getDevicePushTokenAsync().then((token) => {
-      console.log(token);
-      setExpoPushToken(token);
-    });
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) =>
-        setNotification(notification)
-      );
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
 
   return (
     <View>

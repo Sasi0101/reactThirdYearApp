@@ -10,12 +10,14 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Platform,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "firebase/storage";
 import firebase from "firebase/app";
 import { auth, firestore } from "../../firebase";
 import { Overlay } from "@rneui/themed";
+import { COLORS } from "../../constants/COLORS";
 
 export default function QuestionsScreen(props) {
   const [data, setData] = useState([]);
@@ -123,7 +125,7 @@ export default function QuestionsScreen(props) {
               setCurrentData(data);
               setIsAnswerOverlayOn(true);
             }}
-            color={"#20B2AA"}
+            color={COLORS.primary}
           />
         </View>
       </View>
@@ -191,7 +193,7 @@ export default function QuestionsScreen(props) {
         <Button
           title="Ask a question"
           onPress={() => setIsQuestionOverlayOn(true)}
-          color="#20B2AA"
+          color={COLORS.primary}
         />
       </View>
 
@@ -202,7 +204,7 @@ export default function QuestionsScreen(props) {
           setIsQuestionOverlayOn(false);
         }}
       >
-        <View style={{ width: Dimensions.get("window").width * 0.9 }}>
+        <SafeAreaView style={{ width: Dimensions.get("window").width * 0.9 }}>
           <View>
             <Text style={{ fontSize: 22, paddingLeft: 5 }}>Question:</Text>
             <View style={{ elevation: 1, borderWidth: 0.5, borderRadius: 5 }}>
@@ -225,7 +227,7 @@ export default function QuestionsScreen(props) {
           >
             <Button
               title="Cancel"
-              color="#20B2AA"
+              color={COLORS.primary}
               onPress={() => {
                 setQuestion("");
                 setIsQuestionOverlayOn(false);
@@ -233,7 +235,7 @@ export default function QuestionsScreen(props) {
             />
             <Button
               title="Ask question"
-              color="#20B2AA"
+              color={COLORS.primary}
               onPress={() => {
                 question.length < 1
                   ? Alert.alert(
@@ -244,7 +246,7 @@ export default function QuestionsScreen(props) {
               }}
             />
           </View>
-        </View>
+        </SafeAreaView>
       </Overlay>
 
       {currentData && (
@@ -254,7 +256,7 @@ export default function QuestionsScreen(props) {
             setIsAnswerOverlayOn(false);
           }}
         >
-          <View
+          <SafeAreaView
             style={{
               flex: 10,
               margin: 5,
@@ -273,7 +275,7 @@ export default function QuestionsScreen(props) {
               style={{
                 paddingTop: 10,
                 paddingBottom: 10,
-                flex: 8,
+                flex: 9,
                 paddingHorizontal: 2,
               }}
             >
@@ -296,6 +298,7 @@ export default function QuestionsScreen(props) {
                 )}
               />
             </View>
+
             <KeyboardAvoidingView
               style={{
                 flex: 1,
@@ -303,45 +306,48 @@ export default function QuestionsScreen(props) {
                 borderWidth: 0.5,
                 borderRadius: 5,
               }}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
               <TextInput
                 style={{ fontSize: 16, margin: 5 }}
                 placeholder="Write your answer"
+                placeholderTextColor="gray"
                 value={questionAnswer}
                 onChangeText={(text) => setQuestionAnswer(text)}
                 maxLength={256}
               />
             </KeyboardAvoidingView>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              margin: 5,
-            }}
-          >
-            <Button
-              title="Cancel"
-              onPress={() => {
-                setQuestionAnswer("");
-                setIsAnswerOverlayOn(false);
-              }}
-              color={"#20B2AA"}
-            />
 
-            <Button
-              title="Send"
-              onPress={() => {
-                questionAnswer.length < 1
-                  ? Alert.alert(
-                      "Missing answer",
-                      "You must write something as an aswer."
-                    )
-                  : handleAnswerintQuestion();
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                margin: 5,
               }}
-              color={"#20B2AA"}
-            />
-          </View>
+            >
+              <Button
+                title="Cancel"
+                onPress={() => {
+                  setQuestionAnswer("");
+                  setIsAnswerOverlayOn(false);
+                }}
+                color={COLORS.primary}
+              />
+
+              <Button
+                title="Send"
+                onPress={() => {
+                  questionAnswer.length < 1
+                    ? Alert.alert(
+                        "Missing answer",
+                        "You must write something as an aswer."
+                      )
+                    : handleAnswerintQuestion();
+                }}
+                color={COLORS.primary}
+              />
+            </View>
+          </SafeAreaView>
         </Overlay>
       )}
     </SafeAreaView>

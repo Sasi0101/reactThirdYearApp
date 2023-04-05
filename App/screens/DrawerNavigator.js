@@ -16,6 +16,7 @@ import GroupMessagesGiftedChat from "./GroupsScreen/GroupMessagesGiftedChat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NotificationsScreen from "./NotificationsScreen/NotificationsScreen";
 import QuestionsScreen from "./QuestionsScreen/QuestionsScreen";
+import { COLORS } from "../constants/COLORS";
 
 const Drawer = createDrawerNavigator();
 

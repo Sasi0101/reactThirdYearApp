@@ -15,6 +15,7 @@ import React, { useEffect, useState, useLayoutEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Overlay } from "@rneui/themed";
 import OneDeck from "./OneDeck";
+import { COLORS } from "../../constants/COLORS";
 
 import { DeviceEventEmitter } from "react-native";
 import { auth, firestore } from "../../firebase";
@@ -159,34 +160,64 @@ export default function FlashcardsScreen() {
           </View>
 
           <View
-            style={{ height: "10%", width: Dimensions.get("window").width }}
+            style={{
+              height: "10%",
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
           >
-            <View
-              style={[
-                styles.optionsContainer,
-                { justifyContent: "space-between", flexDirection: "row" },
-              ]}
-            >
+            <View style={{ paddingLeft: 7 }}>
               <TouchableOpacity
-                style={styles.optionButton}
+                style={[
+                  styles.optionButton,
+                  {
+                    backgroundColor: COLORS.primary,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    elevation: 4,
+                  },
+                ]}
                 onPress={() => {
                   setCardsOverlay(true);
                 }}
               >
-                <Text>Add a card</Text>
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  ADD CARDS
+                </Text>
               </TouchableOpacity>
-
+            </View>
+            <View>
               <TouchableOpacity
-                style={styles.optionButton}
+                style={[
+                  styles.optionButton,
+                  {
+                    backgroundColor: COLORS.primary,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    elevation: 4,
+                  },
+                ]}
                 onPress={() => {
                   setDeckOverlay(!deckOverlay);
                 }}
               >
-                <Text>Add a deck</Text>
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  ADD A DECK
+                </Text>
               </TouchableOpacity>
-
+            </View>
+            <View style={{ paddingRight: 7 }}>
               <TouchableOpacity
-                style={styles.optionButton}
+                style={[
+                  styles.optionButton,
+                  {
+                    backgroundColor: COLORS.primary,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    elevation: 4,
+                  },
+                ]}
                 onPress={() => {
                   if (isThereWifi) {
                     setShouldShowOnlineDecks(true);
@@ -198,7 +229,9 @@ export default function FlashcardsScreen() {
                   }
                 }}
               >
-                <Text>Decks online</Text>
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  DECKS ONLINE
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -212,10 +245,25 @@ export default function FlashcardsScreen() {
           setInputValue("");
         }}
       >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={{ width: "30%", fontSize: 18 }}> Deck name </Text>
+        <View
+          style={{
+            alignItems: "center",
+            width: Dimensions.get("window").width * 0.9,
+          }}
+        >
+          <Text style={{ fontSize: 18, fontWeight: "bold", paddingBottom: 10 }}>
+            Deck name
+          </Text>
           <TextInput
-            style={{ borderColor: "gray", borderWidth: 1, width: "60%" }}
+            style={{
+              borderColor: "gray",
+              borderWidth: 1,
+              width: "100%",
+              borderRadius: 5,
+              elevation: 1,
+              height: 30,
+              paddingHorizontal: 5,
+            }}
             placeholder=" Enter deck name"
             value={inputValue}
             onChangeText={(text) => setInputValue(text)}
@@ -226,22 +274,44 @@ export default function FlashcardsScreen() {
         <View
           style={{
             flexDirection: "row",
-            marginTop: 40,
+            marginTop: 20,
             marginBottom: 5,
             marginHorizontal: 5,
           }}
         >
           <TouchableOpacity
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+            }}
             onPress={() => {
               setInputValue("");
               setDeckOverlay(!deckOverlay);
             }}
           >
-            <Text>Cancel</Text>
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                paddingHorizontal: 5,
+                paddingVertical: 5,
+              }}
+            >
+              Cancel
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={{ position: "absolute", right: 0 }}
+            style={{
+              position: "absolute",
+              right: 0,
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+            }}
             onPress={() => {
               const checkIfThereIsSameDeckName = deckNames.includes(inputValue);
 
@@ -264,7 +334,16 @@ export default function FlashcardsScreen() {
               }
             }}
           >
-            <Text>Add deck</Text>
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                paddingHorizontal: 5,
+                paddingVertical: 5,
+              }}
+            >
+              Add deck
+            </Text>
           </TouchableOpacity>
         </View>
       </Overlay>
@@ -277,25 +356,38 @@ export default function FlashcardsScreen() {
       >
         <View
           style={{
-            flexDirection: "row",
-            width: "90%",
-            alignItems: "center",
+            width: Dimensions.get("window").width * 0.9,
           }}
         >
-          <Text style={{ fontSize: 17, width: "20%" }}>Deck: </Text>
+          <Text style={{ fontSize: 17, width: "20%", fontWeight: "bold" }}>
+            Deck:
+          </Text>
+          <View style={{ paddingTop: 10 }} />
           <TouchableOpacity
-            style={{ width: "70%" }}
+            style={{
+              borderColor: "gray",
+              borderWidth: 1,
+              borderRadius: 4,
+              height: 25,
+            }}
             onPress={() => {
               setCardsOverlay(false);
               setChooseDeckOverlay(true);
             }}
           >
-            <Text> {selectedOption}</Text>
+            <Text style={{ fontSize: 16 }}> {selectedOption}</Text>
           </TouchableOpacity>
         </View>
 
         <View style={{ flexDirection: "column" }}>
-          <Text style={{ paddingTop: 25, paddingBottom: 10, fontSize: 17 }}>
+          <Text
+            style={{
+              paddingTop: 25,
+              paddingBottom: 10,
+              fontSize: 17,
+              fontWeight: "bold",
+            }}
+          >
             Front:
           </Text>
           <TextInput
@@ -303,6 +395,7 @@ export default function FlashcardsScreen() {
               height: 40,
               borderColor: "gray",
               borderWidth: 1,
+              borderRadius: 4,
             }}
             placeholder=" Enter question"
             value={frontCard}
@@ -312,7 +405,14 @@ export default function FlashcardsScreen() {
         </View>
 
         <View style={{ flexDirection: "column" }}>
-          <Text style={{ paddingTop: 25, paddingBottom: 10, fontSize: 17 }}>
+          <Text
+            style={{
+              paddingTop: 25,
+              paddingBottom: 10,
+              fontSize: 17,
+              fontWeight: "bold",
+            }}
+          >
             Back:
           </Text>
           <TextInput
@@ -320,6 +420,7 @@ export default function FlashcardsScreen() {
               height: 40,
               borderColor: "gray",
               borderWidth: 1,
+              borderRadius: 4,
             }}
             placeholder=" Enter answer"
             value={backCard}
@@ -337,8 +438,7 @@ export default function FlashcardsScreen() {
             alignSelf: "center",
           }}
         >
-          <Button
-            title="Add card"
+          <TouchableOpacity
             onPress={() => {
               if (selectedOption === "Select deck") {
                 Alert.alert("You must choose a desk.");
@@ -360,8 +460,25 @@ export default function FlashcardsScreen() {
               setFrontCard("");
               setBackCard("");
             }}
-            accessibilityLabel="Press this to add"
-          />
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 16,
+                paddingHorizontal: 5,
+                paddingVertical: 5,
+              }}
+            >
+              ADD CARD
+            </Text>
+          </TouchableOpacity>
         </View>
       </Overlay>
 

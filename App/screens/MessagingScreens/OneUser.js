@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { auth, firestore } from "../../firebase";
 import { Avatar } from "react-native-paper";
 import "firebase/storage";
+import { COLORS } from "../../constants/COLORS";
 import firebase from "firebase/app";
 
 export default function OneUser(props) {

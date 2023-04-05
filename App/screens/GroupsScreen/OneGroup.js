@@ -11,6 +11,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { auth, firestore } from "../../firebase";
 import { Overlay } from "@rneui/themed";
+import { COLORS } from "../../constants/COLORS";
 
 export default function OneGroup(props) {
   const navigation = useNavigation();
@@ -148,6 +149,14 @@ export default function OneGroup(props) {
     );
   };
 
+  const handleDelete = async () => {
+    firestore
+      .collection("groups")
+      .doc(props.data.id)
+      .delete()
+      .catch((error) => console.warn("Error while deleting group: ", error));
+  };
+
   return (
     <>
       {!isJoined && isThereSpaceLeft && data && !isBanned && (
@@ -227,9 +236,9 @@ export default function OneGroup(props) {
               <Text
                 style={{
                   fontSize: 20,
-                  backgroundColor: "#E7DECC",
                   borderRadius: 5,
-                  paddingHorizontal: 5,
+                  paddingHorizontal: 2,
+                  borderWidth: 1,
                 }}
               >
                 {data.description}
@@ -245,6 +254,8 @@ export default function OneGroup(props) {
                 <Text
                   style={{
                     fontSize: 20,
+                    borderWidth: 1,
+                    paddingHorizontal: 2,
                   }}
                 >
                   {data.members.join(", ")}
@@ -338,14 +349,25 @@ export default function OneGroup(props) {
             //setShowGroupMessagesGfitedChat(true);
           }}
           onLongPress={() => {
-            Alert.alert(
-              "Exitting",
-              "Are you sure you want to exit from this group?",
-              [
-                { text: "No", onPress: () => {} },
-                { text: "Yes", onPress: () => handleExit() },
-              ]
-            );
+            if (props.data.data.owner === auth.currentUser?.email) {
+              Alert.alert(
+                "Deleting group",
+                "Are you sure you want to delete this group?",
+                [
+                  { text: "No", onPress: () => {} },
+                  { text: "Yes", onPress: () => handleDelete() },
+                ]
+              );
+            } else {
+              Alert.alert(
+                "Exitting",
+                "Are you sure you want to exit from this group?",
+                [
+                  { text: "No", onPress: () => {} },
+                  { text: "Yes", onPress: () => handleExit() },
+                ]
+              );
+            }
           }}
         >
           <View style={styles.item}>
@@ -375,37 +397,93 @@ export default function OneGroup(props) {
         >
           <TextInput
             placeholder="Password"
+            placeholderTextColor={"gray"}
             value={password}
             onChangeText={(text) => setPassword(text)}
             maxLength={32}
+            style={{ borderWidth: 1, paddingHorizontal: 5, borderRadius: 5 }}
           />
 
-          <View style={{ flexDirection: "row", paddingVertical: 10 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              paddingVertical: 10,
+              justifyContent: "space-between",
+            }}
+          >
             <TouchableOpacity
               onPress={() => {
                 setShowPasswordOverlay(!showPasswordOverLay);
                 setPassword("");
               }}
-              style={{ left: 5 }}
+              style={{
+                backgroundColor: COLORS.primary,
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
+              }}
             >
-              <Text> Cancel </Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+              >
+                Cancel
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{ paddingLeft: 50 }}
+              style={{
+                backgroundColor: COLORS.primary,
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
+              }}
               onPress={() => {
                 setShowPasswordOverlay(!showPasswordOverLay);
                 setPassword("");
                 handleRequestForAccess();
               }}
             >
-              <Text>Ask owner to join</Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+              >
+                Ask owner to join
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => handleJoin()}
-              style={{ position: "absolute", right: 5, paddingTop: 10 }}
+              style={{
+                backgroundColor: COLORS.primary,
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
+              }}
             >
-              <Text> Ok </Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+              >
+                Ok
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

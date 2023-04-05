@@ -14,6 +14,7 @@ import { Overlay } from "@rneui/themed";
 import { Rating } from "react-native-ratings";
 import { auth, firestore } from "../../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { COLORS } from "../../constants/COLORS";
 
 export default function OneFlashcard(props) {
   const [deckName, setDeckName] = useState("");
@@ -200,7 +201,13 @@ export default function OneFlashcard(props) {
         onPress={() => {
           setIsOptionsOverlayOn(true);
         }}
-        style={{ borderWidth: 1, height: 80 }}
+        style={{
+          borderWidth: 1,
+          height: 80,
+          backgroundColor: "white",
+          borderRadius: 5,
+          elevation: 4,
+        }}
       >
         <View style={{ flexDirection: "column", alignItems: "center" }}>
           <Text style={{ fontSize: 20, textAlign: "center" }} numberOfLines={2}>
@@ -215,7 +222,11 @@ export default function OneFlashcard(props) {
               startingValue={allRating}
               readonly={true}
             />
-            <Text> {props.data.data.usersVoted.length} votes</Text>
+            <Text>
+              {" "}
+              {props.data.data.usersVoted.length}{" "}
+              {props.data.data.usersVoted.length < 2 ? "vote" : "votes"}
+            </Text>
           </View>
         </View>
 
@@ -227,7 +238,15 @@ export default function OneFlashcard(props) {
         >
           <View style={{ width: Dimensions.get("window").width * 0.9 }}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={{ paddingRight: 25, paddingLeft: 10, fontSize: 20 }}>
+              <Text
+                style={{
+                  paddingRight: 25,
+                  paddingLeft: 10,
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  paddingLeft: 15,
+                }}
+              >
                 Rating:
               </Text>
               <Rating
@@ -248,16 +267,52 @@ export default function OneFlashcard(props) {
                 paddingBottom: 5,
               }}
             >
-              <TouchableOpacity onPress={() => handleDownload()}>
-                <Text style={{ fontSize: 20 }}>Download deck</Text>
+              <TouchableOpacity
+                onPress={() => handleDownload()}
+                style={{
+                  backgroundColor: COLORS.primary,
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  elevation: 4,
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                  }}
+                >
+                  Download deck
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                style={{
+                  backgroundColor: COLORS.primary,
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  elevation: 4,
+                  alignItems: "center",
+                }}
                 onPress={() => {
                   setIsOptionsOverlayOn(false);
                   setIsCardsOverlayOn(true);
                 }}
               >
-                <Text style={{ fontSize: 20 }}>View cards</Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                  }}
+                >
+                  View cards
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -286,9 +341,23 @@ export default function OneFlashcard(props) {
                   setIsCardsOverlayOn(false);
                   setIsOptionsOverlayOn(true);
                 }}
-                style={{ borderWidth: 1 }}
+                style={{
+                  backgroundColor: COLORS.primary,
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  elevation: 4,
+                  alignItems: "center",
+                }}
               >
-                <Text style={{ paddingVertical: 2, paddingHorizontal: 2 }}>
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                  }}
+                >
                   Close cards page
                 </Text>
               </TouchableOpacity>

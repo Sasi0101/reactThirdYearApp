@@ -8,12 +8,13 @@ import {
   FlatList,
   Alert,
 } from "react-native";
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useLayoutEffect, useState } from "react";
 import { Calendar } from "react-native-calendars";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Overlay } from "@rneui/themed";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import OneEvent from "./OneEvent";
+import { COLORS } from "../../constants/COLORS";
 
 export default function CalendarScreen(props) {
   const [selectedDate, setSelectedDate] = useState(
@@ -36,7 +37,8 @@ export default function CalendarScreen(props) {
   const [isEdit, setIsEdit] = useState(false);
   const [editedData, setEditedData] = useState(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    setSelectedDate(getDateInGoodFormat(new Date()));
     props.navigation.setOptions({ title: "Calendar" });
     const retrieveMarkedDates = async () => {
       try {
@@ -115,7 +117,10 @@ export default function CalendarScreen(props) {
     let month = (date.getMonth() + 1).toString();
     if (month.length == 1) month = "0" + month;
 
-    return date.getFullYear() + "-" + month + "-" + date.getDate();
+    let day = date.getDate().toString();
+    if (day.length == 1) day = "0" + day;
+
+    return date.getFullYear() + "-" + month + "-" + day;
   }
 
   const handleAddEvent = async () => {
@@ -247,11 +252,8 @@ export default function CalendarScreen(props) {
     <View style={{ flex: 1 }}>
       <View>
         <Calendar
-          theme={{
-            //calendarBackground: "white",
-            monthTextColor: "green",
-          }}
           onDayPress={(day) => {
+            console.log(day.dateString);
             setSelectedDate(day.dateString);
           }}
           onDayLongPress={(day) => {
@@ -291,6 +293,8 @@ export default function CalendarScreen(props) {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
+            console.log(selectedDate);
+            //console.log(getDateInGoodFormat(selectedDate));
             const date = new Date(selectedDate);
 
             setEventDate(date);
@@ -318,51 +322,54 @@ export default function CalendarScreen(props) {
               showMode("date");
             }}
             style={{
-              paddingVertical: 5,
               borderWidth: 1,
+              borderRadius: 5,
+              backgroundColor: "white",
+              elevation: 4,
               width: "100%",
-              justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <Text>
+            <Text style={{ paddingHorizontal: 5, paddingVertical: 5 }}>
               Date: {eventDate.getFullYear()}/{eventDate.getMonth() + 1}/
               {eventDate.getDate()} ({GetWeekday(eventDate)})
             </Text>
           </TouchableOpacity>
-
+          <View style={{ paddingTop: 10 }} />
           <TouchableOpacity
             onPress={() => {
               setIsFirstTime("2");
               showMode("time");
             }}
             style={{
-              paddingVertical: 5,
               borderWidth: 1,
+              borderRadius: 5,
+              backgroundColor: "white",
+              elevation: 4,
               width: "100%",
-              justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <Text>
+            <Text style={{ paddingHorizontal: 5, paddingVertical: 5 }}>
               From: {firstEventTime.getHours()}:{firstEventTime.getMinutes()}
             </Text>
           </TouchableOpacity>
-
+          <View style={{ paddingTop: 10 }} />
           <TouchableOpacity
             onPress={() => {
               setIsFirstTime("3");
               showMode("time");
             }}
             style={{
-              paddingVertical: 5,
               borderWidth: 1,
+              borderRadius: 5,
+              backgroundColor: "white",
+              elevation: 4,
               width: "100%",
-              justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <Text>
+            <Text style={{ paddingHorizontal: 5, paddingVertical: 5 }}>
               To: {secondEventTime.getHours()}:{secondEventTime.getMinutes()}
             </Text>
           </TouchableOpacity>
@@ -376,8 +383,10 @@ export default function CalendarScreen(props) {
               paddingLeft: 10,
               fontWeight: "bold",
               borderRadius: 15,
+              backgroundColor: "white",
             }}
             placeholder="Event name"
+            placeholderTextColor={"gray"}
             value={eventName}
             onChangeText={(text) => setEventName(text)}
             maxLength={64}
@@ -391,13 +400,14 @@ export default function CalendarScreen(props) {
               height: 40,
               borderWidth: 1,
               paddingLeft: 10,
-              fontWeight: "bold",
               borderRadius: 15,
+              backgroundColor: "white",
             }}
+            placeholderTextColor={"gray"}
             placeholder="Event decription"
             value={eventDescription}
             onChangeText={(text) => setEventDescription(text)}
-            maxLength={512}
+            maxLength={256}
           />
 
           {show && (
@@ -409,7 +419,44 @@ export default function CalendarScreen(props) {
               onChange={onChange}
             />
           )}
-          <View style={{ flexDirection: "row", paddingVertical: 15 }}>
+          <View style={{ paddingTop: 15 }} />
+          <View
+            style={{
+              flexDirection: "row",
+              paddingVertical: 15,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                setEventAddOverlay(!eventAddOverlay);
+                setEventName("");
+                setEventDescription("");
+                setIsEdit(false);
+              }}
+              style={{
+                backgroundColor: COLORS.primary,
+                alignItems: "center",
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                justifyContent: "center",
+                position: "absolute",
+                left: 5,
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
             {!isEdit && (
               <TouchableOpacity
                 onPress={() => {
@@ -424,9 +471,28 @@ export default function CalendarScreen(props) {
                     handleAddEvent();
                   }
                 }}
-                style={{ position: "absolute", right: 5, paddingTop: 15 }}
+                style={{
+                  backgroundColor: COLORS.primary,
+                  alignItems: "center",
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  elevation: 4,
+                  justifyContent: "center",
+                  position: "absolute",
+                  right: 5,
+                }}
               >
-                <Text>Add event</Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                  }}
+                >
+                  Add event
+                </Text>
               </TouchableOpacity>
             )}
 
@@ -444,21 +510,30 @@ export default function CalendarScreen(props) {
                     saveEditChanges();
                   }
                 }}
-                style={{ position: "absolute", right: 5, paddingTop: 15 }}
+                style={{
+                  backgroundColor: COLORS.primary,
+                  alignItems: "center",
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  elevation: 4,
+                  justifyContent: "center",
+                  position: "absolute",
+                  right: 5,
+                }}
               >
-                <Text>Save changes</Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                  }}
+                >
+                  Save changes
+                </Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity
-              onPress={() => {
-                setEventAddOverlay(!eventAddOverlay);
-                setEventName("");
-                setEventDescription("");
-                setIsEdit(false);
-              }}
-            >
-              <Text>Cancel</Text>
-            </TouchableOpacity>
           </View>
         </Overlay>
       </View>
@@ -471,7 +546,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#0080ff",
+    backgroundColor: COLORS.primary,
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",

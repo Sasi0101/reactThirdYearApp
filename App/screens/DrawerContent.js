@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { auth } from "../firebase";
+import { auth, firestore } from "../firebase";
 import { View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
@@ -9,6 +9,7 @@ import "firebase/storage";
 import firebase from "firebase/app";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Tooltip } from "@rneui/themed";
+import { COLORS } from "../constants/COLORS";
 
 export function DrawerContent(props) {
   const [isDarkTheme, setIsDarkTheme] = useState("");
@@ -29,6 +30,8 @@ export function DrawerContent(props) {
   const [isNotificationTooltipVisible, setIsNotificationTooltipVisible] =
     useState(false);
 
+  const [userHasNotifications, setUserHasNotifications] = useState(false);
+
   useEffect(() => {
     setUsername(props.data.username);
 
@@ -46,8 +49,31 @@ export function DrawerContent(props) {
         });
       })
       .catch((error) => {
-        console.error("Error getting image metadata:", error);
+        if (error.code === "storage/object-not-found") {
+          console.log("Image does not exist");
+        } else {
+          console.error("Error getting image metadata:", error);
+        }
       });
+
+    const unsubscribe = firestore
+      .collection("users")
+      .doc(auth.currentUser?.email)
+      .onSnapshot((doc) => {
+        const data = doc.data();
+        if (data.notifications.length) {
+          data.notifications.length < 1
+            ? setUserHasNotifications(false)
+            : setUserHasNotifications(true);
+        } else {
+          setUserHasNotifications(false);
+        }
+        //setUpdateFlatlist(!updateFlatlist);
+      });
+
+    return () => {
+      unsubscribe();
+    };
   }, [props.data]);
 
   const toggleTheme = () => {
@@ -80,7 +106,7 @@ export function DrawerContent(props) {
           <View
             style={[
               styles.userInfoSection,
-              { backgroundColor: "#20B2AA", borderRadius: 5, flex: 4 },
+              { backgroundColor: COLORS.primary, borderRadius: 5, flex: 4 },
             ]}
           >
             <View style={{ flexDirection: "row", marginTop: 15, flex: 4 }}>
@@ -128,6 +154,10 @@ export function DrawerContent(props) {
                 </Text>
               }
               visible={isGroupToolTipVisible}
+              containerStyle={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <CustomDrawerItem
                 iconName="account-group"
@@ -154,6 +184,10 @@ export function DrawerContent(props) {
                   on their profile pictures.
                 </Text>
               }
+              containerStyle={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <CustomDrawerItem
                 iconName="chat"
@@ -179,6 +213,10 @@ export function DrawerContent(props) {
                   You can ask a question or answer an already existing question.
                 </Text>
               }
+              containerStyle={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <CustomDrawerItem
                 iconName="comment"
@@ -202,6 +240,10 @@ export function DrawerContent(props) {
               popover={
                 <Text>View your events and add new ones to your day.</Text>
               }
+              containerStyle={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <CustomDrawerItem
                 iconName="calendar-month"
@@ -228,6 +270,10 @@ export function DrawerContent(props) {
                   view already uploaded decks and download them.
                 </Text>
               }
+              containerStyle={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <CustomDrawerItem
                 iconName="school"
@@ -254,6 +300,10 @@ export function DrawerContent(props) {
                   state by clicking on it.
                 </Text>
               }
+              containerStyle={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <CustomDrawerItem
                 iconName="calendar-check"
@@ -281,6 +331,10 @@ export function DrawerContent(props) {
                   well.
                 </Text>
               }
+              containerStyle={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <CustomDrawerItem
                 iconName="account-outline"
@@ -308,9 +362,13 @@ export function DrawerContent(props) {
                   group created by you.
                 </Text>
               }
+              containerStyle={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <CustomDrawerItem
-                iconName="bell"
+                iconName={userHasNotifications ? "bell-badge" : "bell"}
                 label="Notifications"
                 onPress={() => {
                   props.navigation.navigate("NotificationScreen");

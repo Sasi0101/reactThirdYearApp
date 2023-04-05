@@ -19,6 +19,7 @@ import firebase from "firebase/app";
 import { auth, firestore } from "../../firebase";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { COLORS } from "../../constants/COLORS";
 
 export default function UsersScreen(props) {
   const [usersToPrint, setUsersToPrint] = useState([]);
@@ -206,7 +207,9 @@ export default function UsersScreen(props) {
 
       {isShowingUserProfile ? (
         <SafeAreaView style={styles.container}>
-          <View style={[styles.coverImage, { backgroundColor: "#20B2AA" }]} />
+          <View
+            style={[styles.coverImage, { backgroundColor: COLORS.primary }]}
+          />
 
           <View style={styles.avatarContainer}>
             <Image
@@ -294,7 +297,7 @@ export default function UsersScreen(props) {
 
 const styles = StyleSheet.create({
   searchInput: {
-    backgroundColor: "#20B2AA",
+    backgroundColor: COLORS.primary,
     color: "black",
     height: 40,
     borderRadius: 10,

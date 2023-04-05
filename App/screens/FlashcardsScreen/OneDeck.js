@@ -14,6 +14,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { DeviceEventEmitter } from "react-native";
 import { Overlay } from "@rneui/themed";
 import { auth, firestore } from "../../firebase";
+import { COLORS } from "../../constants/COLORS";
 
 const NEW_PER_DAY = 20;
 //cardState can be new, learning, learning2 and review
@@ -281,31 +282,79 @@ export default function OneDeck(props) {
         style={{}}
       >
         <TouchableOpacity
-          style={{ borderWidth: 1 }}
+          style={{
+            backgroundColor: COLORS.primary,
+            borderWidth: 1,
+            borderRadius: 5,
+            elevation: 4,
+            alignItems: "center",
+          }}
           onPress={() => {
             handleOnPublish();
           }}
         >
-          <Text>Publish deck: {props.deckName}</Text>
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              fontSize: 16,
+              paddingHorizontal: 5,
+              paddingVertical: 5,
+            }}
+          >
+            Publish deck: {props.deckName}
+          </Text>
         </TouchableOpacity>
         <View style={{ paddingVertical: 10 }} />
         <TouchableOpacity
-          style={{ borderWidth: 1 }}
+          style={{
+            backgroundColor: COLORS.primary,
+            borderWidth: 1,
+            borderRadius: 5,
+            elevation: 4,
+            alignItems: "center",
+          }}
           onPress={() => {
             setIsOverlayOn(false);
             setIsCardsOverlayOn(true);
           }}
         >
-          <Text>View cards</Text>
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              fontSize: 16,
+              paddingHorizontal: 5,
+              paddingVertical: 5,
+            }}
+          >
+            View cards
+          </Text>
         </TouchableOpacity>
         <View style={{ paddingVertical: 10 }} />
         <TouchableOpacity
-          style={{ borderWidth: 1 }}
+          style={{
+            backgroundColor: COLORS.primary,
+            borderWidth: 1,
+            borderRadius: 5,
+            elevation: 4,
+            alignItems: "center",
+          }}
           onPress={() => {
             handleDeleteDeck();
           }}
         >
-          <Text>Delete deck</Text>
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              fontSize: 16,
+              paddingHorizontal: 5,
+              paddingVertical: 5,
+            }}
+          >
+            Delete deck
+          </Text>
         </TouchableOpacity>
       </Overlay>
 

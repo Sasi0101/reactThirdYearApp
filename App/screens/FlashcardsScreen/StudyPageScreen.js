@@ -3,6 +3,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DeviceEventEmitter } from "react-native";
 import { Button } from "react-native";
+import { COLORS } from "../../constants/COLORS";
 
 export default function StudyPageScreen({ route }) {
   const [shouldShowAnswer, setShouldShowAnswer] = useState(false);
@@ -327,7 +328,7 @@ export default function StudyPageScreen({ route }) {
           <Button
             title="Show answer"
             onPress={() => setShouldShowAnswer(true)}
-            color="#20B2AA"
+            color={COLORS.primary}
           />
         )}
         {shouldShowAnswer && (

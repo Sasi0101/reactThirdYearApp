@@ -6,11 +6,19 @@ import {
   TouchableOpacity,
   Alert,
   ImageBackground,
+  Switch,
+  Platform,
 } from "react-native";
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { auth, firestore } from "../../firebase";
 import { useNavigation } from "@react-navigation/core";
 import NetInfo from "@react-native-community/netinfo";
+import { COLORS } from "../../constants/COLORS";
+import { CheckBox } from "@rneui/themed";
+import { Overlay } from "@rneui/themed";
+import { ScrollView } from "react-native";
+import { Dimensions } from "react-native";
+import { TouchableHighlight } from "react-native-gesture-handler";
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState("");
@@ -20,6 +28,9 @@ const RegisterScreen = () => {
   const navigation = useNavigation();
   const [isThereWifi, setIsThereWifi] = useState(true);
   const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
+  const [isTermsAndServicesAccepted, setIsTermsAndServicesAccepted] =
+    useState(false);
+  const [isOverlayOn, setIsOverlayOn] = useState(false);
 
   useLayoutEffect(() => {
     const unsubsribe = NetInfo.addEventListener((state) => {
@@ -58,6 +69,11 @@ const RegisterScreen = () => {
       return;
     }
 
+    if (!isTermsAndServicesAccepted) {
+      Alert.alert("Error", "You must accept the terms and services");
+      return;
+    }
+
     email == "" || password == "" || password2 == "" || username == ""
       ? Alert.alert("Error", "All inputs must be filled out!")
       : password != password2
@@ -71,6 +87,9 @@ const RegisterScreen = () => {
               groups_created: [],
               groups_joined: [],
               username: username,
+              notifications: [],
+              description: "",
+              usersTalkedTo: [],
             };
 
             firestore
@@ -112,6 +131,7 @@ const RegisterScreen = () => {
           style={styles.input}
           placeholder="Confirm password"
           value={password2}
+          secureTextEntry={true}
           onChangeText={(text) => setPassword2(text)}
           maxLength={32}
         />
@@ -122,6 +142,39 @@ const RegisterScreen = () => {
           onChangeText={(text) => setUsername(text)}
           maxLength={24}
         />
+
+        <View
+          style={{
+            paddingVertical: 5,
+            flexDirection: "row",
+            alignSelf: "flex-start",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => setIsOverlayOn(true)}
+            style={{ borderWidth: 1 }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "bold",
+                color: "#0000FF",
+              }}
+            >
+              Terms and services
+            </Text>
+          </TouchableOpacity>
+
+          <CheckBox
+            checked={isTermsAndServicesAccepted}
+            onPress={() =>
+              setIsTermsAndServicesAccepted(!isTermsAndServicesAccepted)
+            }
+            size={30}
+          />
+        </View>
 
         <TouchableOpacity style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>Create Account</Text>
@@ -134,6 +187,112 @@ const RegisterScreen = () => {
           <Text style={styles.createAccountButtonText}>Login</Text>
         </TouchableOpacity>
       </View>
+
+      <Overlay
+        isVisible={isOverlayOn}
+        onBackdropPress={() => setIsOverlayOn(false)}
+      >
+        <View
+          style={{
+            height: Dimensions.get("window").height * 0.7,
+            width: Dimensions.get("window").width * 0.9,
+          }}
+        >
+          <Text
+            style={{ fontSize: 26, fontWeight: "bold", alignSelf: "center" }}
+          >
+            Terms and Services
+          </Text>
+          <ScrollView
+            style={{
+              borderRadius: 5,
+              backgroundColor: "white",
+              elevation: 5,
+            }}
+          >
+            <Text style={styles.termsAndServices}>
+              As a user of this platform, you agree to communicate with others
+              in a respectful and appropriate manner. Any behavior that is
+              considered abusive, harassing, threatening, or otherwise
+              inappropriate towards other users or our staff will not be
+              tolerated. This includes, but is not limited to, using hate
+              speech, making derogatory comments, or engaging in any other form
+              of discrimination.
+            </Text>
+            <Text style={styles.termsAndServices}>
+              By using this platform, you acknowledge and agree that any content
+              or communication that you submit is your sole responsibility. We
+              are not responsible for any content posted by users on this
+              platform, and we reserve the right to remove any content or
+              communication that we deem to be inappropriate.
+            </Text>
+
+            <Text style={styles.termsAndServices}>
+              We reserve the right to take any necessary action, including but
+              not limited to, suspending or terminating your account, if we
+              determine that your behavior on this platform violates these terms
+              and services.
+            </Text>
+          </ScrollView>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              paddingTop: 10,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                backgroundColor: COLORS.primary,
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
+              }}
+              onPress={() => setIsOverlayOn(false)}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 8,
+                  paddingVertical: 5,
+                }}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                backgroundColor: COLORS.primary,
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
+              }}
+              onPress={() => {
+                setIsTermsAndServicesAccepted(true);
+                setIsOverlayOn(false);
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 8,
+                  paddingVertical: 5,
+                }}
+              >
+                Accept
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Overlay>
     </View>
   );
 };
@@ -141,9 +300,25 @@ const RegisterScreen = () => {
 export default RegisterScreen;
 
 const styles = StyleSheet.create({
+  termsAndServices: {
+    paddingTop: 10,
+    fontSize: Platform.OS === "ios" ? 18 : 16,
+    paddingHorizontal: 5,
+  },
+  forIOS: {
+    borderRadius: 5,
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#20B2AA",
+    backgroundColor: COLORS.primary,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -166,7 +341,7 @@ const styles = StyleSheet.create({
     textAlign: "flex-end",
   },
   forgotPasswordButtonText: {
-    color: "#20B2AA",
+    color: COLORS.primary,
     fontSize: 12,
     fontWeight: "bold",
     textAlign: "right",
@@ -196,7 +371,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: "#20B2AA",
+    backgroundColor: COLORS.primary,
     borderRadius: 5,
     padding: 10,
     marginTop: 10,
@@ -211,7 +386,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   createAccountButtonText: {
-    color: "#20B2AA",
+    color: COLORS.primary,
     fontSize: 12,
     fontWeight: "bold",
   },

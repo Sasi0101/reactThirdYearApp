@@ -14,6 +14,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Overlay } from "@rneui/themed";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import OneTask from "./OneTask";
+import { COLORS } from "../../constants/COLORS";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function TodoScreen(props) {
@@ -163,7 +164,7 @@ export default function TodoScreen(props) {
           )}
         />
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, { backgroundColor: COLORS.primary }]}
           onPress={() => {
             setTaskWriting("");
             setIsOverlayOn(true);
@@ -204,14 +205,31 @@ export default function TodoScreen(props) {
           </Text>
         </View>
         <View>
-          <Button
-            title="Edit"
-            style={{ width: "100%" }}
+          <TouchableOpacity
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+              alignItems: "center",
+            }}
             onPress={() => {
               setShowingDetailedSpecs(false);
               handleOnEdit();
             }}
-          />
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 16,
+                paddingHorizontal: 5,
+                paddingVertical: 5,
+              }}
+            >
+              Edit
+            </Text>
+          </TouchableOpacity>
         </View>
       </Overlay>
 
@@ -238,8 +256,15 @@ export default function TodoScreen(props) {
             onChangeText={(value) => setTaskWriting(value)}
             maxLength={256}
           />
-          <Button
-            title="Save Task"
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+              alignItems: "center",
+            }}
             onPress={() => {
               if (taskWriting.length < 1)
                 Alert.alert(
@@ -251,7 +276,19 @@ export default function TodoScreen(props) {
                 setTask();
               }
             }}
-          />
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 16,
+                paddingHorizontal: 5,
+                paddingVertical: 5,
+              }}
+            >
+              Save task
+            </Text>
+          </TouchableOpacity>
         </View>
       </Overlay>
 
@@ -290,16 +327,40 @@ export default function TodoScreen(props) {
               justifyContent: "space-between",
             }}
           >
-            <Button
-              title="Cancel"
+            <TouchableOpacity
+              style={{
+                backgroundColor: COLORS.primary,
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
+              }}
               onPress={() => {
                 setIsEditOverlay(false);
                 setTaskWriting("");
               }}
-            />
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
 
-            <Button
-              title="Save Task"
+            <TouchableOpacity
+              style={{
+                backgroundColor: COLORS.primary,
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
+              }}
               onPress={() => {
                 if (specTaskWriting.length < 1)
                   Alert.alert(
@@ -310,7 +371,19 @@ export default function TodoScreen(props) {
                   handleEditChange();
                 }
               }}
-            />
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+              >
+                Save task
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Overlay>

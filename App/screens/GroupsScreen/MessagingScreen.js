@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
+  ScrollView,
 } from "react-native";
 import React, { useLayoutEffect } from "react";
 import { CheckBox } from "@rneui/themed";
+import { COLORS } from "../../constants/COLORS";
 //import { Checkbox } from "@react-native-community/checkbox";
 import { useState, useEffect } from "react";
 import { auth, firestore } from "../../firebase";
@@ -110,7 +112,7 @@ export default function MessagingScreen(props) {
 
       <View style={{ height: "10%" }}>
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, { backgroundColor: COLORS.primary }]}
           onPress={() => {
             returnToOriginal();
             setShowAddOverlay(true);
@@ -139,9 +141,17 @@ export default function MessagingScreen(props) {
               alignItems: "center",
             }}
           >
-            <Text style={{ fontSize: 20 }}>Name: </Text>
+            <Text style={{ fontSize: 20, width: "20%", fontWeight: "bold" }}>
+              Name:
+            </Text>
             <TextInput
-              style={{ paddingLeft: 15, fontSize: 19 }}
+              style={{
+                paddingHorizontal: 5,
+                fontSize: 19,
+                borderWidth: 1,
+                borderRadius: 5,
+                width: "80%",
+              }}
               placeholder="Group name"
               value={groupName}
               onChangeText={(text) => setGroupName(text)}
@@ -150,17 +160,30 @@ export default function MessagingScreen(props) {
           </View>
 
           <View style={{ paddingTop: 15 }}>
-            <Text style={{ fontSize: 20 }}>Description: </Text>
-            <TextInput
-              textAlignVertical="top"
-              multiline
-              numberOfLines={4}
-              placeholder="Description"
-              value={groupDescription}
-              onChangeText={(text) => setGroupDescription(text)}
-              style={{ backgroundColor: "#E8E4C9", fontSize: 19 }}
-              maxLength={500}
-            />
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+              Description:
+            </Text>
+            <ScrollView
+              style={{
+                borderWidth: 1,
+                borderRadius: 5,
+                maxHeight: Dimensions.get("window").height * 0.2,
+              }}
+            >
+              <TextInput
+                textAlignVertical="top"
+                multiline={true}
+                placeholder="Description"
+                value={groupDescription}
+                onChangeText={(text) => setGroupDescription(text)}
+                style={{
+                  fontSize: 18,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+                maxLength={512}
+              />
+            </ScrollView>
           </View>
 
           <View
@@ -170,7 +193,7 @@ export default function MessagingScreen(props) {
               alignContent: "center",
             }}
           >
-            <Text style={{ fontSize: 20 }}>Password </Text>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Password </Text>
             <CheckBox checked={checked} onPress={() => setChecked(!checked)} />
           </View>
 
@@ -180,7 +203,12 @@ export default function MessagingScreen(props) {
                 placeholder="Password"
                 value={groupPassword}
                 onChangeText={(text) => setGroupPassword(text)}
-                style={{ backgroundColor: "#E8E4C9", fontSize: 19 }}
+                style={{
+                  paddingHorizontal: 5,
+                  fontSize: 19,
+                  borderWidth: 1,
+                  borderRadius: 5,
+                }}
                 maxLength={32}
               />
             </View>
@@ -196,25 +224,55 @@ export default function MessagingScreen(props) {
             }}
           >
             <TouchableOpacity
-              style={{ left: 10, borderWidth: 1, borderRadius: 5 }}
+              style={{
+                left: 10,
+                backgroundColor: COLORS.primary,
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
+              }}
               onPress={() => {
                 returnToOriginal();
                 setShowAddOverlay(false);
               }}
             >
-              <Text>Cancel</Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+              >
+                Cancel
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={{
                 position: "absolute",
                 right: 10,
+                backgroundColor: COLORS.primary,
                 borderWidth: 1,
                 borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
               }}
               onPress={() => handleGroupCreate()}
             >
-              <Text>Create group</Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+              >
+                Create group
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

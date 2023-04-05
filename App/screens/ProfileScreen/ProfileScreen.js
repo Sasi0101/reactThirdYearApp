@@ -10,14 +10,15 @@ import {
   Alert,
   Image,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
 import * as ImagePickerExpo from "expo-image-picker";
 import "firebase/storage";
 import firebase from "firebase/app";
 import { auth, firestore } from "../../firebase";
-import { Avatar } from "react-native-paper";
 import * as FileSystem from "expo-file-system";
+import { COLORS } from "../../constants/COLORS";
 
 export default function ProfileScreen(props) {
   const [image, setImage] = useState(null);
@@ -122,232 +123,12 @@ export default function ProfileScreen(props) {
       }
     }
   };
-  /*
-  return (
-    <KeyboardAvoidingView
-      style={{ flex: 6, alignItems: "center", justifyContent: "center" }}
-    >
-      <View
-        style={{
-          width: Dimensions.get("window").width,
-          flex: 1,
-          flexDirection: "row",
-          alignItems: "center",
-          paddingTop: 10,
-          paddingBottom: 10,
-          paddingLeft: 10,
-        }}
-      >
-        <Avatar.Image
-          source={
-            image
-              ? {
-                  uri: image,
-                }
-              : require("../../assets/anonymous-user.png")
-          }
-          size={Dimensions.get("window").height * 0.15}
-        />
-
-        {isEdit && (
-          <TouchableOpacity
-            onPress={chooseImage}
-            style={{ paddingLeft: 15, alignSelf: "flex-end" }}
-          >
-            <Text style={{ fontSize: 20 }}>Change profile picture</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      <View
-        style={{
-          flex: 4,
-          width: Dimensions.get("window").width,
-          flexDirection: "column",
-        }}
-      >
-        {!isEdit && (
-          <View style={{ paddingHorizontal: 10, paddingTop: 20 }}>
-            {username && (
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontSize: 20 }}>Username: </Text>
-                <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                  {username}
-                </Text>
-              </View>
-            )}
-
-            {description && (
-              <View style={{}}>
-                <Text style={{ fontSize: 20 }}>Description: </Text>
-                <ScrollView
-                  style={{
-                    maxHeight: Dimensions.get("window").height * 0.4,
-                    backgroundColor: "#FFFDD0",
-                    paddingHorizontal: 10,
-                    paddingVertical: 5,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 20,
-                    }}
-                    numberOfLines={null}
-                  >
-                    {description}
-                  </Text>
-                </ScrollView>
-              </View>
-            )}
-          </View>
-        )}
-
-        {isEdit && (
-          <View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingTop: 10,
-              }}
-            >
-              <Text style={{ paddingLeft: 10, fontSize: 20 }}>Username: </Text>
-              <TextInput
-                style={{
-                  fontSize: 20,
-                  borderBottomWidth: 1,
-                  paddingHorizontal: 10,
-                  paddingVertical: 0,
-                }}
-                value={editUsername}
-                placeholder="Username"
-                onChangeText={(text) => setEditUsername(text)}
-                maxLength={24}
-              />
-            </View>
-
-            <View
-              style={{
-                paddingTop: 10,
-              }}
-            >
-              <Text
-                style={{ fontSize: 20, paddingBottom: 10, paddingLeft: 10 }}
-              >
-                Description:
-              </Text>
-              <View
-                style={{
-                  paddingHorizontal: Dimensions.get("window").width * 0.03,
-                }}
-              >
-                <TextInput
-                  style={{
-                    paddingLeft: 10,
-                    fontSize: 20,
-                    paddingHorizontal: 10,
-                    paddingVertical: 0,
-                    backgroundColor: "#FFFDD0",
-                    maxHeight: Dimensions.get("window").height * 0.2,
-                  }}
-                  numberOfLines={5}
-                  multiline={true}
-                  textAlignVertical="top"
-                  value={editDescription}
-                  placeholder="Write a description about yourself"
-                  onChangeText={(text) => setEditDescription(text)}
-                  maxLength={512}
-                />
-              </View>
-            </View>
-          </View>
-        )}
-      </View>
-
-      <View style={{ flex: 1 }}>
-        {!isEdit && (
-          <View style={{ paddingTop: 10 }}>
-            <TouchableOpacity
-              onPress={() => {
-                if (username) setEditUsername(username);
-                if (description) setEditDescription(description);
-                setIsEdit(true);
-              }}
-              style={{
-                borderWidth: 1,
-                alignContent: "center",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 5,
-              }}
-            >
-              <Text
-                style={{
-                  paddingVertical: 5,
-                  paddingHorizontal: 5,
-                }}
-              >
-                Edit profile
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {isEdit && (
-          <View style={{ paddingTop: 10, flexDirection: "row" }}>
-            <View>
-              <TouchableOpacity
-                onPress={() => setIsEdit(false)}
-                style={{
-                  borderWidth: 1,
-                  alignContent: "center",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: 5,
-                }}
-              >
-                <Text
-                  style={{
-                    paddingVertical: 5,
-                    paddingHorizontal: 5,
-                  }}
-                >
-                  Cancel edit
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{ paddingLeft: 50 }}>
-              <TouchableOpacity
-                onPress={() => saveChanges()}
-                style={{
-                  borderWidth: 1,
-                  alignContent: "center",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: 5,
-                }}
-              >
-                <Text
-                  style={{
-                    paddingVertical: 5,
-                    paddingHorizontal: 5,
-                  }}
-                >
-                  Save changes
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      </View>
-    </KeyboardAvoidingView>
-  ); */
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={[styles.coverImage, { backgroundColor: "#20B2AA" }]} />
+    <SafeAreaView style={[styles.container]}>
+      <View style={[styles.coverImage, { backgroundColor: COLORS.primary }]} />
 
-      <View style={styles.avatarContainer}>
+      <View style={[styles.avatarContainer]}>
         <Image
           source={
             image
@@ -359,40 +140,90 @@ export default function ProfileScreen(props) {
           style={styles.avatar}
         />
         {isEdit ? (
-          <TouchableOpacity onPress={chooseImage}>
-            <Text style={{ fontSize: 20 }}>Change profile picture</Text>
+          <TouchableOpacity
+            onPress={chooseImage}
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 20,
+                paddingHorizontal: 8,
+                paddingVertical: 5,
+              }}
+            >
+              Change profile picture
+            </Text>
           </TouchableOpacity>
         ) : (
-          <Text style={[styles.name, styles.textWithShadow]}>{username}</Text>
+          <Text>{username}</Text>
         )}
       </View>
 
       {isEdit ? (
-        <View style={{ flex: 8 }}>
-          <View style={[styles.content, { flex: 7 }]}>
-            <View style={styles.infoContainer}>
-              <Text style={styles.infoLabel}>Username:</Text>
+        <View>
+          <View>
+            <View style={{ paddingTop: 10 }}>
+              <Text style={{ fontWeight: "bold" }}>Username:</Text>
               <TextInput
-                style={styles.infoValue}
+                style={[
+                  styles.infoValue,
+                  {
+                    paddingVertical: 5,
+                    backgroundColor: "white",
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    elevation: 4,
+                    paddingHorizontal: 5,
+                  },
+                ]}
                 value={editUsername}
                 placeholder="Username"
                 onChangeText={(text) => setEditUsername(text)}
                 maxLength={24}
               />
             </View>
-            <View style={styles.infoContainer}>
-              <Text style={styles.infoLabel}>Email:</Text>
-              <Text style={styles.infoValue}>{email}</Text>
+            <View style={{ paddingTop: 10 }}>
+              <Text style={{ fontWeight: "bold" }}>Email:</Text>
+              <Text
+                style={[
+                  styles.infoValue,
+                  {
+                    paddingVertical: 5,
+                    backgroundColor: "white",
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    elevation: 4,
+                    paddingHorizontal: 5,
+                  },
+                ]}
+              >
+                {email}
+              </Text>
             </View>
-
-            <KeyboardAvoidingView
-              style={{ flex: 1 }}
-              behavior="position"
-              keyboardVerticalOffset={10}
-            >
-              <Text style={styles.infoLabel}>Bio:</Text>
+            <Text style={[{ fontWeight: "bold" }, { paddingTop: 10 }]}>
+              Bio:
+            </Text>
+            <KeyboardAvoidingView behavior="height">
               <TextInput
-                style={styles.infoValue}
+                style={[
+                  styles.infoValue,
+                  {
+                    paddingVertical: 5,
+                    backgroundColor: "white",
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    elevation: 4,
+                    paddingHorizontal: 5,
+                  },
+                ]}
                 numberOfLines={5}
                 multiline={true}
                 textAlignVertical="top"
@@ -406,7 +237,6 @@ export default function ProfileScreen(props) {
 
           <View
             style={{
-              flex: 1,
               paddingTop: 10,
               flexDirection: "row",
               justifyContent: "space-between",
@@ -415,17 +245,20 @@ export default function ProfileScreen(props) {
             <TouchableOpacity
               onPress={() => setIsEdit(false)}
               style={{
+                backgroundColor: COLORS.primary,
                 borderWidth: 1,
-                alignContent: "center",
-                justifyContent: "center",
-                alignItems: "center",
                 borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
               }}
             >
               <Text
                 style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 8,
                   paddingVertical: 5,
-                  paddingHorizontal: 5,
                 }}
               >
                 Cancel edit
@@ -435,17 +268,20 @@ export default function ProfileScreen(props) {
             <TouchableOpacity
               onPress={() => saveChanges()}
               style={{
+                backgroundColor: COLORS.primary,
                 borderWidth: 1,
-                alignContent: "center",
-                justifyContent: "center",
-                alignItems: "center",
                 borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
               }}
             >
               <Text
                 style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 8,
                   paddingVertical: 5,
-                  paddingHorizontal: 5,
                 }}
               >
                 Save changes
@@ -454,28 +290,68 @@ export default function ProfileScreen(props) {
           </View>
         </View>
       ) : (
-        <View style={{ flex: 8 }}>
-          <View style={[styles.content, { flex: 7 }]}>
-            <View style={styles.infoContainer}>
-              <Text style={styles.infoLabel}>Email:</Text>
-              <Text style={styles.infoValue}>{email}</Text>
+        <View>
+          <View>
+            <View>
+              <Text style={{ fontWeight: "bold" }}>Email:</Text>
+              <Text
+                style={[
+                  styles.infoValue,
+                  {
+                    paddingVertical: 5,
+                    backgroundColor: "white",
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    elevation: 4,
+                    paddingHorizontal: 5,
+                  },
+                ]}
+              >
+                {email}
+              </Text>
             </View>
-            <View style={styles.infoContainer}>
-              <Text style={styles.infoLabel}>Bio:</Text>
+            <View>
+              <Text style={{ fontWeight: "bold" }}>Bio:</Text>
               {description.length > 0 ? (
                 <ScrollView
                   style={{ maxHeight: Dimensions.get("window").height * 0.3 }}
                 >
-                  <Text style={styles.infoValue} numberOfLines={null}>
+                  <Text
+                    style={[
+                      styles.infoValue,
+                      {
+                        paddingVertical: 5,
+                        backgroundColor: "white",
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        elevation: 4,
+                        paddingHorizontal: 5,
+                      },
+                    ]}
+                    numberOfLines={null}
+                  >
                     {description}
                   </Text>
                 </ScrollView>
               ) : (
-                <Text style={styles.infoValue}>You do not have a bio yet!</Text>
+                <Text
+                  style={[
+                    styles.infoValue,
+                    {
+                      backgroundColor: "white",
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      elevation: 4,
+                      paddingHorizontal: 5,
+                    },
+                  ]}
+                >
+                  You do not have a bio yet!
+                </Text>
               )}
             </View>
           </View>
-          <View style={{ flex: 1 }}>
+          <View>
             <View style={{ paddingTop: 10 }}>
               <TouchableOpacity
                 onPress={() => {
@@ -484,17 +360,20 @@ export default function ProfileScreen(props) {
                   setIsEdit(true);
                 }}
                 style={{
+                  backgroundColor: COLORS.primary,
                   borderWidth: 1,
-                  alignContent: "center",
-                  justifyContent: "center",
-                  alignItems: "center",
                   borderRadius: 5,
+                  elevation: 4,
+                  alignItems: "center",
                 }}
               >
                 <Text
                   style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    paddingHorizontal: 8,
                     paddingVertical: 5,
-                    paddingHorizontal: 5,
                   }}
                 >
                   Edit profile
@@ -510,8 +389,6 @@ export default function ProfileScreen(props) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
     padding: 20,
   },
   coverImage: {
@@ -535,15 +412,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 10,
     color: "white",
-  },
-  content: {
-    marginTop: 20,
-  },
-  infoContainer: {
-    marginTop: 20,
-  },
-  infoLabel: {
-    fontWeight: "bold",
   },
   infoValue: {
     marginTop: 5,

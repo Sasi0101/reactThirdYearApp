@@ -9,6 +9,8 @@ import {
 import React, { useState } from "react";
 import { Overlay } from "@rneui/themed";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { COLORS } from "../../constants/COLORS";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function OneEvent(props) {
   const [showOverLay, setShowOverlay] = useState(false);
@@ -38,26 +40,36 @@ export default function OneEvent(props) {
   };
 
   return (
-    <View style={{ paddingVertical: 8, paddingHorizontal: 5 }}>
+    <View style={{ paddingVertical: 8, paddingHorizontal: 8 }}>
       <TouchableOpacity
-        style={{ borderWidth: 1, height: 70, borderRadius: 10 }}
+        style={{
+          borderWidth: 1,
+          borderRadius: 10,
+          elevation: 4,
+          paddingHorizontal: 8,
+          paddingVertical: 5,
+          justifyContent: "center",
+          backgroundColor: "white",
+        }}
         onPress={() => setShowOverlay(true)}
       >
         <Text
           style={{
-            alignSelf: "flex-start",
             fontSize: 20,
-            paddingHorizontal: 5,
-            paddingTop: 5,
           }}
+          numberOfLines={1}
         >
           {props.data.name}
         </Text>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={{ paddingHorizontal: 5 }}>
-            {GetTime(props.data.from)} - {GetTime(props.data.to)}
+        {props.data.description.length > 0 && (
+          <Text numberOfLines={1} style={{ fontStyle: "italic" }}>
+            {props.data.description}
           </Text>
-        </View>
+        )}
+
+        <Text style={{ fontStyle: "italic", fontWeight: "bold" }}>
+          {GetTime(props.data.from)} - {GetTime(props.data.to)}
+        </Text>
       </TouchableOpacity>
 
       <Overlay
@@ -69,20 +81,54 @@ export default function OneEvent(props) {
         <View
           style={{
             width: Dimensions.get("window").width * 0.9,
-            height: Dimensions.get("window").height * 0.5,
+            //height: Dimensions.get("window").height * 0.5,
           }}
         >
           <Text
-            style={{ fontSize: 25, fontWeight: "bold", alignSelf: "center" }}
+            style={{
+              fontSize: 25,
+              fontWeight: "bold",
+              alignSelf: "center",
+            }}
           >
             {props.data.name}
           </Text>
-          <Text style={{ paddingTop: 30, fontSize: 17 }}>
-            From: {GetTime(new Date(props.data.from))}
-          </Text>
-          <Text style={{ fontSize: 17 }}>
-            To: {GetTime(new Date(props.data.to))}
-          </Text>
+
+          <View
+            style={{
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <View style={{ paddingTop: 10 }} />
+            <Text
+              style={{
+                fontSize: 17,
+                borderRadius: 5,
+                paddingLeft: 5,
+                elevation: 5,
+                backgroundColor: "white",
+                justifyContent: "center",
+                borderWidth: 1,
+              }}
+            >
+              From: {GetTime(new Date(props.data.from))}
+            </Text>
+            <View style={{ paddingTop: 10 }} />
+            <Text
+              style={{
+                fontSize: 17,
+                borderRadius: 5,
+                paddingLeft: 5,
+                elevation: 5,
+                backgroundColor: "white",
+                justifyContent: "center",
+                borderWidth: 1,
+              }}
+            >
+              To: {GetTime(new Date(props.data.to))}
+            </Text>
+          </View>
 
           {props.data.description !== "" && (
             <>
@@ -91,11 +137,13 @@ export default function OneEvent(props) {
               </Text>
               <Text
                 style={{
-                  borderWidth: 1,
+                  fontSize: 17,
                   borderRadius: 5,
-                  backgroundColor: "#FFFDD0",
-                  paddingHorizontal: 5,
-                  fontSize: 18,
+                  paddingLeft: 5,
+                  elevation: 5,
+                  backgroundColor: "white",
+                  justifyContent: "center",
+                  borderWidth: 1,
                 }}
               >
                 {props.data.description}
@@ -105,37 +153,73 @@ export default function OneEvent(props) {
 
           <View
             style={{
-              position: "absolute",
-              bottom: 0,
+              paddingTop: 20,
               flexDirection: "row",
               width: Dimensions.get("window").width * 0.9,
               justifyContent: "space-between",
-              paddingHorizontal: 10,
               paddingBottom: 5,
             }}
           >
             <TouchableOpacity
+              style={{
+                backgroundColor: COLORS.primary,
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
+              }}
               onPress={() => {
                 setShowOverlay(false);
               }}
             >
-              <Text> Close </Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+              >
+                Close
+              </Text>
             </TouchableOpacity>
 
             <View style={{ flexDirection: "row" }}>
               <TouchableOpacity
                 style={{
-                  marginRight: 10,
+                  backgroundColor: COLORS.primary,
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  elevation: 4,
+                  alignItems: "center",
                 }}
                 onPress={() => {
                   props.onEdit(props);
                   setShowOverlay(false);
                 }}
               >
-                <Text> Edit </Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    paddingHorizontal: 8,
+                    paddingVertical: 5,
+                  }}
+                >
+                  Edit
+                </Text>
               </TouchableOpacity>
-
+              <View style={{ paddingLeft: 15 }} />
               <TouchableOpacity
+                style={{
+                  backgroundColor: COLORS.primary,
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  elevation: 4,
+                  alignItems: "center",
+                }}
                 onPress={() => {
                   Alert.alert(
                     "Delete",
@@ -151,7 +235,17 @@ export default function OneEvent(props) {
                   );
                 }}
               >
-                <Text> Delete </Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                  }}
+                >
+                  Delete
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

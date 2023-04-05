@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { COLORS } from "../../constants/COLORS";
 
 export default function OneTask(props) {
   useEffect(() => {}, []);

@@ -12,6 +12,7 @@ import { auth } from "../../firebase";
 import { useNavigation } from "@react-navigation/core";
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { COLORS } from "../../constants/COLORS";
 
 const LoginScreen = () => {
   const maxUsernameLength = 50;
@@ -95,10 +96,6 @@ const LoginScreen = () => {
           onChangeText={(text) => setPassword(text)}
         />
 
-        <TouchableOpacity style={styles.forgotPasswordButton}>
-          <Text style={styles.forgotPasswordButtonText}>Forgot?</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
@@ -139,7 +136,7 @@ const styles = StyleSheet.create({
     textAlign: "flex-end",
   },
   forgotPasswordButtonText: {
-    color: "#20B2AA",
+    color: COLORS.primary,
     fontSize: 12,
     fontWeight: "bold",
     textAlign: "right",
@@ -169,7 +166,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: "#20B2AA",
+    backgroundColor: COLORS.primary,
     borderRadius: 5,
     padding: 10,
     marginTop: 10,
@@ -184,7 +181,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   createAccountButtonText: {
-    color: "#20B2AA",
+    color: COLORS.primary,
     fontSize: 12,
     fontWeight: "bold",
   },

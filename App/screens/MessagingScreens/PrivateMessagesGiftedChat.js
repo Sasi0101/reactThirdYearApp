@@ -6,6 +6,7 @@ import { auth, firestore } from "../../firebase";
 import "firebase/storage";
 import firebase from "firebase/app";
 import BadWordsFilter from "bad-words";
+import { COLORS } from "../../constants/COLORS";
 
 export default function PrivateMessagesGiftedChat(props) {
   const filter = new BadWordsFilter();
@@ -220,7 +221,7 @@ export default function PrivateMessagesGiftedChat(props) {
           console.log(`Avatar pressed for user ${user._id}`)
         }
         onPress={() => console.log("message was pressed")}
-        renderActions={renderActions}
+        //renderActions={renderActions}
       />
     </View>
   );

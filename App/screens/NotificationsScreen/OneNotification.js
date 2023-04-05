@@ -1,12 +1,7 @@
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
 import { auth, firestore } from "../../firebase";
+import { COLORS } from "../../constants/COLORS";
 
 export default function OneNotification(props) {
   const [type, setType] = useState("");
@@ -102,8 +97,11 @@ export default function OneNotification(props) {
   return (
     <View>
       <View style={styles.item}>
-        <Text style={{ paddingTop: 5 }}>{typeAddition}</Text>
-        <Text>Note: {note}</Text>
+        <Text style={{ paddingTop: 5, fontSize: 16 }}>{typeAddition}</Text>
+        <Text>
+          <Text style={{ fontWeight: "bold" }}>Note: </Text>
+          {note}
+        </Text>
         <View
           style={{
             flexDirection: "row",
@@ -114,19 +112,47 @@ export default function OneNotification(props) {
           }}
         >
           <TouchableOpacity
-            style={{ borderWidth: 1 }}
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+              alignItems: "center",
+            }}
             onPress={() => handleOnIgnore()}
           >
-            <Text style={{ paddingHorizontal: 2, paddingVertical: 2 }}>
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 16,
+                paddingHorizontal: 5,
+                paddingVertical: 5,
+              }}
+            >
               Ignore
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={{ borderWidth: 1 }}
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+              alignItems: "center",
+            }}
             onPress={() => handleAccept()}
           >
-            <Text style={{ paddingHorizontal: 2, paddingVertical: 2 }}>
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 16,
+                paddingHorizontal: 5,
+                paddingVertical: 5,
+              }}
+            >
               Accept
             </Text>
           </TouchableOpacity>
