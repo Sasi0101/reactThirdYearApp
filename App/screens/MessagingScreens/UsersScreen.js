@@ -228,26 +228,22 @@ export default function UsersScreen(props) {
 
           <View style={{ flex: 8 }}>
             <View style={[styles.content, { flex: 7 }]}>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Email:</Text>
-                <Text style={styles.infoValue}>{email}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Bio:</Text>
-                {description.length > 0 ? (
-                  <ScrollView
-                    style={{ maxHeight: Dimensions.get("window").height * 0.3 }}
-                  >
-                    <Text style={styles.infoValue} numberOfLines={null}>
-                      {description}
-                    </Text>
-                  </ScrollView>
-                ) : (
-                  <Text style={styles.infoValue}>
-                    You do not have a bio yet!
+              <Text style={styles.textTitle}>Email:</Text>
+              <Text style={styles.textCover}>{email}</Text>
+              <Text style={styles.textTitle}>Bio:</Text>
+              {description.length > 0 ? (
+                <ScrollView
+                  style={{ maxHeight: Dimensions.get("window").height * 0.3 }}
+                >
+                  <Text style={styles.textCover} numberOfLines={null}>
+                    {description}
                   </Text>
-                )}
-              </View>
+                </ScrollView>
+              ) : (
+                <Text style={styles.textCover}>
+                  The user does not have a bio yet!
+                </Text>
+              )}
             </View>
             <View style={{ flex: 1 }}>
               <View style={{ paddingTop: 10 }}>
@@ -255,22 +251,9 @@ export default function UsersScreen(props) {
                   onPress={() => {
                     setIsShowingUserProfile(false);
                   }}
-                  style={{
-                    borderWidth: 1,
-                    alignContent: "center",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 5,
-                  }}
+                  style={styles.touchableButton}
                 >
-                  <Text
-                    style={{
-                      paddingVertical: 5,
-                      paddingHorizontal: 5,
-                    }}
-                  >
-                    Close profile
-                  </Text>
+                  <Text style={styles.touchableText}>Close profile</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -336,7 +319,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+
     padding: 20,
   },
   coverImage: {
@@ -373,4 +356,28 @@ const styles = StyleSheet.create({
   infoValue: {
     marginTop: 5,
   },
+  textCover: {
+    marginTop: 2,
+    paddingVertical: 5,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderRadius: 5,
+    elevation: 4,
+    paddingHorizontal: 5,
+  },
+  touchableButton: {
+    backgroundColor: COLORS.primary,
+    borderWidth: 1,
+    borderRadius: 5,
+    elevation: 4,
+    alignItems: "center",
+  },
+  touchableText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 20,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  textTitle: { fontWeight: "bold", fontSize: 18, marginTop: 7 },
 });

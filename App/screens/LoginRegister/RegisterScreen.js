@@ -152,18 +152,18 @@ const RegisterScreen = () => {
             alignItems: "center",
           }}
         >
-          <TouchableOpacity
-            onPress={() => setIsOverlayOn(true)}
-            style={{ borderWidth: 1 }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "bold",
-                color: "#0000FF",
-              }}
-            >
-              Terms and services
+          <TouchableOpacity onPress={() => setIsOverlayOn(true)} style={{}}>
+            <Text>
+              Accept{" "}
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: "#0000FF",
+                }}
+              >
+                terms and services
+              </Text>
             </Text>
           </TouchableOpacity>
 

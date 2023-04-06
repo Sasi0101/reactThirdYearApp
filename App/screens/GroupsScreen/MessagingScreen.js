@@ -76,7 +76,7 @@ export default function MessagingScreen(props) {
       description: groupDescription,
       members: [auth.currentUser?.email],
       name: groupName,
-      numberlimit: 8,
+      numberlimit: 5,
       owner: auth.currentUser?.email,
       password: groupPassword,
       lastMessageSent: {
