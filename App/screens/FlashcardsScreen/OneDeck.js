@@ -409,6 +409,7 @@ export default function OneDeck(props) {
             width: Dimensions.get("window").width * 0.8,
           }}
           placeholder=" Enter front of the card"
+          placeholderTextColor={"gray"}
           value={frontCard}
           onChangeText={(text) => setFrontCard(text)}
           maxLength={256}
@@ -422,6 +423,7 @@ export default function OneDeck(props) {
             width: Dimensions.get("window").width * 0.8,
           }}
           placeholder=" Enter back of the card"
+          placeholderTextColor={"gray"}
           value={backCard}
           onChangeText={(text) => setBackCard(text)}
           maxLength={256}

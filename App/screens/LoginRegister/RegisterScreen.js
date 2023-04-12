@@ -115,6 +115,7 @@ const RegisterScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Email"
+          placeholderTextColor={"gray"}
           maxLength={50}
           value={email}
           onChangeText={(text) => setEmail(text)}
@@ -122,6 +123,7 @@ const RegisterScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Password"
+          placeholderTextColor={"gray"}
           secureTextEntry={true}
           value={password}
           onChangeText={(text) => setPassword(text)}
@@ -130,6 +132,7 @@ const RegisterScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Confirm password"
+          placeholderTextColor={"gray"}
           value={password2}
           secureTextEntry={true}
           onChangeText={(text) => setPassword2(text)}
@@ -138,6 +141,7 @@ const RegisterScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Username"
+          placeholderTextColor={"gray"}
           value={username}
           onChangeText={(text) => setUsername(text)}
           maxLength={24}

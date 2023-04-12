@@ -197,6 +197,7 @@ export default function UsersScreen(props) {
         <View style={{ width: "90%" }}>
           <TextInput
             placeholder="Search"
+            placeholderTextColor={"gray"}
             value={searchText}
             onChangeText={(text) => handleSearch(text)}
             style={styles.searchInput}

@@ -19,7 +19,7 @@ DESIGN:
 calendar screen - done
 groups when adding a group and when joining - done
 notifications (some small design here) - done
-fix when changing your profile because when writing the buttons go up as well
+fix when changing your profile because when writing the buttons go up as well - done
 add placeholderTextColor ={"gray"} to all textinputs
 
 

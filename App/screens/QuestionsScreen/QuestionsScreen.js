@@ -212,6 +212,7 @@ export default function QuestionsScreen(props) {
                 style={{ fontSize: 18, margin: 5 }}
                 multiline={true}
                 placeholder="Write your question here"
+                placeholderTextColor={"gray"}
                 value={question}
                 onChangeText={(text) => setQuestion(text)}
                 maxLength={256}

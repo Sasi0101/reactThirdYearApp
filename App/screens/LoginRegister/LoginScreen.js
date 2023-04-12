@@ -83,6 +83,7 @@ const LoginScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Email"
+          placeholderTextColor={"gray"}
           value={email}
           onChangeText={(text) => setEmail(text)}
           maxLength={50}
@@ -90,6 +91,7 @@ const LoginScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Password"
+          placeholderTextColor={"gray"}
           secureTextEntry={true}
           maxLength={32}
           value={password}

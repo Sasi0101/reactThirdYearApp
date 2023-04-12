@@ -265,6 +265,7 @@ export default function FlashcardsScreen() {
               paddingHorizontal: 5,
             }}
             placeholder=" Enter deck name"
+            placeholderTextColor={"gray"}
             value={inputValue}
             onChangeText={(text) => setInputValue(text)}
             maxLength={50}
@@ -398,6 +399,7 @@ export default function FlashcardsScreen() {
               borderRadius: 4,
             }}
             placeholder=" Enter question"
+            placeholderTextColor={"gray"}
             value={frontCard}
             onChangeText={(text) => setFrontCard(text)}
             maxLength={256}
@@ -423,6 +425,7 @@ export default function FlashcardsScreen() {
               borderRadius: 4,
             }}
             placeholder=" Enter answer"
+            placeholderTextColor={"gray"}
             value={backCard}
             onChangeText={(text) => setBackCard(text)}
             maxLength={512}

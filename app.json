@@ -1,41 +1,15 @@
 {
   "expo": {
-    "name": "reactThirdYearApp",
-    "slug": "reactThirdYearApp",
+    "name": "reactthirdyearapp",
+    "slug": "reactthirdyearapp",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./App/assets/favicon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./App/assets/favicon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
+    "sdkVersion": "47.0.0",
+    "platforms": [
+      "ios",
+      "android"
     ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.sasi01.reactThirdYearApp"
-    },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./App/assets/favicon.png",
-        "backgroundColor": "#FFFFFF"
-      },
-      "package": "com.sasi01.reactThirdYearApp"
-    },
-    "web": {
-      "favicon": "./App/assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "3bc003f8-3304-4fed-8826-78d79a1170a7"
-      }
+      "package": "com.sasi01.reactthirdyearapp"
     }
   }
 }
-

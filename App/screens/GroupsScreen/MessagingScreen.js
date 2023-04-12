@@ -153,6 +153,7 @@ export default function MessagingScreen(props) {
                 width: "80%",
               }}
               placeholder="Group name"
+              placeholderTextColor={"gray"}
               value={groupName}
               onChangeText={(text) => setGroupName(text)}
               maxLength={50}
@@ -174,6 +175,7 @@ export default function MessagingScreen(props) {
                 textAlignVertical="top"
                 multiline={true}
                 placeholder="Description"
+                placeholderTextColor={"gray"}
                 value={groupDescription}
                 onChangeText={(text) => setGroupDescription(text)}
                 style={{
@@ -201,6 +203,7 @@ export default function MessagingScreen(props) {
             <View>
               <TextInput
                 placeholder="Password"
+                placeholderTextColor={"gray"}
                 value={groupPassword}
                 onChangeText={(text) => setGroupPassword(text)}
                 style={{

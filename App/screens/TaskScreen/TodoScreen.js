@@ -253,6 +253,7 @@ export default function TodoScreen(props) {
               marginBottom: 10,
             }}
             placeholder="Task"
+            placeholderTextColor={"gray"}
             onChangeText={(value) => setTaskWriting(value)}
             maxLength={256}
           />
@@ -315,6 +316,7 @@ export default function TodoScreen(props) {
             ]}
             multiline={true}
             placeholder="Title"
+            placeholderTextColor={"gray"}
             onChangeText={(value) => setSpecTaskWriting(value)}
             maxLength={256}
           />

@@ -403,8 +403,8 @@ export default function CalendarScreen(props) {
               borderRadius: 15,
               backgroundColor: "white",
             }}
-            placeholderTextColor={"gray"}
             placeholder="Event decription"
+            placeholderTextColor={"gray"}
             value={eventDescription}
             onChangeText={(text) => setEventDescription(text)}
             maxLength={256}
