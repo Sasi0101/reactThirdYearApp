@@ -236,9 +236,10 @@ export default function OneGroup(props) {
               <Text
                 style={{
                   fontSize: 20,
-                  borderRadius: 5,
+                  borderRadius: 1,
                   paddingHorizontal: 2,
                   borderWidth: 1,
+                  elevation: 2,
                 }}
               >
                 {data.description}
@@ -256,6 +257,7 @@ export default function OneGroup(props) {
                     fontSize: 20,
                     borderWidth: 1,
                     paddingHorizontal: 2,
+                    elevation: 2,
                   }}
                 >
                   {data.members.join(", ")}

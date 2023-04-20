@@ -30,7 +30,7 @@ export default function QuestionsScreen(props) {
   const [username, setUsername] = useState(""); // add username instead of email
 
   useLayoutEffect(() => {
-    props.navigation.setOptions({ title: "Questions" });
+    props.navigation.setOptions({ title: "Forum" });
     const unsubscribe = firestore
       .collection("questions")
       .orderBy("lastAnswerDate", "desc")

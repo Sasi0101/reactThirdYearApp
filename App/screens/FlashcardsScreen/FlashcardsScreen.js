@@ -22,7 +22,7 @@ import { auth, firestore } from "../../firebase";
 import NetInfo from "@react-native-community/netinfo";
 import VotingFlashcardsScreen from "./VotingFlashcardsScreen";
 
-export default function FlashcardsScreen() {
+export default function FlashcardsScreen(props) {
   const [deckNames, setDeckNames] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedOption, setSelectedOption] = useState("Select deck");
@@ -56,7 +56,7 @@ export default function FlashcardsScreen() {
   }, []);
 
   useLayoutEffect(() => {
-    //props.navigation.setOptions({ title: "Flashcards" });
+    props.navigation.setOptions({ title: "Flashcards" });
     const unsubsribe = NetInfo.addEventListener((state) => {
       if (state.isConnected) {
         setIsThereWifi(true);

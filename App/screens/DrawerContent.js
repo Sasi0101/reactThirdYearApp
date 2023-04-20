@@ -1,7 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { auth, firestore } from "../firebase";
-import { View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { Avatar, Title, Caption, Drawer, Text } from "react-native-paper";
@@ -166,10 +172,15 @@ export function DrawerContent(props) {
                   props.navigation.navigate("MessagingScreen");
                 }}
                 onLongPress={() => {
+                  Alert.alert(
+                    "Groups",
+                    "You can join or create group and ask for help or help others with their questions. Please behave according to the rules."
+                  );
+                  /*
                   setIsGroupTooltipVisible(true);
                   setTimeout(() => {
                     setIsGroupTooltipVisible(false);
-                  }, 3000);
+                  }, 3000);*/
                 }}
               />
             </Tooltip>
@@ -196,10 +207,15 @@ export function DrawerContent(props) {
                   props.navigation.navigate("UsersScreen");
                 }}
                 onLongPress={() => {
+                  Alert.alert(
+                    "Users",
+                    "You can talk with others and view their profiles by clicking on their profile pictures."
+                  );
+                  /*
                   setIsUserTooltipVisible(true);
                   setTimeout(() => {
                     setIsUserTooltipVisible(false);
-                  }, 3000);
+                  }, 3000);*/
                 }}
               />
             </Tooltip>
@@ -220,15 +236,20 @@ export function DrawerContent(props) {
             >
               <CustomDrawerItem
                 iconName="comment"
-                label="Questions"
+                label="Forum"
                 onPress={() => {
                   props.navigation.navigate("QuestionsScreen");
                 }}
                 onLongPress={() => {
+                  Alert.alert(
+                    "Forum",
+                    "You can ask a question or answer an already existing question."
+                  );
+                  /*
                   setIsQuestionTooltipVisible(true);
                   setTimeout(() => {
                     setIsQuestionTooltipVisible(false);
-                  }, 3000);
+                  }, 3000);*/
                 }}
               />
             </Tooltip>
@@ -252,10 +273,15 @@ export function DrawerContent(props) {
                   props.navigation.navigate("CalendarScreen");
                 }}
                 onLongPress={() => {
+                  Alert.alert(
+                    "Calendar",
+                    "View your events and add new ones to your day."
+                  );
+                  /*
                   setIsCalendarTooltipVisible(true);
                   setTimeout(() => {
                     setIsCalendarTooltipVisible(false);
-                  }, 3000);
+                  }, 3000);*/
                 }}
               />
             </Tooltip>
@@ -282,10 +308,15 @@ export function DrawerContent(props) {
                   props.navigation.navigate("FlashcardsScreen");
                 }}
                 onLongPress={() => {
+                  Alert.alert(
+                    "Flashcards",
+                    "Create decks and add cards to those decks to study. You can view already uploaded decks and download them."
+                  );
+                  /*
                   setIsFlashcardTooltipVisible(true);
                   setTimeout(() => {
                     setIsFlashcardTooltipVisible(false);
-                  }, 3000);
+                  }, 3000);*/
                 }}
               />
             </Tooltip>
@@ -312,10 +343,15 @@ export function DrawerContent(props) {
                   props.navigation.navigate("TodoScreen");
                 }}
                 onLongPress={() => {
+                  Alert.alert(
+                    "To-do list",
+                    "Add tasks that you plan to do that day. You can change a tasks state by clicking on it."
+                  );
+                  /*
                   setIsTodoTooltipVisible(true);
                   setTimeout(() => {
                     setIsTodoTooltipVisible(false);
-                  }, 3000);
+                  }, 3000);*/
                 }}
               />
             </Tooltip>
@@ -323,7 +359,7 @@ export function DrawerContent(props) {
             <View style={{ paddingTop: 25 }} />
             <Tooltip
               visible={isProfileTooltipVisible}
-              width={Dimensions.get("window").width * 0.9}
+              width={300}
               height={100}
               popover={
                 <Text>
@@ -343,10 +379,15 @@ export function DrawerContent(props) {
                   props.navigation.navigate("ProfileScreen");
                 }}
                 onLongPress={() => {
+                  Alert.alert(
+                    "Profile",
+                    "View and update your profile. Others can see your profile as well."
+                  );
+                  /*
                   setIsProfileTooltipVisible(true);
                   setTimeout(() => {
                     setIsProfileTooltipVisible(false);
-                  }, 3000);
+                  }, 3000);*/
                 }}
               />
             </Tooltip>
@@ -374,10 +415,15 @@ export function DrawerContent(props) {
                   props.navigation.navigate("NotificationScreen");
                 }}
                 onLongPress={() => {
+                  Alert.alert(
+                    "Notifications",
+                    "You can view if someone asks you for permission to join a group created by you."
+                  );
+                  /*
                   setIsNotificationTooltipVisible(true);
                   setTimeout(() => {
                     setIsNotificationTooltipVisible(false);
-                  }, 3000);
+                  }, 3000);*/
                 }}
               />
             </Tooltip>

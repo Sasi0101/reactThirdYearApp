@@ -22,4 +22,9 @@ notifications (some small design here) - done
 fix when changing your profile because when writing the buttons go up as well - done
 add placeholderTextColor ={"gray"} to all textinputs
 
+cards edit for flashcards - done
+change name and possibly picture for the app
+change on info that its out of 5 not 8 for number of people - done
+length of viewing cards od decks online should be set - done
+
 

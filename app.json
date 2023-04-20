@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "reactthirdyearapp",
+    "name": "Study management application",
     "slug": "reactthirdyearapp",
     "version": "1.0.0",
     "sdkVersion": "47.0.0",
@@ -10,6 +10,14 @@
     ],
     "android": {
       "package": "com.sasi01.reactthirdyearapp"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bff08da5-6247-4ff6-a9f3-401cf98aee57"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.sasi01.reactthirdyearapp"
     }
   }
 }

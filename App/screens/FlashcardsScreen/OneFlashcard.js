@@ -129,6 +129,7 @@ export default function OneFlashcard(props) {
     } else {
       handleDownloadAfterDeckName(deckNames);
     }
+    setIsOptionsOverlayOn(false);
   };
 
   const handleDownloadAfterDeckName = async (deckNames) => {
@@ -366,6 +367,7 @@ export default function OneFlashcard(props) {
               <FlatList
                 data={cards}
                 renderItem={({ item }) => <OneCard card={item} />}
+                style={{ maxHeight: Dimensions.get("window").height * 0.8 }}
               />
             </View>
           </View>

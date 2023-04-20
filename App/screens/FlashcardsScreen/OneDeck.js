@@ -381,9 +381,23 @@ export default function OneDeck(props) {
                 setIsCardsOverlayOn(false);
                 setIsOverlayOn(true);
               }}
-              style={{ borderWidth: 1 }}
+              style={{
+                backgroundColor: COLORS.primary,
+                borderWidth: 1,
+                borderRadius: 5,
+                elevation: 4,
+                alignItems: "center",
+              }}
             >
-              <Text style={{ paddingVertical: 2, paddingHorizontal: 2 }}>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                }}
+              >
                 Close cards page
               </Text>
             </TouchableOpacity>
@@ -392,6 +406,7 @@ export default function OneDeck(props) {
             <FlatList
               data={cards}
               renderItem={({ item }) => <OneCard card={item} />}
+              style={{ maxHeight: Dimensions.get("window").height * 0.8 }}
             />
           </View>
         </View>
@@ -399,7 +414,9 @@ export default function OneDeck(props) {
 
       <Overlay
         isVisible={isEditCardOverlayOn}
-        onBackdropPress={() => setIsEditCardOverlayOn(false)}
+        onBackdropPress={() => {
+          setIsEditCardOverlayOn(false);
+        }}
       >
         <Text>Front:</Text>
         <TextInput
@@ -407,6 +424,7 @@ export default function OneDeck(props) {
             borderColor: "gray",
             borderWidth: 1,
             width: Dimensions.get("window").width * 0.8,
+            paddingHorizontal: 2,
           }}
           placeholder=" Enter front of the card"
           placeholderTextColor={"gray"}
@@ -415,11 +433,14 @@ export default function OneDeck(props) {
           maxLength={256}
         />
 
+        <View style={{ paddingTop: 10 }} />
+
         <Text>Back:</Text>
         <TextInput
           style={{
             borderColor: "gray",
             borderWidth: 1,
+            paddingHorizontal: 2,
             width: Dimensions.get("window").width * 0.8,
           }}
           placeholder=" Enter back of the card"
@@ -442,13 +463,24 @@ export default function OneDeck(props) {
                   setIsEditCardOverlayOn(false);
                 }}
                 style={{
-                  paddingVertical: 2,
-                  paddingHorizontal: 2,
-                  alignItems: "center",
+                  backgroundColor: COLORS.primary,
                   borderWidth: 1,
+                  borderRadius: 5,
+                  elevation: 4,
+                  alignItems: "center",
                 }}
               >
-                <Text>Cancel</Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                  }}
+                >
+                  Cancel
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -458,13 +490,24 @@ export default function OneDeck(props) {
                   handleEditCard();
                 }}
                 style={{
-                  paddingVertical: 2,
-                  paddingHorizontal: 2,
-                  alignItems: "center",
+                  backgroundColor: COLORS.primary,
                   borderWidth: 1,
+                  borderRadius: 5,
+                  elevation: 4,
+                  alignItems: "center",
                 }}
               >
-                <Text>Save edit</Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                  }}
+                >
+                  Save edit
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
