@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/core";
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { COLORS } from "../../constants/COLORS";
+import { Dimensions } from "react-native";
 
 const LoginScreen = () => {
   const maxUsernameLength = 50;
@@ -72,13 +73,19 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={{ uri: "https://www.bootdey.com/image/580x580/20B2AA/20B2AA" }}
-        style={styles.header}
+    <View style={[styles.container]}>
+      <View
+        style={{
+          backgroundColor: COLORS.primary,
+          width: Dimensions.get("window").width,
+          alignItems: "center",
+          justifyContent: "center",
+          height: 200,
+        }}
       >
         <Text style={styles.heading}>Study management application</Text>
-      </ImageBackground>
+      </View>
+
       <View style={styles.card}>
         <TextInput
           style={styles.input}

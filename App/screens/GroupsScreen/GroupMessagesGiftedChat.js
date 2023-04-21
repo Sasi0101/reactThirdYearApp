@@ -15,6 +15,7 @@ import BadWordsFilter from "bad-words";
 import "firebase/storage";
 import firebase from "firebase/app";
 import { DeviceEventEmitter } from "react-native";
+import { COLORS } from "../../constants/COLORS";
 
 export default function GroupMessagesGiftedChat(props) {
   const filter = new BadWordsFilter();
@@ -94,9 +95,10 @@ export default function GroupMessagesGiftedChat(props) {
   };
 
   function handleLongPress(tempMessage) {
+    console.log(auth.currentUser?.email + " " + props.route.params.data.owner);
     setreportData(tempMessage);
     if (tempMessage.user._id == auth.currentUser?.email) return;
-    auth.currentUser?.email !== props.route.params.data.owner
+    auth.currentUser?.email === props.route.params.data.owner
       ? setIsOwnerOverLayOn(true)
       : setIsNotOwnerOverlayOn(true);
   }
@@ -247,9 +249,27 @@ export default function GroupMessagesGiftedChat(props) {
         isVisible={isNotOwnerOverlayOn}
         onBackdropPress={() => setIsNotOwnerOverlayOn(false)}
       >
-        <View style={{ width: Dimensions.get("window").width * 0.9 }}>
-          <TouchableOpacity onPress={() => reportUser()}>
-            <Text>Report user</Text>
+        <View style={{ width: Dimensions.get("window").width * 0.5 }}>
+          <TouchableOpacity
+            onPress={() => reportUser()}
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                paddingVertical: 5,
+                paddingHorizontal: 3,
+              }}
+            >
+              Report user
+            </Text>
           </TouchableOpacity>
         </View>
       </Overlay>
@@ -258,15 +278,71 @@ export default function GroupMessagesGiftedChat(props) {
         isVisible={isOwnerOverlayOn}
         onBackdropPress={() => setIsOwnerOverLayOn(false)}
       >
-        <View style={{ width: Dimensions.get("window").width * 0.9 }}>
-          <TouchableOpacity onPress={() => reportUser()}>
-            <Text>Report user</Text>
+        <View style={{ width: Dimensions.get("window").width * 0.5 }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+              alignItems: "center",
+            }}
+            onPress={() => reportUser()}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                paddingVertical: 5,
+                paddingHorizontal: 3,
+              }}
+            >
+              Report user
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => kickUser()}>
-            <Text>Kick user</Text>
+          <View style={{ paddingTop: 10 }} />
+          <TouchableOpacity
+            onPress={() => kickUser()}
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                paddingVertical: 5,
+                paddingHorizontal: 3,
+              }}
+            >
+              Kick user
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => banUser()}>
-            <Text>Ban user</Text>
+          <View style={{ paddingTop: 10 }} />
+          <TouchableOpacity
+            onPress={() => banUser()}
+            style={{
+              backgroundColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: 5,
+              elevation: 4,
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                paddingVertical: 5,
+                paddingHorizontal: 3,
+              }}
+            >
+              Ban user
+            </Text>
           </TouchableOpacity>
         </View>
       </Overlay>

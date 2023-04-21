@@ -81,7 +81,7 @@ export default function DrawerNavigator() {
         component={PrivateMessageGiftedChat}
       />
       <Drawer.Screen name="QuestionsScreen" component={QuestionsScreen} />
-      <Drawer.Screen name="StudyPageScreen" component={StudyPageScreen} />
+      <Drawer.Screen name="Studying flashcards" component={StudyPageScreen} />
       <Drawer.Screen
         name="GroupMessageScreen"
         component={GroupMessagesGiftedChat}

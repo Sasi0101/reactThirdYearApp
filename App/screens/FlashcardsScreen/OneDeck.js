@@ -241,7 +241,7 @@ export default function OneDeck(props) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("StudyPageScreen", {
+        navigation.navigate("Studying flashcards", {
           deckName: props.deckName,
           newCards: newCards.slice(0, NEW_PER_DAY - newCardsStudiedToday),
           learningCards: learningCards,

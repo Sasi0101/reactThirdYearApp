@@ -16,6 +16,7 @@ export default function StudyPageScreen({ route }) {
   const [reviewCardsNumber, setReviewCardsNumber] = useState(0);
 
   useLayoutEffect(() => {
+    //route.navigation.setOptions({ title: "Groups" });
     setNewCardsNumber(route.params.newCards.length);
     setLearningCardsNumber(route.params.learningCards.length);
     setReviewCardsNumber(route.params.reviewCards.length);
